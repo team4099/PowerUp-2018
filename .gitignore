@@ -18,3 +18,4 @@ build/
 dist/
 out/
 .idea/
+.idea/workspace.xml
