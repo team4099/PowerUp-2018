@@ -7,7 +7,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="FRC Plugins" level="project" />
     <orderEntry type="library" name="NavX MXP" level="project" />
+    <orderEntry type="library" name="FRC Plugins" level="project" />
   </component>
 </module>

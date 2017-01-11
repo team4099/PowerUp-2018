@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4099.lib;
+package org.usfirst.frc.team4099.lib.util;
 
 /**
  * An iterative boolean latch.
