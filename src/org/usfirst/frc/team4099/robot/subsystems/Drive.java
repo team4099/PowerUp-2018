@@ -4,6 +4,7 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team4099.lib.drive.DriveSignal;
 import org.usfirst.frc.team4099.robot.loops.Loop;
 
@@ -36,7 +37,7 @@ public class Drive implements Subsystem {
 
     @Override
     public void outputToSmartDashboard() {
-
+        SmartDashboard.putNumber("gyro", this.getAHRS().getAngle());
     }
 
     @Override
@@ -49,7 +50,7 @@ public class Drive implements Subsystem {
 
     }
 
-    protected synchronized void setLeftRightPower(double left, double right) {
+    private synchronized void setLeftRightPower(double left, double right) {
         leftTalonSR.set(-left);
         rightTalonSR.set(right);
     }

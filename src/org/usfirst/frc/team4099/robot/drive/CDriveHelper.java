@@ -38,7 +38,7 @@ public class CDriveHelper {
         if (isQuickTurn) {
             if (Math.abs(throttle) < 0.2) {
                 double alpha = 0.1;
-                mQuickStopAccumulator = (1 - alpha) * mQuickStopAccumulator +
+                mQuickStopAccumulator = (1 - alpha) * mQuickStopAccumulator + // used for "negative inertia"
                                         alpha * Utils.limit(wheel, 1.0) * 2;
             }
             overPower = 1.0;
