@@ -19,4 +19,8 @@ public class Utils {
     }
 
 
+    public static double diff(double current, double prev) {
+        return Math.abs(current - prev);
+    }
+
 }

@@ -1,10 +1,12 @@
 package org.usfirst.frc.team4099.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team4099.lib.util.CrashTracker;
 import org.usfirst.frc.team4099.robot.drive.CDriveHelper;
 import org.usfirst.frc.team4099.robot.drive.TankDriveHelper;
 import org.usfirst.frc.team4099.robot.loops.Looper;
+import org.usfirst.frc.team4099.robot.loops.VoltageEstimator;
 import org.usfirst.frc.team4099.robot.subsystems.Drive;
 
 public class Robot extends IterativeRobot {
@@ -29,8 +31,9 @@ public class Robot extends IterativeRobot {
             CrashTracker.logRobotInit();
 
             //TODO: add the robot state estimator here
-            //mEnabledLooper.register(mDrive.getLoop());
-            //TODO: add the disabled looper tasks
+            mEnabledLooper.register(mDrive.getLoop());
+
+            mDisabledLooper.register(VoltageEstimator.getInstance());
 
         } catch (Throwable t) {
             CrashTracker.logThrowableCrash("robotInit", t);
@@ -43,9 +46,8 @@ public class Robot extends IterativeRobot {
         try {
             CrashTracker.logDisabledInit();
 
-            // change which looper is running
-//            mEnabledLooper.stop();
-//            mDisabledLooper.start();
+            mEnabledLooper.stop(); // end EnabledLooper
+            mDisabledLooper.start(); // start DisabledLooper
 
         } catch (Throwable t) {
             CrashTracker.logThrowableCrash("disabledInit", t);
@@ -58,9 +60,8 @@ public class Robot extends IterativeRobot {
         try {
             CrashTracker.logAutoInit();
 
-            // change which looper is running
-//            mEnabledLooper.start();
-//            mDisabledLooper.stop();
+            mEnabledLooper.start(); // start EnabledLooper
+            mDisabledLooper.stop(); // end DisabledLooper
 
         } catch (Throwable t) {
             CrashTracker.logThrowableCrash("autonomousInit", t);
@@ -73,9 +74,8 @@ public class Robot extends IterativeRobot {
         try {
             CrashTracker.logTeleopInit();
 
-            // change which looper is running
-//            mEnabledLooper.start();
-//            mDisabledLooper.stop();
+            mEnabledLooper.start(); // start EnabledLooper
+            mDisabledLooper.stop(); // end DisabledLooper
 
         } catch (Throwable t) {
             CrashTracker.logThrowableCrash("teleopInit", t);
@@ -111,9 +111,12 @@ public class Robot extends IterativeRobot {
             double throttle = mControls.getThrottle();
             double turn = mControls.getTurn();
             boolean isQuickTurn = mControls.getQuickTurn();
-            //mDrive.setOpenLoop(mCDriveHelper.curvatureDrive(throttle, turn, isQuickTurn));
-            mDrive.setOpenLoop(mTDriveHelper.tankDrive(throttle, turn));
 
+            SmartDashboard.putBoolean("isQuickTurn", isQuickTurn);
+            SmartDashboard.putNumber("voltage", VoltageEstimator.getInstance().getAverageVoltage());
+
+            mDrive.setOpenLoop(mCDriveHelper.curvatureDrive(throttle, turn, isQuickTurn));
+            //mDrive.setOpenLoop(mTDriveHelper.tankDrive(throttle, turn));
 
             outputAllToSmartDashboard();
             updateDashboardFeedback(); // things such as is aligned?, etc

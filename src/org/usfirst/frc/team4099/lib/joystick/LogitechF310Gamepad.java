@@ -40,26 +40,26 @@ public class LogitechF310Gamepad extends Joystick {
     }
 
     public boolean getAButton() {
-        return this.getRawButton(0);
-    }
-
-    public boolean getBButton() {
         return this.getRawButton(1);
     }
 
-    public boolean getXButton() {
+    public boolean getBButton() {
         return this.getRawButton(2);
     }
 
-    public boolean getYButton() {
+    public boolean getXButton() {
         return this.getRawButton(3);
     }
 
+    public boolean getYButton() {
+        return this.getRawButton(4);
+    }
+
     public boolean getLeftJoystickButton() {
-        return this.getRawButton(8);
+        return this.getRawButton(9);
     }
 
     public boolean getRightJoystickButton() {
-        return this.getRawButton(9);
+        return this.getRawButton(10);
     }
 }
