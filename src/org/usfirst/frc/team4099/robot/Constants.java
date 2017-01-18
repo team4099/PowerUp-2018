@@ -19,7 +19,7 @@ public class Constants {
     }
 
     public class Loopers {
-        public static final double LOOPER_DT = 0.005;
+        public static final double LOOPER_DT = 0.005; // 200 Hz
     }
 
 }

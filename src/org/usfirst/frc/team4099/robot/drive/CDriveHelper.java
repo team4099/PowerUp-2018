@@ -1,5 +1,6 @@
 package org.usfirst.frc.team4099.robot.drive;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team4099.lib.drive.DriveSignal;
 import org.usfirst.frc.team4099.lib.joystick.JoystickUtils;
 import org.usfirst.frc.team4099.lib.util.Utils;
@@ -22,6 +23,9 @@ public class CDriveHelper {
     private static final double kWheelDeadband= 0.02;
     private static final double kTurnSensitivity = 2.0;
 
+    private double lastThrottle = 0.0;
+    private static final double kMaxThrottleDelta = 1.0 / 50.0;
+
     private DriveSignal mSignal = new DriveSignal(0, 0);
 
     public static CDriveHelper getInstance() {
@@ -30,6 +34,33 @@ public class CDriveHelper {
 
     public DriveSignal curvatureDrive(double throttle, double wheel, boolean isQuickTurn) {
         throttle = JoystickUtils.deadband(throttle, kThrottleDeadband);
+
+        /* ramps up the joystick throttle when magnitude increases
+         * if magnitude decreases (1.0 to 0.0, or -1.0 to 0.0), allow anything
+         * kMaxThrottleDelta is the maximum allowed change in throttle
+         *   per iteration (~50 Hz)
+         * attempt to limit the current draw when accelerating
+         * TODO: Test how responsive this is
+         * TODO: Test to see if this slew rate method works
+         */
+        if (!Utils.sameSign(throttle, lastThrottle)) {
+            throttle = 0.0;
+        } else {
+            double throttleMagnitude = Math.abs(throttle);
+            double lastThrottleMagnitude = Math.abs(lastThrottle);
+
+            // only if an increase in magnitude
+            if (throttleMagnitude > lastThrottleMagnitude) {
+                // for + to more + increases
+                if (throttle > lastThrottle + kMaxThrottleDelta)
+                    throttle = lastThrottle + kMaxThrottleDelta;
+                // for - to more - decreases
+                else if (throttle < lastThrottle - kMaxThrottleDelta)
+                    throttle = lastThrottle - kMaxThrottleDelta;
+            }
+        }
+        lastThrottle = throttle;
+
         wheel = -JoystickUtils.deadband(wheel, kWheelDeadband);
 
         double overPower;
@@ -48,9 +79,9 @@ public class CDriveHelper {
             angularPower = Math.abs(throttle) * wheel * kTurnSensitivity - mQuickStopAccumulator;
 
             if (mQuickStopAccumulator > 1) {
-                mQuickStopAccumulator -= 1;
+                mQuickStopAccumulator -= 1.0;
             } else if (mQuickStopAccumulator < -1) {
-                mQuickStopAccumulator += 1;
+                mQuickStopAccumulator += 1.0;
             } else {
                 mQuickStopAccumulator = 0.0;
             }

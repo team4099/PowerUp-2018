@@ -127,6 +127,9 @@ public class Robot extends IterativeRobot {
         }
     }
 
+    /**
+     * Log information from all subsystems onto the SmartDashboard
+     */
     private void outputAllToSmartDashboard() {
         if (logging) {
             mDrive.outputToSmartDashboard(); // subsystems output to SmartDashboard

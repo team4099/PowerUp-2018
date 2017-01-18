@@ -1,22 +1,32 @@
 package org.usfirst.frc.team4099.lib.joystick;
 
+import org.usfirst.frc.team4099.robot.loops.VoltageEstimator;
+
 public class JoystickUtils {
 
     private JoystickUtils() {}
 
-    public static double deadband(double signal, double limit) {
-        double DB_POWER = 2.8;
-        double DB_LIMIT = limit;
-        double _limit = Math.pow(DB_LIMIT, DB_POWER);  // deadband limit; internal to function
+    /**
+     * Transforms the joystick input from linear to cubic.
+     * @param signal The raw input from the joystick
+     * @param deadbandWidth The maximum output of the joystick that is still considered 0.
+     * @return The transformed, potentially smoother control curve.
+     */
+    public static double deadband(double signal, double deadbandWidth) {
+        // TODO: Implement MAX_OUTPUT limiter based on currentVoltage
 
+        double currentVoltage = VoltageEstimator.getInstance().getAverageVoltage();
+        double MAX_OUTPUT = 1.0;
+        double alpha = 0.1;
+        double beta = MAX_OUTPUT - alpha;
+
+        signal = alpha * signal + beta * Math.pow(signal, 3);
         int sign = (signal > 0) ? 1 : -1;
         signal = Math.abs(signal);
-        signal = Math.pow(signal, DB_POWER);
 
-        if (signal < _limit)
+        if (signal < deadbandWidth)
             return 0;
 
-        return sign * (signal - _limit) / (1.0 - _limit);
+        return sign * (signal - deadbandWidth) / (1.0 - deadbandWidth);
     }
-
 }

@@ -1,7 +1,6 @@
 package org.usfirst.frc.team4099.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -13,13 +12,10 @@ import org.usfirst.frc.team4099.robot.loops.VoltageEstimator;
 public class Drive implements Subsystem {
 
     private static Drive sInstance = new Drive();
-    private final Talon leftTalonSR,
-                        rightTalonSR;
-    private final AHRS ahrs;
+    private Talon leftTalonSR,
+                  rightTalonSR;
+    private AHRS ahrs;
     private DriveControlState currentState;
-
-    private double lastLeft = 0;
-    private double lastRight = 0;
 
     public enum DriveControlState {
         OPEN_LOOP;
@@ -32,7 +28,7 @@ public class Drive implements Subsystem {
         ahrs = new AHRS(SPI.Port.kMXP);
     }
 
-    public static Drive getInstance() {
+    public static Drive getInstance() { // singleton
         return sInstance;
     }
 
@@ -46,6 +42,11 @@ public class Drive implements Subsystem {
     public void outputToSmartDashboard() {
         if (this.getAHRS() != null)
             SmartDashboard.putNumber("gyro", this.getAHRS().getAngle());
+        else
+            SmartDashboard.putNumber("gyro", -31337);
+
+        SmartDashboard.putNumber("leftTalon", leftTalonSR.get());
+        SmartDashboard.putNumber("rightTalon", rightTalonSR.get());
     }
 
     @Override
@@ -58,30 +59,15 @@ public class Drive implements Subsystem {
 
     }
 
-    private synchronized void setOpenLeftRightPower(double left, double right) {
-        double ldiff = Utils.diff(left, lastLeft);
-        double rdiff = Utils.diff(right, lastRight);
-
-        double MAX_OUTPUT = VoltageEstimator.getInstance().getAverageVoltage() / 14.0;
-        double DAMPENING_FRACTION = 0.8;
-
-        double l_dampen = MAX_OUTPUT -
-                          (DAMPENING_FRACTION * MAX_OUTPUT) * ldiff;
-        double r_dampen = MAX_OUTPUT -
-                          (DAMPENING_FRACTION * MAX_OUTPUT) * rdiff;
-
-        left *= l_dampen;
-        right *= r_dampen;
-
-        leftTalonSR.set(-left);
-        rightTalonSR.set(right);
-
-        lastLeft = left;
-        lastRight = right;
-    }
-
+    /**
+     * Powers the left and right talons during OPEN_LOOP, taking into account
+     * the difference between the previous and current output (and making sure
+     * it isn't too extreme)
+     * @param left
+     * @param right
+     */
     private synchronized void setLeftRightPower(double left, double right) {
-        leftTalonSR.set(-left);
+        leftTalonSR.set(left);
         rightTalonSR.set(right);
     }
 
@@ -89,8 +75,8 @@ public class Drive implements Subsystem {
         if (currentState != DriveControlState.OPEN_LOOP) {
             currentState = DriveControlState.OPEN_LOOP;
         }
-        setOpenLeftRightPower(signal.getLeftMotor(), signal.getRightMotor());
-        //setLeftRightPower(signal.getLeftMotor(), signal.getRightMotor());
+
+        setLeftRightPower(signal.getLeftMotor(), signal.getRightMotor());
     }
 
     public Loop getLoop() {

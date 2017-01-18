@@ -18,9 +18,19 @@ public class Utils {
             return limit;
     }
 
-
     public static double diff(double current, double prev) {
         return Math.abs(current - prev);
     }
 
+    public static boolean around(double value, double around, double tolerance) {
+        return diff(value, around) <= tolerance;
+    }
+
+    public static boolean sameSign(double new_, double old_) {
+        return (new_ >= 0 && old_ >= 0) || (new_ <= 0 && old_ <= 0);
+    }
+
+    public static int sign(double value) {
+        return (value >= 0)? 1 : -1;
+    }
 }

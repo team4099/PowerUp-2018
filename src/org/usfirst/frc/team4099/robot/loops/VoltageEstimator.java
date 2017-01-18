@@ -22,7 +22,7 @@ public class VoltageEstimator implements Loop {
     public synchronized void onLoop() {
         double cur_voltage = DriverStation.getInstance().getBatteryVoltage();
         running_avg = (cur_voltage + weight * running_avg) / (1.0 + weight);
-        System.out.println(running_avg);
+        //System.out.println(running_avg);
     }
 
     @Override
