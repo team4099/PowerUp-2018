@@ -2,6 +2,10 @@ package org.usfirst.frc.team4099.robot.loops;
 
 import edu.wpi.first.wpilibj.DriverStation;
 
+/** Constantly measures battery voltage before the match begins.
+ *
+ */
+
 public class VoltageEstimator implements Loop {
 
     private static VoltageEstimator sInstance = new VoltageEstimator();
@@ -22,7 +26,6 @@ public class VoltageEstimator implements Loop {
     public synchronized void onLoop() {
         double cur_voltage = DriverStation.getInstance().getBatteryVoltage();
         running_avg = (cur_voltage + weight * running_avg) / (1.0 + weight);
-        //System.out.println(running_avg);
     }
 
     @Override

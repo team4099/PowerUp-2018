@@ -16,11 +16,23 @@ public class JoystickUtils {
         // TODO: Implement MAX_OUTPUT limiter based on currentVoltage
 
         double currentVoltage = VoltageEstimator.getInstance().getAverageVoltage();
-        double MAX_OUTPUT = 1.0;
+        double MAX_OUTPUT = 0.85;
         double alpha = 0.1;
         double beta = MAX_OUTPUT - alpha;
 
         signal = alpha * signal + beta * Math.pow(signal, 3);
+        int sign = (signal > 0) ? 1 : -1;
+        signal = Math.abs(signal);
+
+        if (signal < deadbandWidth)
+            return 0;
+
+        return sign * (signal - deadbandWidth) / (1.0 - deadbandWidth);
+    }
+
+    public static double deadbandNoShape(double signal, double deadbandWidth) {
+        double MAX_OUTPUT = 0.85;
+
         int sign = (signal > 0) ? 1 : -1;
         signal = Math.abs(signal);
 

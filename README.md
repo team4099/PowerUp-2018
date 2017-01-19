@@ -17,7 +17,7 @@ We are a school-based _FIRST&reg; Robotics Competition_ team from Poolesville Hi
 
 
 ## Things To Do
-* Implement smart shutdown of subsystems during risky brownout.
+* Implement smart shutdown of subsystems when in risk of brownout.
 
 ## Joystick Controls
 We used two Xbox controllers (currently using the F310 gamepad by Logitech), one for the *driver*, who controls the movement of the robot, and one for the *shotgun*, who operates the turret, gear intake, etc.

@@ -60,14 +60,12 @@ public class Drive implements Subsystem {
     }
 
     /**
-     * Powers the left and right talons during OPEN_LOOP, taking into account
-     * the difference between the previous and current output (and making sure
-     * it isn't too extreme)
+     * Powers the left and right talons during OPEN_LOOP
      * @param left
      * @param right
      */
     private synchronized void setLeftRightPower(double left, double right) {
-        leftTalonSR.set(left);
+        leftTalonSR.set(-left);
         rightTalonSR.set(right);
     }
 

@@ -6,9 +6,9 @@ import org.usfirst.frc.team4099.lib.joystick.JoystickUtils;
 import org.usfirst.frc.team4099.lib.util.Utils;
 
 /**
- * Curvature Drive
- * The left joystick controls speed (throttle)
- * The right joystick controls the curvature of the path.
+ * Curvature Drive -
+ *   The left joystick controls speed (throttle)
+ *   The right joystick controls the curvature of the path.
  *
  * Credits: Team 254
  */
@@ -18,13 +18,14 @@ public class CDriveHelper {
     private static CDriveHelper sInstance = new CDriveHelper();
 
     private double mQuickStopAccumulator;
+    private double negativeInertia;
 
     private static final double kThrottleDeadband = 0.02;
     private static final double kWheelDeadband= 0.02;
-    private static final double kTurnSensitivity = 2.0;
+    private static final double kTurnSensitivity = 0.6;
 
-    private double lastThrottle = 0.0;
-    private static final double kMaxThrottleDelta = 1.0 / 50.0;
+    private double lastThrottle;
+    private static final double kMaxThrottleDelta = 1.0 / 40.0;
 
     private DriveSignal mSignal = new DriveSignal(0, 0);
 
@@ -40,9 +41,10 @@ public class CDriveHelper {
          * kMaxThrottleDelta is the maximum allowed change in throttle
          *   per iteration (~50 Hz)
          * attempt to limit the current draw when accelerating
-         * TODO: Test how responsive this is
-         * TODO: Test to see if this slew rate method works
+         *
+         * The acceleration time is quite apparent, but not unresponsive.
          */
+
         if (!Utils.sameSign(throttle, lastThrottle)) {
             throttle = 0.0;
         } else {
@@ -59,9 +61,34 @@ public class CDriveHelper {
                     throttle = lastThrottle - kMaxThrottleDelta;
             }
         }
+        SmartDashboard.putNumber("joystickThrottle", throttle);
         lastThrottle = throttle;
 
-        wheel = -JoystickUtils.deadband(wheel, kWheelDeadband);
+        if (Utils.around(wheel, 0.0, 0.15)) {
+            double beta = 0.1;
+
+            negativeInertia = (1 - beta) * negativeInertia +
+                    beta * Utils.limit(throttle, 1.0) * 2;
+        }
+
+        if (Utils.around(throttle, 0.0, 0.2)) {
+            if (!Utils.around(negativeInertia, 0.0, 0.0001))
+                System.out.println("negativeInertia: " + negativeInertia);
+
+            throttle -= negativeInertia;
+
+            //TODO: find the optimal value for negativeInertia decrease per iteration
+            //TODO: testing 0.1, 0.15, 0.2, 0.25, 0.3, 0.5, 1.0, etc.
+            if (negativeInertia > 1) {
+                negativeInertia -= 0.1;
+            } else if (negativeInertia < -1) {
+                negativeInertia += 0.1;
+            } else {
+                negativeInertia = 0.0;
+            }
+        }
+
+        wheel = -JoystickUtils.deadbandNoShape(wheel, kWheelDeadband);
 
         double overPower;
         double angularPower;
