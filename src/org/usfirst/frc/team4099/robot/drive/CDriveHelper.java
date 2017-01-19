@@ -64,14 +64,14 @@ public class CDriveHelper {
         SmartDashboard.putNumber("joystickThrottle", throttle);
         lastThrottle = throttle;
 
-        if (Utils.around(wheel, 0.0, 0.15)) {
+        if (Utils.around(wheel, 0.0, 0.15)) { // if moving straight
             double beta = 0.1;
 
             negativeInertia = (1 - beta) * negativeInertia +
                     beta * Utils.limit(throttle, 1.0) * 2;
         }
 
-        if (Utils.around(throttle, 0.0, 0.2)) {
+        if (Utils.around(throttle, 0.0, 0.075)) { // if wanting to brake (low throttle)
             if (!Utils.around(negativeInertia, 0.0, 0.0001))
                 System.out.println("negativeInertia: " + negativeInertia);
 
