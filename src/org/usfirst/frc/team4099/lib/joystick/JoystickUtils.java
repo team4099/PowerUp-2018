@@ -39,6 +39,6 @@ public class JoystickUtils {
         if (signal < deadbandWidth)
             return 0;
 
-        return sign * (signal - deadbandWidth) / (1.0 - deadbandWidth);
+        return MAX_OUTPUT * sign * (signal - deadbandWidth) / (1.0 - deadbandWidth);
     }
 }

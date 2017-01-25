@@ -35,6 +35,15 @@ public class CDriveHelper {
 
     public DriveSignal curvatureDrive(double throttle, double wheel, boolean isQuickTurn) {
         throttle = JoystickUtils.deadband(throttle, kThrottleDeadband);
+        //TODO: see if moving wheel in the beginning makes a difference in throttle stop
+        //TODO: because it used to come after the negativeInertia code
+        wheel = -JoystickUtils.deadbandNoShape(wheel, kWheelDeadband);
+
+        //TODO: test this, does it really make controls feel better?
+        double wheelNonLinearity = 0.5;
+        wheel = Math.sin(Math.PI / 2.0 * wheelNonLinearity * wheel) / Math.sin(Math.PI / 2.0 * wheelNonLinearity);
+        wheel = Math.sin(Math.PI / 2.0 * wheelNonLinearity * wheel) / Math.sin(Math.PI / 2.0 * wheelNonLinearity);
+        wheel = Math.sin(Math.PI / 2.0 * wheelNonLinearity * wheel) / Math.sin(Math.PI / 2.0 * wheelNonLinearity);
 
         /* ramps up the joystick throttle when magnitude increases
          * if magnitude decreases (1.0 to 0.0, or -1.0 to 0.0), allow anything
@@ -88,7 +97,7 @@ public class CDriveHelper {
             }
         }
 
-        wheel = -JoystickUtils.deadbandNoShape(wheel, kWheelDeadband);
+        // wheel deadband used to be here
 
         double overPower;
         double angularPower;
