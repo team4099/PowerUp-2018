@@ -30,4 +30,12 @@ public class ControlBoard {
     public boolean getQuickTurn() {
         return driver.getRightJoystickButton();
     }
+
+    public boolean getToggleIntakeUp() {
+        return driver.getAButton();
+    }
+
+    public boolean getToggleIntakeGrab() {
+        return driver.getBButton();
+    }
 }
