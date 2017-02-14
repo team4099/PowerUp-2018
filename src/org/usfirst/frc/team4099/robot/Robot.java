@@ -8,10 +8,12 @@ import org.usfirst.frc.team4099.robot.drive.TankDriveHelper;
 import org.usfirst.frc.team4099.robot.loops.Looper;
 import org.usfirst.frc.team4099.robot.loops.VoltageEstimator;
 import org.usfirst.frc.team4099.robot.subsystems.Drive;
+import org.usfirst.frc.team4099.robot.subsystems.Intake;
 
 public class Robot extends IterativeRobot {
 
     private Drive mDrive = Drive.getInstance();
+    private Intake mIntake = Intake.getInstance();
     private CDriveHelper mCDriveHelper = CDriveHelper.getInstance();
     private TankDriveHelper mTDriveHelper = TankDriveHelper.getInstance();
 
@@ -32,6 +34,7 @@ public class Robot extends IterativeRobot {
 
             //TODO: add the robot state estimator here
             mEnabledLooper.register(mDrive.getLoop());
+            mEnabledLooper.register(mIntake.getLoop());
 
             mDisabledLooper.register(VoltageEstimator.getInstance());
 
@@ -100,6 +103,7 @@ public class Robot extends IterativeRobot {
             outputAllToSmartDashboard();
             updateDashboardFeedback();
         } catch (Throwable t) {
+
             CrashTracker.logThrowableCrash("autonomousPeriodic", t);
             throw t;
         }
@@ -112,11 +116,15 @@ public class Robot extends IterativeRobot {
             double turn = mControls.getTurn();
             boolean isQuickTurn = mControls.getQuickTurn();
 
+            boolean toggleIntakeUp = mControls.getToggleIntakeUp();
+            boolean toggleIntakeGrab = mControls.getToggleIntakeGrab();
+
             SmartDashboard.putBoolean("isQuickTurn", isQuickTurn);
             SmartDashboard.putNumber("voltage", VoltageEstimator.getInstance().getAverageVoltage());
 
             mDrive.setOpenLoop(mCDriveHelper.curvatureDrive(throttle, turn, isQuickTurn));
-            //mDrive.setOpenLoop(mTDriveHelper.tankDrive(throttle, turn));
+            //mDrive.updateIntakePositions(mTDriveHelper.tankDrive(throttle, turn));
+            mIntake.updateIntakePositions(toggleIntakeUp, toggleIntakeGrab);
 
             outputAllToSmartDashboard();
             updateDashboardFeedback(); // things such as is aligned?, etc

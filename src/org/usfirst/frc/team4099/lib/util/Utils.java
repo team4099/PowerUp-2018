@@ -6,7 +6,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class Utils {
-    private Utils() {}
+    public static final String UDOO_ADDRESS = "http://10.40.99.6/";
 
     /**
      * Limits the given input to the given magnitude.
@@ -39,7 +39,7 @@ public class Utils {
         return (value >= 0)? 1 : -1;
     }
 
-    public static String getHTML(String urlToRead) throws Exception {
+    private static String getHTML(String urlToRead) {
         try {
             StringBuilder result = new StringBuilder();
             URL url = new URL(urlToRead);
@@ -58,12 +58,22 @@ public class Utils {
         }
     }
 
-    public static int[] getNumbersFromString(String htmlOutput) {
+    private static double[] getNumbersFromString(String htmlOutput) {
         String[] htmlArray = htmlOutput.split(",");
-        int[] anglesArray = new int[htmlArray.length];
+        double[] anglesArray = new double[htmlArray.length];
         for(int i = 0; i < htmlArray.length; i++) {
-            anglesArray[i] = Integer.parseInt(htmlArray[i]);
+            anglesArray[i] = Double.parseDouble(htmlArray[i]);
         }
         return anglesArray;
+    }
+
+    public static double[] getNumbersFromUrl(String urlToRead) throws Exception {
+        for (int i = 0; i < 3; i++) {
+            String html = getHTML(urlToRead);
+            if (!html.equals("-1")) {
+                return getNumbersFromString(html);
+            }
+        }
+        throw new Exception();
     }
 }
