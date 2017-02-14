@@ -5,12 +5,14 @@ import org.usfirst.frc.team4099.robot.subsystems.Intake;
 /**
  * Created by plato2000 on 2/14/17.
  */
-public class ReleaseIntakeAction implements Action {
+public class SetIntakeAction implements Action {
     private Intake mIntake;
     private boolean isDone;
+    private Intake.IntakePosition positionToSet;
 
-    public ReleaseIntakeAction() {
+    public SetIntakeAction(Intake.IntakePosition position) {
         mIntake = Intake.getInstance();
+        positionToSet = position;
     }
 
     @Override
@@ -30,6 +32,7 @@ public class ReleaseIntakeAction implements Action {
 
     @Override
     public void start() {
-//        mIntake.
+        mIntake.updateIntake(positionToSet, mIntake.getGrabberPosition());
+        isDone = true;
     }
 }

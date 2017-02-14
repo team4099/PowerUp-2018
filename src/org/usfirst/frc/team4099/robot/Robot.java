@@ -134,7 +134,7 @@ public class Robot extends IterativeRobot {
             mDrive.setOpenLoop(mCDriveHelper.curvatureDrive(throttle, turn, isQuickTurn));
 
             //mDrive.setOpenLoop(mTDriveHelper.tankDrive(throttle, turn));
-            mIntake.updateIntakePositions(toggleUp, toggleGrab);
+            mIntake.updateIntake(toggleUp, toggleGrab);
             mClimber.setClimberPower(climberPower);
 
             outputAllToSmartDashboard();
