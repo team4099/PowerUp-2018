@@ -5,15 +5,18 @@ import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team4099.lib.drive.DriveSignal;
+import org.usfirst.frc.team4099.robot.Constants;
 import org.usfirst.frc.team4099.robot.loops.Loop;
 
 public class Drive implements Subsystem, PIDOutput {
 
     private static Drive sInstance = new Drive();
-    private Talon leftTalonSR,
-                  rightTalonSR;
+    private Talon leftFrontTalonSR,
+                  leftBackTalonSR,
+                  rightFrontTalonSR,
+                  rightBackTalonSR;
     private AHRS ahrs;
-    private DriveControlState currentState;
+    private DriveControlState currentState = DriveControlState.OPEN_LOOP;
 
     public enum DriveControlState {
         OPEN_LOOP,
@@ -73,8 +76,11 @@ public class Drive implements Subsystem, PIDOutput {
     private final AutonomousConfiguration autonomousConfiguration = AutonomousConfiguration.ONE_GEAR;
 
     private Drive() {
-        leftTalonSR = new Talon(0);
-        rightTalonSR = new Talon(1);
+        leftFrontTalonSR = new Talon(Constants.Drive.LEFT_FRONT_ID);
+        leftBackTalonSR = new Talon(Constants.Drive.LEFT_BACK_ID);
+
+        rightFrontTalonSR = new Talon(Constants.Drive.RIGHT_FRONT_ID);
+        rightBackTalonSR = new Talon(Constants.Drive.RIGHT_BACK_ID);
 
         ahrs = new AHRS(SPI.Port.kMXP);
 
@@ -108,8 +114,8 @@ public class Drive implements Subsystem, PIDOutput {
             SmartDashboard.putNumber("gyro", -31337);
         }
 
-        SmartDashboard.putNumber("leftTalon", leftTalonSR.get());
-        SmartDashboard.putNumber("rightTalon", rightTalonSR.get());
+        SmartDashboard.putNumber("leftTalon", leftFrontTalonSR.get());
+        SmartDashboard.putNumber("rightTalon", rightFrontTalonSR.get());
     }
 
     @Override
@@ -132,8 +138,10 @@ public class Drive implements Subsystem, PIDOutput {
      * @param right
      */
     private synchronized void setLeftRightPower(double left, double right) {
-        leftTalonSR.set(-left);
-        rightTalonSR.set(right);
+        leftFrontTalonSR.set(-left);
+        leftBackTalonSR.set(-left);
+        rightFrontTalonSR.set(right);
+        rightBackTalonSR.set(right);
     }
 
     public synchronized void setOpenLoop(DriveSignal signal) {
@@ -154,8 +162,7 @@ public class Drive implements Subsystem, PIDOutput {
     }
 
     private void turnAngle() {
-        leftTalonSR.set(rotationRate);
-        rightTalonSR.set(-rotationRate);
+        setLeftRightPower(rotationRate, -rotationRate);
     }
 
     public boolean turnAngle(double relativeAngle) {
@@ -167,8 +174,7 @@ public class Drive implements Subsystem, PIDOutput {
             return true;
         } else if (Math.abs(ahrs.getAngle() - Math.IEEEremainder(relativeAngle - startingAngle, 360)) < kToleranceDegrees) {
             turnController.disable();
-            leftTalonSR.set(0);
-            rightTalonSR.set(0);
+            setLeftRightPower(0, 0);
             return false;
         } else {
             turnAngle();
