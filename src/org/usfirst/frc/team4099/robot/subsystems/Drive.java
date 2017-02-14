@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team4099.lib.drive.DriveSignal;
+import org.usfirst.frc.team4099.robot.Constants;
 import org.usfirst.frc.team4099.robot.loops.Loop;
 
 public class Drive implements Subsystem {
@@ -15,18 +16,18 @@ public class Drive implements Subsystem {
                   rightFrontTalonSR,
                   rightBackTalonSR;
     private AHRS ahrs;
-    private DriveControlState currentState;
+    private DriveControlState currentState = DriveControlState.OPEN_LOOP;
 
     public enum DriveControlState {
         OPEN_LOOP;
     }
 
     private Drive() {
-        leftFrontTalonSR = new Talon(2);
-        leftBackTalonSR = new Talon(3);
+        leftFrontTalonSR = new Talon(Constants.Drive.LEFT_FRONT_ID);
+        leftBackTalonSR = new Talon(Constants.Drive.LEFT_BACK_ID);
 
-        rightFrontTalonSR = new Talon(0);
-        rightBackTalonSR = new Talon(1);
+        rightFrontTalonSR = new Talon(Constants.Drive.RIGHT_FRONT_ID);
+        rightBackTalonSR = new Talon(Constants.Drive.RIGHT_BACK_ID);
 
         ahrs = new AHRS(SPI.Port.kMXP);
     }

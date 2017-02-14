@@ -1,18 +1,21 @@
 package org.usfirst.frc.team4099.robot.subsystems;
 
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.usfirst.frc.team4099.robot.Constants;
 import org.usfirst.frc.team4099.robot.loops.Loop;
 
-/**
- * Created by plato2000 on 2/7/17.
- */
-
 public class Intake implements Subsystem {
-    public static Intake sIntake = new Intake();
+    private static Intake sIntake = new Intake();
 
     private DoubleSolenoid upAndDown;
     private DoubleSolenoid gearGrabber;
+
+    private boolean lastToggleUp;
+    private boolean lastToggleGrab;
+
+    private Compressor compressor;
 
     public enum GrabberPosition {
         OPEN, CLOSED;
@@ -21,25 +24,41 @@ public class Intake implements Subsystem {
         UP, DOWN;
     }
 
-    private IntakePosition intakePosition;
-    private GrabberPosition grabberPosition;
-
-    private boolean lastToggleUp;
-    private boolean lastToggleGrab;
+    private IntakePosition intakePosition = IntakePosition.UP;
+    private GrabberPosition grabberPosition = GrabberPosition.CLOSED;
 
     private Intake() {
-        this.upAndDown = new DoubleSolenoid(1, 0);
-        this.gearGrabber = new DoubleSolenoid(3, 2);
+        compressor = new Compressor();
+        this.upAndDown = new DoubleSolenoid(
+                Constants.Intake.UP_DOWN_SOLENOID_FORWARD,
+                Constants.Intake.UP_DOWN_SOLENOID_REVERSE);
+        this.gearGrabber = new DoubleSolenoid(
+                Constants.Intake.GRAB_SOLENOID_FORWARD,
+                Constants.Intake.GRAB_SOLENOID_REVERSE);
     }
 
     public static Intake getInstance() {
         return sIntake;
     }
 
+    public void stopCompressor() {
+        compressor.stop();
+    }
+
+    public void startCompressor() {
+        compressor.start();
+    }
+
+    public Compressor getCompressor() {
+        return compressor;
+    }
+
     @Override
     public void outputToSmartDashboard() {
         SmartDashboard.putBoolean("Intake.isUp", intakePosition.equals(IntakePosition.UP));
         SmartDashboard.putBoolean("Intake.isClosed", grabberPosition.equals(GrabberPosition.CLOSED));
+        SmartDashboard.putNumber("Compressor Current Draw", compressor.getCompressorCurrent());
+        SmartDashboard.putBoolean("Pressure Switch Value", compressor.getPressureSwitchValue());
     }
 
     @Override

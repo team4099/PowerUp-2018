@@ -1,21 +1,25 @@
 package org.usfirst.frc.team4099.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team4099.lib.joystick.JoystickUtils;
+import org.usfirst.frc.team4099.lib.util.CrashTracker;
+import org.usfirst.frc.team4099.robot.Constants;
 import org.usfirst.frc.team4099.robot.loops.Loop;
 
-/**
- * Created by plato2000 on 2/13/17.
- */
 public class Climber implements Subsystem {
 
-    public static Climber sClimber = new Climber();
+    private static Climber sClimber = new Climber();
     private Talon climberTalon;
-    private double currentPower;
+    private double climberPower;
+    private ClimberState climberState = ClimberState.NOT_CLIMBING;
 
+    public enum ClimberState {
+        CLIMBING, NOT_CLIMBING;
+    }
 
     private Climber() {
-        this.climberTalon = new Talon(5);
+        climberTalon = new Talon(Constants.Climber.CLIMBER_TALON_ID);
     }
 
     public static Climber getInstance() {
@@ -24,21 +28,24 @@ public class Climber implements Subsystem {
 
     @Override
     public void outputToSmartDashboard() {
-//        SmartDashboard.putNumber("climberPower", );
-
+        SmartDashboard.putNumber("climberPower", climberPower);
     }
 
     @Override
     public synchronized void stop() {
         setClimberPower(0);
-        climberTalon.set(0);
+    }
+
+    public ClimberState getClimberState() {
+        return climberState;
     }
 
     @Override
     public void zeroSensors() {}
 
     public synchronized void setClimberPower(double climberPower) {
-        this.currentPower = Math.abs(JoystickUtils.deadband(climberPower, .2));
+        this.climberPower = Math.abs(climberPower);
+        climberTalon.set(climberPower);
     }
 
     public Loop getLoop() {
@@ -54,7 +61,19 @@ public class Climber implements Subsystem {
         @Override
         public void onLoop() {
             synchronized (Climber.this) {
-                climberTalon.set(currentPower);
+                switch (climberState) {
+                    case CLIMBING:
+                        setClimberPower(0.5);
+                        break;
+                    case NOT_CLIMBING:
+                        setClimberPower(0);
+                        break;
+                    default:
+                        CrashTracker.logMarker("REACHED ILLEGAL STATE IN CLIMBER");
+                        setClimberPower(0);
+                        climberState = ClimberState.NOT_CLIMBING;
+                        break;
+                }
             }
         }
 

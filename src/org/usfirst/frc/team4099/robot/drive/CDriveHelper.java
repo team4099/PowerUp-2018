@@ -108,7 +108,7 @@ public class CDriveHelper {
                 mQuickStopAccumulator = (1 - alpha) * mQuickStopAccumulator + // used for "negative inertia"
                                         alpha * Utils.limit(wheel, 1.0) * 2;
             }
-            overPower = 1.0;
+            overPower = 0.75;
             angularPower = wheel;
         } else {
             overPower = 0.0;

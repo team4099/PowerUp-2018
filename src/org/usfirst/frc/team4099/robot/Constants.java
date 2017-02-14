@@ -7,10 +7,10 @@ public class Constants {
     }
 
     public class Drive {
-        public static final int LEFT_FRONT_ID = 0;
-        public static final int RIGHT_FRONT_ID = 1;
-        public static final int LEFT_BACK_ID = 2;
-        public static final int RIGHT_BACK_ID = 3;
+        public static final int LEFT_FRONT_ID = 2;
+        public static final int RIGHT_FRONT_ID = 0;
+        public static final int LEFT_BACK_ID = 3;
+        public static final int RIGHT_BACK_ID = 1;
     }
 
     public class Joysticks {
@@ -20,6 +20,17 @@ public class Constants {
 
     public class Loopers {
         public static final double LOOPER_DT = 0.005; // 200 Hz
+    }
+
+    public class Climber {
+        public static final int CLIMBER_TALON_ID = 5;
+    }
+
+    public class Intake {
+        public static final int UP_DOWN_SOLENOID_FORWARD = 2;
+        public static final int UP_DOWN_SOLENOID_REVERSE = 3;
+        public static final int GRAB_SOLENOID_FORWARD = 0;
+        public static final int GRAB_SOLENOID_REVERSE = 1;
     }
 
 }
