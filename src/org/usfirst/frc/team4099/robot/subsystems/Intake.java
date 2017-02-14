@@ -23,9 +23,12 @@ public class Intake implements Subsystem {
     private IntakePosition intakePosition;
     private GrabberPosition grabberPosition;
 
+    private boolean lastToggleUp;
+    private boolean lastToggleGrab;
+
     private Intake() {
-        this.upAndDown = new DoubleSolenoid(0, 1);
-        this.gearGrabber = new DoubleSolenoid(2, 3);
+        this.upAndDown = new DoubleSolenoid(1, 0);
+        this.gearGrabber = new DoubleSolenoid(3, 2);
     }
 
     public static Intake getInstance() {
@@ -49,20 +52,28 @@ public class Intake implements Subsystem {
     public void zeroSensors() {}
 
     public synchronized void updateIntakePositions(boolean toggleUp, boolean toggleGrab) {
-        if(toggleUp) {
+        if(toggleUp && !lastToggleUp) {
             if(intakePosition.equals(IntakePosition.DOWN)) {
                 intakePosition = IntakePosition.UP;
             } else {
                 intakePosition = IntakePosition.DOWN;
             }
         }
-        if(toggleGrab) {
+        if(toggleGrab && !lastToggleGrab) {
             if(grabberPosition.equals(GrabberPosition.OPEN)) {
                 grabberPosition = GrabberPosition.CLOSED;
             } else {
                 grabberPosition = GrabberPosition.OPEN;
             }
         }
+        lastToggleGrab = toggleGrab;
+        lastToggleUp = toggleUp;
+    }
+
+    private synchronized void updateIntakePositions(IntakePosition intakePosition, GrabberPosition grabberPosition) {
+        this.intakePosition = intakePosition;
+        this.grabberPosition = grabberPosition;
+        setIntakePositions();
     }
 
     private synchronized void setIntakePositions() {
@@ -90,9 +101,7 @@ public class Intake implements Subsystem {
     private final Loop mLoop = new Loop() {
         @Override
         public void onStart() {
-            intakePosition = IntakePosition.UP;
-            grabberPosition = GrabberPosition.CLOSED;
-            setIntakePositions();
+            updateIntakePositions(IntakePosition.UP, GrabberPosition.CLOSED);
         }
 
         @Override

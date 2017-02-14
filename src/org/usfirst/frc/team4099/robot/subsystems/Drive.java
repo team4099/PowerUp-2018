@@ -5,15 +5,15 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team4099.lib.drive.DriveSignal;
-import org.usfirst.frc.team4099.lib.util.Utils;
 import org.usfirst.frc.team4099.robot.loops.Loop;
-import org.usfirst.frc.team4099.robot.loops.VoltageEstimator;
 
 public class Drive implements Subsystem {
 
     private static Drive sInstance = new Drive();
-    private Talon leftTalonSR,
-                  rightTalonSR;
+    private Talon leftFrontTalonSR,
+                  leftBackTalonSR,
+                  rightFrontTalonSR,
+                  rightBackTalonSR;
     private AHRS ahrs;
     private DriveControlState currentState;
 
@@ -22,8 +22,11 @@ public class Drive implements Subsystem {
     }
 
     private Drive() {
-        leftTalonSR = new Talon(0);
-        rightTalonSR = new Talon(1);
+        leftFrontTalonSR = new Talon(2);
+        leftBackTalonSR = new Talon(3);
+
+        rightFrontTalonSR = new Talon(0);
+        rightBackTalonSR = new Talon(1);
 
         ahrs = new AHRS(SPI.Port.kMXP);
     }
@@ -45,8 +48,8 @@ public class Drive implements Subsystem {
         else
             SmartDashboard.putNumber("gyro", -31337);
 
-        SmartDashboard.putNumber("leftTalon", leftTalonSR.get());
-        SmartDashboard.putNumber("rightTalon", rightTalonSR.get());
+        SmartDashboard.putNumber("leftTalon", leftFrontTalonSR.get());
+        SmartDashboard.putNumber("rightTalon", rightFrontTalonSR.get());
     }
 
     @Override
@@ -65,8 +68,10 @@ public class Drive implements Subsystem {
      * @param right
      */
     private synchronized void setLeftRightPower(double left, double right) {
-        leftTalonSR.set(-left);
-        rightTalonSR.set(right);
+        leftFrontTalonSR.set(-left);
+        leftBackTalonSR.set(-left);
+        rightFrontTalonSR.set(right);
+        rightBackTalonSR.set(right);
     }
 
     public synchronized void setOpenLoop(DriveSignal signal) {
