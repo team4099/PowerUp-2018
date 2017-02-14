@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team4099.lib.util.CrashTracker;
 import org.usfirst.frc.team4099.robot.drive.CDriveHelper;
 import org.usfirst.frc.team4099.robot.drive.TankDriveHelper;
+import org.usfirst.frc.team4099.robot.loops.BrownoutDefender;
 import org.usfirst.frc.team4099.robot.loops.Looper;
 import org.usfirst.frc.team4099.robot.loops.VoltageEstimator;
 import org.usfirst.frc.team4099.robot.subsystems.Climber;
@@ -40,6 +41,7 @@ public class Robot extends IterativeRobot {
             mEnabledLooper.register(mDrive.getLoop());
             mEnabledLooper.register(mIntake.getLoop());
             mEnabledLooper.register(mClimber.getLoop());
+            mEnabledLooper.register(BrownoutDefender.getInstance());
 
             mDisabledLooper.register(VoltageEstimator.getInstance());
 
