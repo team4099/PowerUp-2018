@@ -144,6 +144,10 @@ public class Drive implements Subsystem, PIDOutput {
         setLeftRightPower(signal.getLeftMotor(), signal.getRightMotor());
     }
 
+    public synchronized void setAutonomous() {
+        currentState = DriveControlState.AUTONOMOUS;
+    }
+
     @Override
     public void pidWrite(double output) {
         rotationRate = output;
@@ -154,10 +158,10 @@ public class Drive implements Subsystem, PIDOutput {
         rightTalonSR.set(-rotationRate);
     }
 
-    private boolean turnAngle(double relativeAngle) {
+    public boolean turnAngle(double relativeAngle) {
         if (!turnController.isEnabled()) {
             turnController.enable();
-            turnController.setSetpoint(Math.IEEEremainder(relativeAngle, 360) - 180);
+            turnController.setSetpoint(Math.IEEEremainder(relativeAngle - startingAngle, 360) - 180);
             startingAngle = ahrs.getAngle();
             turnAngle();
             return true;
@@ -184,7 +188,6 @@ public class Drive implements Subsystem, PIDOutput {
 
         @Override
         public void onLoop() {
-            //TODO: finish the autonomous code
             synchronized (Drive.this) {
                 switch (currentState) {
                     case OPEN_LOOP:
