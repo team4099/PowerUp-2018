@@ -28,7 +28,9 @@ public class Intake implements Subsystem {
 
     private Intake() {
         this.upAndDown = new DoubleSolenoid(1, 0);
-        this.gearGrabber = new DoubleSolenoid(3, 2);
+        this.gearGrabber = new DoubleSolenoid(2, 3);
+        this.intakePosition = IntakePosition.UP;
+        this.grabberPosition = GrabberPosition.CLOSED;
     }
 
     public static Intake getInstance() {
@@ -37,7 +39,9 @@ public class Intake implements Subsystem {
 
     @Override
     public void outputToSmartDashboard() {
-        SmartDashboard.putBoolean("Intake.isUp", intakePosition.equals(IntakePosition.UP));
+        if(intakePosition != null)
+            SmartDashboard.putBoolean("Intake.isUp", intakePosition.equals(IntakePosition.UP));
+        if(grabberPosition != null)
         SmartDashboard.putBoolean("Intake.isClosed", grabberPosition.equals(GrabberPosition.CLOSED));
     }
 

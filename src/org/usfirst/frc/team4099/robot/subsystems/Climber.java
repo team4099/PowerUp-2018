@@ -15,7 +15,7 @@ public class Climber implements Subsystem {
 
 
     private Climber() {
-        this.climberTalon = new Talon(5);
+        this.climberTalon = new Talon(4);
     }
 
     public static Climber getInstance() {
