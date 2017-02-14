@@ -7,11 +7,16 @@ import org.usfirst.frc.team4099.robot.drive.CDriveHelper;
 import org.usfirst.frc.team4099.robot.drive.TankDriveHelper;
 import org.usfirst.frc.team4099.robot.loops.Looper;
 import org.usfirst.frc.team4099.robot.loops.VoltageEstimator;
+import org.usfirst.frc.team4099.robot.subsystems.Climber;
 import org.usfirst.frc.team4099.robot.subsystems.Drive;
+import org.usfirst.frc.team4099.robot.subsystems.Intake;
 
 public class Robot extends IterativeRobot {
 
     private Drive mDrive = Drive.getInstance();
+    private Intake mIntake = Intake.getInstance();
+    private Climber mClimber = Climber.getInstance();
+
     private CDriveHelper mCDriveHelper = CDriveHelper.getInstance();
     private TankDriveHelper mTDriveHelper = TankDriveHelper.getInstance();
 
@@ -25,6 +30,7 @@ public class Robot extends IterativeRobot {
         CrashTracker.logRobotConstruction();
     }
 
+
     @Override
     public void robotInit() {
         try {
@@ -32,6 +38,8 @@ public class Robot extends IterativeRobot {
 
             //TODO: add the robot state estimator here
             mEnabledLooper.register(mDrive.getLoop());
+            mEnabledLooper.register(mIntake.getLoop());
+            mEnabledLooper.register(mClimber.getLoop());
 
             mDisabledLooper.register(VoltageEstimator.getInstance());
 
@@ -112,11 +120,18 @@ public class Robot extends IterativeRobot {
             double turn = mControls.getTurn();
             boolean isQuickTurn = mControls.getQuickTurn();
 
+            boolean toggleGrab = mControls.getToggleIntakeGrab();
+            boolean toggleUp = mControls.getToggleIntakeUp();
+
+            double climberPower = mControls.getClimberPower();
+
             SmartDashboard.putBoolean("isQuickTurn", isQuickTurn);
             SmartDashboard.putNumber("voltage", VoltageEstimator.getInstance().getAverageVoltage());
 
             mDrive.setOpenLoop(mCDriveHelper.curvatureDrive(throttle, turn, isQuickTurn));
             //mDrive.setOpenLoop(mTDriveHelper.tankDrive(throttle, turn));
+            mIntake.updateIntakePositions(toggleUp, toggleGrab);
+            mClimber.setClimberPower(climberPower);
 
             outputAllToSmartDashboard();
             updateDashboardFeedback(); // things such as is aligned?, etc
@@ -133,6 +148,8 @@ public class Robot extends IterativeRobot {
     private void outputAllToSmartDashboard() {
         if (logging) {
             mDrive.outputToSmartDashboard(); // subsystems output to SmartDashboard
+            mIntake.outputToSmartDashboard();
+            mClimber.outputToSmartDashboard();
         }
     }
 

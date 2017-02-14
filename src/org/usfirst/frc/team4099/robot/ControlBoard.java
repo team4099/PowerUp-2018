@@ -4,11 +4,9 @@ import org.usfirst.frc.team4099.lib.joystick.LogitechF310Gamepad;
 
 public class ControlBoard {
     private static ControlBoard sInstance = new ControlBoard();
-
     public static ControlBoard getInstance() {
         return sInstance;
     }
-
     private final LogitechF310Gamepad driver;
 
     private ControlBoard() {
@@ -37,5 +35,9 @@ public class ControlBoard {
 
     public boolean getToggleIntakeGrab() {
         return driver.getBButton();
+    }
+
+    public double getClimberPower() {
+        return driver.getLeftTriggerAxis();
     }
 }

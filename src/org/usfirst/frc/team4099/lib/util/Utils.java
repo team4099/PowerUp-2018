@@ -1,5 +1,10 @@
 package org.usfirst.frc.team4099.lib.util;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 public class Utils {
     private Utils() {}
 
@@ -32,5 +37,33 @@ public class Utils {
 
     public static int sign(double value) {
         return (value >= 0)? 1 : -1;
+    }
+
+    public static String getHTML(String urlToRead) throws Exception {
+        try {
+            StringBuilder result = new StringBuilder();
+            URL url = new URL(urlToRead);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setConnectTimeout(1000);
+            conn.setRequestMethod("GET");
+            BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String line;
+            while((line = rd.readLine()) != null) {
+                result.append(line);
+            }
+            rd.close();
+            return result.toString();
+        } catch(Exception e) {
+            return "-1";
+        }
+    }
+
+    public static int[] getNumbersFromString(String htmlOutput) {
+        String[] htmlArray = htmlOutput.split(",");
+        int[] anglesArray = new int[htmlArray.length];
+        for(int i = 0; i < htmlArray.length; i++) {
+            anglesArray[i] = Integer.parseInt(htmlArray[i]);
+        }
+        return anglesArray;
     }
 }
