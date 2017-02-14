@@ -7,11 +7,15 @@ import org.usfirst.frc.team4099.robot.loops.Loop;
 /**
  * Created by plato2000 on 2/7/17.
  */
+
 public class Intake implements Subsystem {
     public static Intake sIntake = new Intake();
 
     private DoubleSolenoid upAndDown;
     private DoubleSolenoid gearGrabber;
+
+    private boolean previousToggleUp;
+    private boolean previousToggleGrab;
 
     public enum GrabberPosition {
         OPEN, CLOSED;
@@ -49,20 +53,23 @@ public class Intake implements Subsystem {
     public void zeroSensors() {}
 
     public synchronized void updateIntakePositions(boolean toggleUp, boolean toggleGrab) {
-        if(toggleUp) {
+        if(toggleUp && !previousToggleUp) {
             if(intakePosition.equals(IntakePosition.DOWN)) {
                 intakePosition = IntakePosition.UP;
             } else {
                 intakePosition = IntakePosition.DOWN;
             }
         }
-        if(toggleGrab) {
+        if(toggleGrab && !previousToggleGrab) {
             if(grabberPosition.equals(GrabberPosition.OPEN)) {
                 grabberPosition = GrabberPosition.CLOSED;
             } else {
                 grabberPosition = GrabberPosition.OPEN;
             }
         }
+
+        previousToggleUp = toggleUp;
+        previousToggleGrab = toggleGrab;
     }
 
     private synchronized void setIntakePositions() {
