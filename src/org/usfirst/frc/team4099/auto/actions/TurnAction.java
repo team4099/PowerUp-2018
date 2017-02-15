@@ -35,6 +35,6 @@ public class TurnAction implements Action {
 
     @Override
     public void start() {
-        mDrive.setAutonomous();
+        mDrive.setAutonomousTurning();
     }
 }

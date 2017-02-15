@@ -5,10 +5,11 @@ import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team4099.lib.drive.DriveSignal;
+import org.usfirst.frc.team4099.lib.drive.PIDOutputReceiver;
 import org.usfirst.frc.team4099.robot.Constants;
 import org.usfirst.frc.team4099.robot.loops.Loop;
 
-public class Drive implements Subsystem, PIDOutput {
+public class Drive implements Subsystem {
 
     private static Drive sInstance = new Drive();
     private Talon leftFrontTalonSR,
@@ -20,38 +21,8 @@ public class Drive implements Subsystem, PIDOutput {
 
     public enum DriveControlState {
         OPEN_LOOP,
-        AUTONOMOUS
-    }
-
-    public enum AutonomousState {
-        START,
-        FIRST_FORWARD,
-        TURN_TO_GOAL,
-        FORWARD_TO_LIFT,
-        BACK_OUT_OF_LIFT,
-        TURN_TO_BASELINE,
-        TURN_BEFORE_SECOND_GEAR,
-        TURN_FOR_SECOND_GEAR,
-        FORWARD_FOR_SECOND_GEAR,
-        TURN_AFTER_SECOND_GEAR,
-        TURN_FOR_SECOND_LIFT,
-        FORWARD_FOR_SECOND_LIFT,
-        BACK_OUT_OF_SECOND_LIFT,
-        FORWARD_TO_BASELINE,
-        TURN_AROUND_AFTER_BASELINE,
-        WAIT,
-    }
-
-    public enum StartingPosition {
-        LEFT,
-        CENTER,
-        RIGHT
-    }
-
-    public enum AutonomousConfiguration {
-        BASELINE,
-        ONE_GEAR,
-        TWO_GEAR
+        AUTONOMOUS_TURNING,
+        AUTONOMOUS_DRIVING
     }
 
     private static final double kP = 0.03;
@@ -60,20 +31,21 @@ public class Drive implements Subsystem, PIDOutput {
     private static final double kF = 0.00;
 
     private static final double kToleranceDegrees = 2f;
-
-    private double rotationRate;
+    private static final double kToleranceDistance = .05f;
 
     private PIDController turnController;
+    private PIDController leftController;
+    private PIDController rightController;
+
+    private PIDOutputReceiver turnReceiver;
+    private PIDOutputReceiver leftReceiver;
+    private PIDOutputReceiver rightReceiver;
 
     private Encoder leftEncoder;
     private Encoder rightEncoder;
 
     private double distanceToDrive;
     private double startingAngle = 0;
-
-    private AutonomousState autonomousState = AutonomousState.START;
-    private final StartingPosition startingPosition = StartingPosition.CENTER;
-    private final AutonomousConfiguration autonomousConfiguration = AutonomousConfiguration.ONE_GEAR;
 
     private Drive() {
         leftFrontTalonSR = new Talon(Constants.Drive.LEFT_FRONT_ID);
@@ -86,11 +58,16 @@ public class Drive implements Subsystem, PIDOutput {
 
         leftEncoder = new Encoder(0, 1, false, Encoder.EncodingType.k4X);
         rightEncoder = new Encoder(2, 3, false, Encoder.EncodingType.k4X);
-        turnController = new PIDController(kP, kI, kD, kF, ahrs, this);
+
+        turnReceiver = new PIDOutputReceiver();
+        turnController = new PIDController(kP, kI, kD, kF, ahrs, turnReceiver);
         turnController.setInputRange(-180d, 180d);
         turnController.setOutputRange(-1d, 1d);
         turnController.setAbsoluteTolerance(kToleranceDegrees);
         turnController.setContinuous(true);
+
+//        leftReceiver = new PIDOutputReceiver();
+//        leftController = new PIDController()
 
         LiveWindow.addActuator("DriveSystem", "RotateController", turnController);
     }
@@ -152,33 +129,34 @@ public class Drive implements Subsystem, PIDOutput {
         setLeftRightPower(signal.getLeftMotor(), signal.getRightMotor());
     }
 
-    public synchronized void setAutonomous() {
-        currentState = DriveControlState.AUTONOMOUS;
+    public synchronized void setAutonomousTurning() {
+        currentState = DriveControlState.AUTONOMOUS_TURNING;
     }
 
-    @Override
-    public void pidWrite(double output) {
-        rotationRate = output;
+    public synchronized void setAutonomousDriving() {
+        currentState = DriveControlState.AUTONOMOUS_DRIVING;
     }
 
     private void turnAngle() {
-        setLeftRightPower(rotationRate, -rotationRate);
+        setLeftRightPower(turnReceiver.getOutput(), -turnReceiver.getOutput());
     }
 
     public boolean turnAngle(double relativeAngle) {
-        if (!turnController.isEnabled()) {
+        setAutonomousTurning();
+        if(!turnController.isEnabled()) {
             turnController.enable();
             turnController.setSetpoint(Math.IEEEremainder(relativeAngle - startingAngle, 360) - 180);
             startingAngle = ahrs.getAngle();
             turnAngle();
-            return true;
-        } else if (Math.abs(ahrs.getAngle() - Math.IEEEremainder(relativeAngle - startingAngle, 360)) < kToleranceDegrees) {
+            return false;
+        } else if(Math.abs(ahrs.getAngle() - Math.IEEEremainder(relativeAngle - startingAngle, 360)) < kToleranceDegrees) {
             turnController.disable();
             setLeftRightPower(0, 0);
-            return false;
+            setOpenLoop(DriveSignal.NEUTRAL);
+            return true;
         } else {
             turnAngle();
-            return true;
+            return false;
         }
     }
 
