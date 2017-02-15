@@ -110,10 +110,10 @@ public class Intake implements Subsystem {
     private synchronized void setIntakePositions() {
         switch(intakePosition) {
             case UP:
-                gearGrabber.set(DoubleSolenoid.Value.kReverse);
+                gearGrabber.set(DoubleSolenoid.Value.kForward);
                 break;
             case DOWN:
-                gearGrabber.set(DoubleSolenoid.Value.kForward);
+                gearGrabber.set(DoubleSolenoid.Value.kReverse);
                 break;
         }
         switch(grabberPosition) {
