@@ -1,6 +1,5 @@
 package org.usfirst.frc.team4099.auto.actions;
 
-import org.usfirst.frc.team4099.lib.drive.DriveSignal;
 import org.usfirst.frc.team4099.robot.subsystems.Drive;
 
 /**
@@ -25,16 +24,16 @@ public class TurnAction implements Action {
 
     @Override
     public void update() {
-        isDone = mDrive.turnAngle(degreesToTurn);
+        isDone = mDrive.turnAngle();
     }
 
     @Override
     public void done() {
-        mDrive.setOpenLoop(DriveSignal.NEUTRAL);
+        mDrive.finishTurn();
     }
 
     @Override
     public void start() {
-        mDrive.setAutonomousTurning();
+        mDrive.setAngleSetpoint(degreesToTurn);
     }
 }

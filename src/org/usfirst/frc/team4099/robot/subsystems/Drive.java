@@ -25,12 +25,18 @@ public class Drive implements Subsystem {
         AUTONOMOUS_DRIVING
     }
 
-    private static final double kP = 0.03;
-    private static final double kI = 0.00;
-    private static final double kD = 0.00;
-    private static final double kF = 0.00;
+    private static final double kUTurn = 0.015;
 
-    private static final double kToleranceDegrees = 2f;
+    private static final double kPTurn = 0.015;
+    private static final double kITurn = 0.00;
+    private static final double kDTurn = 0.6;
+    private static final double kFTurn = 0.00;
+
+    private static final double kPForward = 0.015;
+    private static final double kIForward = 0.00;
+    private static final double kDForward = 0.6;
+    private static final double kFForward = 0.00;
+
     private static final double kToleranceDistance = .05f;
 
     private PIDController turnController;
@@ -43,6 +49,9 @@ public class Drive implements Subsystem {
 
     private Encoder leftEncoder;
     private Encoder rightEncoder;
+
+    private double leftDistancePerPulse = 1;
+    private double rightDistancePerPulse = 1;
 
     private double distanceToDrive;
     private double startingAngle = 0;
@@ -57,19 +66,41 @@ public class Drive implements Subsystem {
         ahrs = new AHRS(SPI.Port.kMXP);
 
         leftEncoder = new Encoder(0, 1, false, Encoder.EncodingType.k4X);
+        leftEncoder.setDistancePerPulse(Constants.Drive.LEFT_ENCODER_DISTANCE_PER_PULSE);
+        leftEncoder.startLiveWindowMode();
+
         rightEncoder = new Encoder(2, 3, false, Encoder.EncodingType.k4X);
+        rightEncoder.setDistancePerPulse(Constants.Drive.RIGHT_ENCODER_DISTANCE_PER_PULSE);
+        rightEncoder.startLiveWindowMode();
 
         turnReceiver = new PIDOutputReceiver();
-        turnController = new PIDController(kP, kI, kD, kF, ahrs, turnReceiver);
+        turnController = new PIDController(kPTurn, kITurn, kDTurn, kFTurn, ahrs, turnReceiver);
         turnController.setInputRange(-180d, 180d);
-        turnController.setOutputRange(-1d, 1d);
-        turnController.setAbsoluteTolerance(kToleranceDegrees);
+        turnController.setOutputRange(-.25d, .25d);
+        turnController.setAbsoluteTolerance(Constants.Drive.TURN_TOLERANCE_DEGREES);
         turnController.setContinuous(true);
+        turnController.startLiveWindowMode();
 
-//        leftReceiver = new PIDOutputReceiver();
-//        leftController = new PIDController()
+        leftReceiver = new PIDOutputReceiver();
+        leftController = new PIDController(kPForward, kIForward, kDForward, kFForward, leftEncoder, leftReceiver);
+        leftController.setOutputRange(-.25d, .25d);
+        leftController.setPercentTolerance(Constants.Drive.FORWARD_TOLERANCE_METERS);
+        leftController.setContinuous(true);
+        leftController.startLiveWindowMode();
 
-        LiveWindow.addActuator("DriveSystem", "RotateController", turnController);
+        rightReceiver = new PIDOutputReceiver();
+        rightController = new PIDController(kPForward, kIForward, kDForward, kFForward, rightEncoder, rightReceiver);
+        rightController.setOutputRange(-.25d, .25d);
+        rightController.setPercentTolerance(Constants.Drive.FORWARD_TOLERANCE_METERS);
+        rightController.setContinuous(true);
+        rightController.startLiveWindowMode();
+
+        LiveWindow.addActuator("Drive", "RotateController", turnController);
+        LiveWindow.addActuator("Drive", "leftController", leftController);
+        LiveWindow.addActuator("Drive", "rightController", rightController);
+        LiveWindow.addSensor("Drive", "Gyro", ahrs);
+        LiveWindow.addSensor("Drive", "leftEncoder", leftEncoder);
+        LiveWindow.addSensor("Drive", "rightEncoder", rightEncoder);
     }
 
     public static Drive getInstance() { // singleton
@@ -93,6 +124,8 @@ public class Drive implements Subsystem {
 
         SmartDashboard.putNumber("leftTalon", leftFrontTalonSR.get());
         SmartDashboard.putNumber("rightTalon", rightFrontTalonSR.get());
+        SmartDashboard.putNumber("leftEncoder", leftEncoder.getDistance());
+        SmartDashboard.putNumber("rightEncoder", rightEncoder.getDistance());
     }
 
     @Override
@@ -125,39 +158,67 @@ public class Drive implements Subsystem {
         if (currentState != DriveControlState.OPEN_LOOP) {
             currentState = DriveControlState.OPEN_LOOP;
         }
+        turnController.disable();
+
 
         setLeftRightPower(signal.getLeftMotor(), signal.getRightMotor());
-    }
-
-    public synchronized void setAutonomousTurning() {
-        currentState = DriveControlState.AUTONOMOUS_TURNING;
     }
 
     public synchronized void setAutonomousDriving() {
         currentState = DriveControlState.AUTONOMOUS_DRIVING;
     }
 
-    private void turnAngle() {
-        setLeftRightPower(turnReceiver.getOutput(), -turnReceiver.getOutput());
+    public void setForwardSetpoint(double distance) {
+        System.out.println("Set setpoint to " + distance);
+        setAutonomousDriving();
+        rightController.enable();
+        leftController.enable();
+        rightController.setSetpoint(distance);
+        leftController.setSetpoint(distance);
     }
 
-    public boolean turnAngle(double relativeAngle) {
-        setAutonomousTurning();
-        if(!turnController.isEnabled()) {
-            turnController.enable();
-            turnController.setSetpoint(Math.IEEEremainder(relativeAngle - startingAngle, 360) - 180);
-            startingAngle = ahrs.getAngle();
-            turnAngle();
-            return false;
-        } else if(Math.abs(ahrs.getAngle() - Math.IEEEremainder(relativeAngle - startingAngle, 360)) < kToleranceDegrees) {
-            turnController.disable();
-            setLeftRightPower(0, 0);
-            setOpenLoop(DriveSignal.NEUTRAL);
+    public boolean goForward() {
+        System.out.println("Moving rate of right: " + rightReceiver.getOutput() + " Distance: " + ahrs.getDisplacementX() + " Time: " + Timer.getFPGATimestamp());
+        System.out.println("Moving rate of left: " + rightReceiver.getOutput() + " Distance: " + ahrs.getDisplacementX()+ " Time: " + Timer.getFPGATimestamp());
+        rightController.updateTable();
+        leftController.updateTable();
+        if(rightReceiver.getOutput() == 0 || leftReceiver.getOutput() == 0){
             return true;
-        } else {
-            turnAngle();
-            return false;
         }
+        setLeftRightPower(leftReceiver.getOutput(), rightReceiver.getOutput());
+        return false;
+    }
+
+    public void finishForward() {
+        rightController.disable();
+        leftController.disable();
+        setOpenLoop(DriveSignal.NEUTRAL);
+    }
+
+    public synchronized void setAutonomousTurning() {
+        currentState = DriveControlState.AUTONOMOUS_TURNING;
+    }
+
+    public void setAngleSetpoint(double angle) {
+        System.out.println("Set setpoint to " + angle);
+        setAutonomousTurning();
+        turnController.enable();
+        turnController.setSetpoint(angle);
+    }
+
+    public boolean turnAngle() {
+        System.out.println("Turn rate: " + turnReceiver.getOutput() + " Angle: " + ahrs.getAngle() + " Time: " + Timer.getFPGATimestamp());
+        turnController.updateTable();
+        if (turnReceiver.getOutput() == 0) {
+            return true;
+        }
+        setLeftRightPower(turnReceiver.getOutput(), -turnReceiver.getOutput());
+        return false;
+    }
+
+    public void finishTurn() {
+        turnController.disable();
+        setOpenLoop(DriveSignal.NEUTRAL);
     }
 
     public Loop getLoop() {
