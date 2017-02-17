@@ -5,10 +5,10 @@ package org.usfirst.frc.team4099.lib.util;
  */
 public class AutonomousInitParameters {
     private double distanceInMeters;
-    private Rotation2d turnAngle;
+    private Rotation2D turnAngle;
     private int trackID;
 
-    public AutonomousInitParameters(double forwardDistance, Rotation2d turnAngle, int trackID) {
+    public AutonomousInitParameters(double forwardDistance, Rotation2D turnAngle, int trackID) {
         this.distanceInMeters = forwardDistance;
         this.turnAngle = turnAngle;
         this.trackID = trackID;
@@ -18,7 +18,7 @@ public class AutonomousInitParameters {
         return distanceInMeters;
     }
 
-    public Rotation2d getTurnAngle() {
+    public Rotation2D getTurnAngle() {
         return turnAngle;
     }
 

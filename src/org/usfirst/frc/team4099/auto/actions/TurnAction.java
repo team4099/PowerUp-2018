@@ -1,5 +1,7 @@
 package org.usfirst.frc.team4099.auto.actions;
 
+import org.usfirst.frc.team4099.lib.util.Rotation2D;
+import org.usfirst.frc.team4099.robot.Constants;
 import org.usfirst.frc.team4099.robot.subsystems.Drive;
 
 /**
@@ -10,16 +12,17 @@ public class TurnAction implements Action {
     private Drive mDrive;
     private double degreesToTurn;
     private boolean isDone;
+    private double finishAngle;
 
-    public TurnAction(double degreesToTurn) {
+    public TurnAction(Rotation2D degreesToTurn) {
         this.mDrive = Drive.getInstance();
-        this.degreesToTurn = degreesToTurn;
+        this.degreesToTurn = degreesToTurn.getDegrees();
         this.isDone = false;
     }
 
     @Override
     public boolean isFinished() {
-        return isDone;
+        return isDone || Math.abs(mDrive.getAHRS().getYaw() - finishAngle) < Constants.Drive.TURN_TOLERANCE_DEGREES;
     }
 
     @Override
@@ -34,6 +37,7 @@ public class TurnAction implements Action {
 
     @Override
     public void start() {
-        mDrive.setAngleSetpoint(degreesToTurn);
+        finishAngle = Math.IEEEremainder(mDrive.getAHRS().getYaw() + degreesToTurn, 360);
+        mDrive.setAngleSetpoint(finishAngle);
     }
 }

@@ -8,17 +8,17 @@ import java.text.DecimalFormat;
  *
  * Inspired by Sophus (https://github.com/strasdat/Sophus/tree/master/sophus)
  */
-public class Rotation2d implements Interpolable<Rotation2d> {
+public class Rotation2D implements Interpolable<Rotation2D> {
     protected static final double kEpsilon = 1E-9;
 
     protected double cos_angle_;
     protected double sin_angle_;
 
-    public Rotation2d() {
+    public Rotation2D() {
         this(1, 0, false);
     }
 
-    public Rotation2d(double x, double y, boolean normalize) {
+    public Rotation2D(double x, double y, boolean normalize) {
         cos_angle_ = x;
         sin_angle_ = y;
         if (normalize) {
@@ -26,16 +26,16 @@ public class Rotation2d implements Interpolable<Rotation2d> {
         }
     }
 
-    public Rotation2d(Rotation2d other) {
+    public Rotation2D(Rotation2D other) {
         cos_angle_ = other.cos_angle_;
         sin_angle_ = other.sin_angle_;
     }
 
-    public static Rotation2d fromRadians(double angle_radians) {
-        return new Rotation2d(Math.cos(angle_radians), Math.sin(angle_radians), false);
+    public static Rotation2D fromRadians(double angle_radians) {
+        return new Rotation2D(Math.cos(angle_radians), Math.sin(angle_radians), false);
     }
 
-    public static Rotation2d fromDegrees(double angle_degrees) {
+    public static Rotation2D fromDegrees(double angle_degrees) {
         return fromRadians(Math.toRadians(angle_degrees));
     }
 
@@ -83,7 +83,7 @@ public class Rotation2d implements Interpolable<Rotation2d> {
     }
 
     /**
-     * We can rotate this Rotation2d by adding together the effects of it and
+     * We can rotate this Rotation2D by adding together the effects of it and
      * another rotation.
      *
      * @param other
@@ -91,29 +91,29 @@ public class Rotation2d implements Interpolable<Rotation2d> {
      *            https://en.wikipedia.org/wiki/Rotation_matrix
      * @return This rotation rotated by other.
      */
-    public Rotation2d rotateBy(Rotation2d other) {
-        return new Rotation2d(cos_angle_ * other.cos_angle_ - sin_angle_ * other.sin_angle_,
+    public Rotation2D rotateBy(Rotation2D other) {
+        return new Rotation2D(cos_angle_ * other.cos_angle_ - sin_angle_ * other.sin_angle_,
                 cos_angle_ * other.sin_angle_ + sin_angle_ * other.cos_angle_, true);
     }
 
     /**
-     * The inverse of a Rotation2d "undoes" the effect of this rotation.
+     * The inverse of a Rotation2D "undoes" the effect of this rotation.
      *
      * @return The opposite of this rotation.
      */
-    public Rotation2d inverse() {
-        return new Rotation2d(cos_angle_, -sin_angle_, false);
+    public Rotation2D inverse() {
+        return new Rotation2D(cos_angle_, -sin_angle_, false);
     }
 
     @Override
-    public Rotation2d interpolate(Rotation2d other, double x) {
+    public Rotation2D interpolate(Rotation2D other, double x) {
         if (x <= 0) {
-            return new Rotation2d(this);
+            return new Rotation2D(this);
         } else if (x >= 1) {
-            return new Rotation2d(other);
+            return new Rotation2D(other);
         }
         double angle_diff = inverse().rotateBy(other).getRadians();
-        return this.rotateBy(Rotation2d.fromRadians(angle_diff * x));
+        return this.rotateBy(Rotation2D.fromRadians(angle_diff * x));
     }
 
     @Override

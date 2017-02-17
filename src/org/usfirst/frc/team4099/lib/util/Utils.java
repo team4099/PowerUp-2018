@@ -1,13 +1,14 @@
 package org.usfirst.frc.team4099.lib.util;
 
+import org.usfirst.frc.team4099.robot.Constants;
+
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class Utils {
-    public static final String UDOO_ADDRESS = "http://10.40.99.6/";
-
     /**
      * Limits the given input to the given magnitude.
      * @param v         value to limit
@@ -67,13 +68,13 @@ public class Utils {
         return anglesArray;
     }
 
-    public static double[] getNumbersFromUrl(String urlToRead) throws Exception {
+    public static double[] getNumbersFromUrl(String urlToRead) throws FileNotFoundException {
         for (int i = 0; i < 3; i++) {
-            String html = getHTML(urlToRead);
+            String html = getHTML(Constants.Vision.UDOO_ADDRESS + urlToRead);
             if (!html.equals("-1")) {
                 return getNumbersFromString(html);
             }
         }
-        throw new Exception();
+        throw new FileNotFoundException();
     }
 }

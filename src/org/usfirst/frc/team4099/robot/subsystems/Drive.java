@@ -1,7 +1,6 @@
 package org.usfirst.frc.team4099.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
-import com.sun.tools.internal.jxc.ap.Const;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -26,19 +25,18 @@ public class Drive implements Subsystem {
         AUTONOMOUS_DRIVING
     }
 
-    private static final double kUTurn = 0.015;
+    private static final double kUTurn = 0.035;
+    private static final double tUTurn = .17;
 
-    private static final double kPTurn = 0.015;
-    private static final double kITurn = 0.00;
-    private static final double kDTurn = 0.6;
+    private static final double kPTurn = kUTurn * .6;
+    private static final double kITurn = tUTurn / 2;
+    private static final double kDTurn = tUTurn / 8;
     private static final double kFTurn = 0.00;
 
     private static final double kPForward = 0.015;
     private static final double kIForward = 0.00;
     private static final double kDForward = 0.6;
     private static final double kFForward = 0.00;
-
-    private static final double kToleranceDistance = .05f;
 
     private PIDController turnController;
     private PIDController leftController;
@@ -48,14 +46,8 @@ public class Drive implements Subsystem {
     private PIDOutputReceiver leftReceiver;
     private PIDOutputReceiver rightReceiver;
 
-    private Encoder leftEncoder;
-    private Encoder rightEncoder;
-
-    private double leftDistancePerPulse = 1;
-    private double rightDistancePerPulse = 1;
-
-    private double distanceToDrive;
-    private double startingAngle = 0;
+    public Encoder leftEncoder;
+    public Encoder rightEncoder;
 
     private Drive() {
         leftFrontTalonSR = new Talon(Constants.Drive.LEFT_FRONT_ID);
@@ -91,7 +83,7 @@ public class Drive implements Subsystem {
 
         rightReceiver = new PIDOutputReceiver();
         rightController = new PIDController(kPForward, kIForward, kDForward, kFForward, rightEncoder, rightReceiver);
-        rightController.setOutputRange(-Constants.Drive.FORWARD_MAX_POWER, Constants.Drive.FORWARD_MAX_POWER)
+        rightController.setOutputRange(-Constants.Drive.FORWARD_MAX_POWER, Constants.Drive.FORWARD_MAX_POWER);
         rightController.setPercentTolerance(Constants.Drive.FORWARD_TOLERANCE_METERS);
         rightController.setContinuous(true);
         rightController.startLiveWindowMode();
@@ -117,7 +109,7 @@ public class Drive implements Subsystem {
     @Override
     public void outputToSmartDashboard() {
         if (this.getAHRS() != null) {
-            SmartDashboard.putNumber("gyro", this.getAHRS().getAngle());
+            SmartDashboard.putNumber("gyro", this.getAHRS().getYaw());
         }
         else {
             SmartDashboard.putNumber("gyro", -31337);
@@ -235,6 +227,9 @@ public class Drive implements Subsystem {
         @Override
         public void onLoop() {
             synchronized (Drive.this) {
+//                rightEncoder.updateTable();
+//                leftEncoder.updateTable();
+//                System.out.println(rightEncoder.getDistance());
                 switch (currentState) {
                     case OPEN_LOOP:
                         break;

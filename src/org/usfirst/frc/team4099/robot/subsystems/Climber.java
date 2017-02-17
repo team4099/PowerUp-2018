@@ -2,7 +2,6 @@ package org.usfirst.frc.team4099.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.usfirst.frc.team4099.lib.joystick.JoystickUtils;
 import org.usfirst.frc.team4099.lib.util.CrashTracker;
 import org.usfirst.frc.team4099.robot.Constants;
 import org.usfirst.frc.team4099.robot.loops.Loop;
@@ -43,9 +42,12 @@ public class Climber implements Subsystem {
     @Override
     public void zeroSensors() {}
 
-    public synchronized void setClimberPower(double climberPower) {
-        this.climberPower = Math.abs(climberPower);
-        climberTalon.set(climberPower);
+    public void setClimbingMode(ClimberState state) {
+        climberState = state;
+    }
+
+    private void setClimberPower(double power) {
+        climberTalon.set(Math.abs(power));
     }
 
     public Loop getLoop() {
@@ -63,7 +65,7 @@ public class Climber implements Subsystem {
             synchronized (Climber.this) {
                 switch (climberState) {
                     case CLIMBING:
-                        setClimberPower(0.5);
+                        setClimberPower(1);
                         break;
                     case NOT_CLIMBING:
                         setClimberPower(0);

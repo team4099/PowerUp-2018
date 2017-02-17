@@ -20,7 +20,7 @@ public class Constants {
         public static final double LEFT_ENCODER_DISTANCE_PER_PULSE = 1;
         public static final double RIGHT_ENCODER_DISTANCE_PER_PULSE = 1;
 
-        public static final double TURN_TOLERANCE_DEGREES = 2;
+        public static final double TURN_TOLERANCE_DEGREES = 3;
         public static final double FORWARD_TOLERANCE_METERS = .05;
 
         public static final double TURN_MAX_POWER = .25;
@@ -38,7 +38,7 @@ public class Constants {
     }
 
     public class Climber {
-        public static final int CLIMBER_TALON_ID = 5;
+        public static final int CLIMBER_TALON_ID = 4;
     }
 
     public class Intake {
@@ -46,6 +46,10 @@ public class Constants {
         public static final int UP_DOWN_SOLENOID_REVERSE = 0;
         public static final int GRAB_SOLENOID_FORWARD = 3;
         public static final int GRAB_SOLENOID_REVERSE = 2;
+    }
+
+    public class Vision {
+        public static final String UDOO_ADDRESS = "http://10.40.99.6/";
     }
 
 }

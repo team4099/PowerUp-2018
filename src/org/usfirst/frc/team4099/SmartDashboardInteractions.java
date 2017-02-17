@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team4099.auto.AutoModeEndedException;
 import org.usfirst.frc.team4099.auto.modes.*;
 import org.usfirst.frc.team4099.lib.util.AutonomousInitParameters;
-import org.usfirst.frc.team4099.lib.util.Rotation2d;
+import org.usfirst.frc.team4099.lib.util.Rotation2D;
 
 import java.util.ArrayList;
 
@@ -23,7 +23,7 @@ public class SmartDashboardInteractions {
     private static final String SELECTED_AUTO_MODE = "selected_auto_mode";
     private static final String SELECTED_AUTO_LANE = "selected_auto_lane";
 
-    private static final AutonOption DEFAULT_MODE = AutonOption.ONE_GEAR_AND_BASELINE_AND_TURN;
+    private static final AutonOption DEFAULT_MODE = AutonOption.BASELINE;
     private static final AutonLane DEFAULT_LANE = AutonLane.LEFT_LANE;
 
     public void initWithDefaults() {
@@ -106,11 +106,11 @@ public class SmartDashboardInteractions {
 
     private AutonomousInitParameters getAimingHintForLane(AutonLane lane) {
         if (lane == AutonLane.LEFT_LANE) {
-            return new AutonomousInitParameters(lane.distanceToDrive, Rotation2d.fromDegrees(30), -1);
+            return new AutonomousInitParameters(lane.distanceToDrive, Rotation2D.fromDegrees(30), -1);
         } else if (lane == AutonLane.CENTER_LANE) {
-            return new AutonomousInitParameters(lane.distanceToDrive, Rotation2d.fromDegrees(0), -1);
+            return new AutonomousInitParameters(lane.distanceToDrive, Rotation2D.fromDegrees(0), -1);
         } else {/* if (lane == AutonLane.RIGHT_LANE) {*/
-            return new AutonomousInitParameters(lane.distanceToDrive, Rotation2d.fromDegrees(-30), -1);
+            return new AutonomousInitParameters(lane.distanceToDrive, Rotation2D.fromDegrees(-30), -1);
         }
     }
 
