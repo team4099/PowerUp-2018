@@ -58,7 +58,7 @@ public class Intake implements Subsystem {
         if(intakePosition != null)
             SmartDashboard.putBoolean("Intake.isUp", intakePosition.equals(IntakePosition.UP));
         if(grabberPosition != null)
-        SmartDashboard.putBoolean("Intake.isClosed", grabberPosition.equals(GrabberPosition.CLOSED));
+            SmartDashboard.putBoolean("Intake.isClosed", grabberPosition.equals(GrabberPosition.CLOSED));
         SmartDashboard.putNumber("Compressor Current Draw", compressor.getCompressorCurrent());
         SmartDashboard.putBoolean("Pressure Switch Value", compressor.getPressureSwitchValue());
     }
@@ -110,18 +110,18 @@ public class Intake implements Subsystem {
     private synchronized void setIntakePositions() {
         switch(intakePosition) {
             case UP:
-                gearGrabber.set(DoubleSolenoid.Value.kForward);
+                upAndDown.set(DoubleSolenoid.Value.kReverse);
                 break;
             case DOWN:
-                gearGrabber.set(DoubleSolenoid.Value.kReverse);
+                upAndDown.set(DoubleSolenoid.Value.kForward);
                 break;
         }
         switch(grabberPosition) {
             case OPEN:
-                upAndDown.set(DoubleSolenoid.Value.kReverse);
+                gearGrabber.set(DoubleSolenoid.Value.kForward);
                 break;
             case CLOSED:
-                upAndDown.set(DoubleSolenoid.Value.kForward);
+                gearGrabber.set(DoubleSolenoid.Value.kReverse);
         }
     }
 
