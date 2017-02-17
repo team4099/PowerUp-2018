@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4099.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.sun.tools.internal.jxc.ap.Const;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -65,37 +66,37 @@ public class Drive implements Subsystem {
 
         ahrs = new AHRS(SPI.Port.kMXP);
 
-        leftEncoder = new Encoder(0, 1, false, Encoder.EncodingType.k4X);
+        leftEncoder = new Encoder(Constants.Drive.LEFT_ENCODER_A, Constants.Drive.LEFT_ENCODER_B, false, Encoder.EncodingType.k4X);
         leftEncoder.setDistancePerPulse(Constants.Drive.LEFT_ENCODER_DISTANCE_PER_PULSE);
         leftEncoder.startLiveWindowMode();
 
-        rightEncoder = new Encoder(2, 3, false, Encoder.EncodingType.k4X);
+        rightEncoder = new Encoder(Constants.Drive.RIGHT_ENCODER_A, Constants.Drive.RIGHT_ENCODER_B, false, Encoder.EncodingType.k4X);
         rightEncoder.setDistancePerPulse(Constants.Drive.RIGHT_ENCODER_DISTANCE_PER_PULSE);
         rightEncoder.startLiveWindowMode();
 
         turnReceiver = new PIDOutputReceiver();
         turnController = new PIDController(kPTurn, kITurn, kDTurn, kFTurn, ahrs, turnReceiver);
-        turnController.setInputRange(-180d, 180d);
-        turnController.setOutputRange(-.25d, .25d);
+        turnController.setInputRange(-180, 180);
+        turnController.setOutputRange(-Constants.Drive.TURN_MAX_POWER, Constants.Drive.TURN_MAX_POWER);
         turnController.setAbsoluteTolerance(Constants.Drive.TURN_TOLERANCE_DEGREES);
         turnController.setContinuous(true);
         turnController.startLiveWindowMode();
 
         leftReceiver = new PIDOutputReceiver();
         leftController = new PIDController(kPForward, kIForward, kDForward, kFForward, leftEncoder, leftReceiver);
-        leftController.setOutputRange(-.25d, .25d);
+        leftController.setOutputRange(-Constants.Drive.FORWARD_MAX_POWER, Constants.Drive.FORWARD_MAX_POWER);
         leftController.setPercentTolerance(Constants.Drive.FORWARD_TOLERANCE_METERS);
         leftController.setContinuous(true);
         leftController.startLiveWindowMode();
 
         rightReceiver = new PIDOutputReceiver();
         rightController = new PIDController(kPForward, kIForward, kDForward, kFForward, rightEncoder, rightReceiver);
-        rightController.setOutputRange(-.25d, .25d);
+        rightController.setOutputRange(-Constants.Drive.FORWARD_MAX_POWER, Constants.Drive.FORWARD_MAX_POWER)
         rightController.setPercentTolerance(Constants.Drive.FORWARD_TOLERANCE_METERS);
         rightController.setContinuous(true);
         rightController.startLiveWindowMode();
 
-        LiveWindow.addActuator("Drive", "RotateController", turnController);
+        LiveWindow.addActuator("Drive", "turnController", turnController);
         LiveWindow.addActuator("Drive", "leftController", leftController);
         LiveWindow.addActuator("Drive", "rightController", rightController);
         LiveWindow.addSensor("Drive", "Gyro", ahrs);

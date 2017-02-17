@@ -12,11 +12,19 @@ public class Constants {
         public static final int LEFT_BACK_ID = 3;
         public static final int RIGHT_BACK_ID = 1;
 
+        public static final int LEFT_ENCODER_A = 0;
+        public static final int LEFT_ENCODER_B = 1;
+        public static final int RIGHT_ENCODER_A = 2;
+        public static final int RIGHT_ENCODER_B = 3;
+
         public static final double LEFT_ENCODER_DISTANCE_PER_PULSE = 1;
         public static final double RIGHT_ENCODER_DISTANCE_PER_PULSE = 1;
 
-        public static final float TURN_TOLERANCE_DEGREES = 2f;
-        public static final float FORWARD_TOLERANCE_METERS = .05f;
+        public static final double TURN_TOLERANCE_DEGREES = 2;
+        public static final double FORWARD_TOLERANCE_METERS = .05;
+
+        public static final double TURN_MAX_POWER = .25;
+        public static final double FORWARD_MAX_POWER = .5;
 
     }
 
