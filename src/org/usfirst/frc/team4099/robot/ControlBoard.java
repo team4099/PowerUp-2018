@@ -26,7 +26,7 @@ public class ControlBoard {
      * @return  true/false, depending on if the joystick is depressed
      */
     public boolean getQuickTurn() {
-        return driver.getRightJoystickButton();
+        return driver.getLeftJoystickButton();
     }
 
     public boolean getToggleIntakeUp() {
