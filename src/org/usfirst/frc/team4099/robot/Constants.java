@@ -11,6 +11,13 @@ public class Constants {
         public static final int RIGHT_FRONT_ID = 0;
         public static final int LEFT_BACK_ID = 3;
         public static final int RIGHT_BACK_ID = 1;
+
+        public static final double LEFT_ENCODER_DISTANCE_PER_PULSE = 1;
+        public static final double RIGHT_ENCODER_DISTANCE_PER_PULSE = 1;
+
+        public static final float TURN_TOLERANCE_DEGREES = 2f;
+        public static final float FORWARD_TOLERANCE_METERS = .05f;
+
     }
 
     public class Joysticks {
@@ -27,10 +34,10 @@ public class Constants {
     }
 
     public class Intake {
-        public static final int UP_DOWN_SOLENOID_FORWARD = 2;
-        public static final int UP_DOWN_SOLENOID_REVERSE = 3;
-        public static final int GRAB_SOLENOID_FORWARD = 0;
-        public static final int GRAB_SOLENOID_REVERSE = 1;
+        public static final int UP_DOWN_SOLENOID_FORWARD = 1;
+        public static final int UP_DOWN_SOLENOID_REVERSE = 0;
+        public static final int GRAB_SOLENOID_FORWARD = 3;
+        public static final int GRAB_SOLENOID_REVERSE = 2;
     }
 
 }

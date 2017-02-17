@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4099.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team4099.lib.util.CrashTracker;
 import org.usfirst.frc.team4099.robot.drive.CDriveHelper;
@@ -26,6 +27,7 @@ public class Robot extends IterativeRobot {
     private Looper mEnabledLooper = new Looper("enabledLooper");
 
     private boolean logging = true;
+    private boolean potato = true;
 
     public Robot() {
         CrashTracker.logRobotConstruction();
@@ -69,10 +71,9 @@ public class Robot extends IterativeRobot {
     public void autonomousInit() {
         try {
             CrashTracker.logAutoInit();
-
             mEnabledLooper.start(); // start EnabledLooper
             mDisabledLooper.stop(); // end DisabledLooper
-
+            mDrive.zeroSensors();
         } catch (Throwable t) {
             CrashTracker.logThrowableCrash("autonomousInit", t);
             throw t;
@@ -83,7 +84,7 @@ public class Robot extends IterativeRobot {
     public void teleopInit() {
         try {
             CrashTracker.logTeleopInit();
-
+            potato = true;
             mEnabledLooper.start(); // start EnabledLooper
             mDisabledLooper.stop(); // end DisabledLooper
 
@@ -107,6 +108,7 @@ public class Robot extends IterativeRobot {
     @Override
     public void autonomousPeriodic() {
         try {
+            mDrive.turnAngle();
             outputAllToSmartDashboard();
             updateDashboardFeedback();
         } catch (Throwable t) {
@@ -119,6 +121,7 @@ public class Robot extends IterativeRobot {
     @Override
     public void teleopPeriodic() {
         try {
+            potato = true;
             double throttle = mControls.getThrottle();
             double turn = mControls.getTurn();
             boolean isQuickTurn = mControls.getQuickTurn();
@@ -142,6 +145,36 @@ public class Robot extends IterativeRobot {
 
         } catch (Throwable t) {
             CrashTracker.logThrowableCrash("teleopPeriodic", t);
+            throw t;
+        }
+    }
+
+    @Override
+    public void testInit() {
+        try {
+            CrashTracker.logAutoInit();
+            mEnabledLooper.start(); // start EnabledLooper
+            mDisabledLooper.stop(); // end DisabledLooper
+            mDrive.zeroSensors();
+            mDrive.setAutonomousTurning();
+            mDrive.setAngleSetpoint(5);
+            LiveWindow.setEnabled(true);
+        } catch (Throwable t) {
+            CrashTracker.logThrowableCrash("testInit", t);
+            throw t;
+        }
+    }
+
+    @Override
+    public void testPeriodic() {
+        try {
+            LiveWindow.run();
+            mDrive.turnAngle();
+            outputAllToSmartDashboard();
+            updateDashboardFeedback();
+        } catch (Throwable t) {
+
+            CrashTracker.logThrowableCrash("testPeriodic", t);
             throw t;
         }
     }
