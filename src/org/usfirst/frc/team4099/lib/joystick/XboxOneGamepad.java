@@ -9,9 +9,9 @@ import edu.wpi.first.wpilibj.Joystick;
  * Flight Mode (Mode Light = Off)
  */
 
-public class LogitechF310Gamepad extends Joystick {
+public class XboxOneGamepad extends Joystick {
 
-    public LogitechF310Gamepad(int port) {
+    public XboxOneGamepad(int port) {
         super(port);
     }
 
@@ -56,11 +56,11 @@ public class LogitechF310Gamepad extends Joystick {
     }
 
     public boolean getLeftJoystickButton() {
-        return this.getRawButton(9);
+        return this.getRawButton(6);
     }
 
     public boolean getRightJoystickButton() {
-        return this.getRawButton(10);
+        return this.getRawButton(7);
     }
 
     public boolean getLeftShoulderButton() {

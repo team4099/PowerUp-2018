@@ -1,16 +1,18 @@
 package org.usfirst.frc.team4099.robot;
 
-import org.usfirst.frc.team4099.lib.joystick.DualShock4Gamepad;
+import org.usfirst.frc.team4099.lib.joystick.LogitechF310Gamepad;
 
 public class ControlBoard {
     private static ControlBoard sInstance = new ControlBoard();
     public static ControlBoard getInstance() {
         return sInstance;
     }
-    private final DualShock4Gamepad driver;
+    private final LogitechF310Gamepad driver;
+//    private final LogitechF310Gamepad operator;
 
     private ControlBoard() {
-        driver = new DualShock4Gamepad(Constants.Joysticks.DRIVER_PORT);
+        driver = new LogitechF310Gamepad(Constants.Joysticks.DRIVER_PORT);
+//        operator = new LogitechF310Gamepad(Constants.Joysticks.SHOTGUN_PORT);
     }
 
     public double getThrottle() {

@@ -32,6 +32,7 @@ public class Climber implements Subsystem {
 
     @Override
     public synchronized void stop() {
+        setClimbingMode(ClimberState.NOT_CLIMBING);
         setClimberPower(0);
     }
 
@@ -47,7 +48,7 @@ public class Climber implements Subsystem {
     }
 
     private void setClimberPower(double power) {
-        climberTalon.set(Math.abs(power));
+        climberTalon.set(-Math.abs(power));
     }
 
     public Loop getLoop() {

@@ -25,8 +25,8 @@ public class Drive implements Subsystem {
         AUTONOMOUS_DRIVING
     }
 
-    private static final double kUTurn = 0.035;
-    private static final double tUTurn = .17;
+    private static final double kUTurn = 0.045;
+    private static final double tUTurn = .07;
 
     private static final double kPTurn = kUTurn * .6;
     private static final double kITurn = tUTurn / 2;
@@ -78,14 +78,14 @@ public class Drive implements Subsystem {
         leftController = new PIDController(kPForward, kIForward, kDForward, kFForward, leftEncoder, leftReceiver);
         leftController.setOutputRange(-Constants.Drive.FORWARD_MAX_POWER, Constants.Drive.FORWARD_MAX_POWER);
         leftController.setPercentTolerance(Constants.Drive.FORWARD_TOLERANCE_METERS);
-        leftController.setContinuous(true);
+        leftController.setContinuous(false);
         leftController.startLiveWindowMode();
 
         rightReceiver = new PIDOutputReceiver();
         rightController = new PIDController(kPForward, kIForward, kDForward, kFForward, rightEncoder, rightReceiver);
         rightController.setOutputRange(-Constants.Drive.FORWARD_MAX_POWER, Constants.Drive.FORWARD_MAX_POWER);
         rightController.setPercentTolerance(Constants.Drive.FORWARD_TOLERANCE_METERS);
-        rightController.setContinuous(true);
+        rightController.setContinuous(false);
         rightController.startLiveWindowMode();
 
         LiveWindow.addActuator("Drive", "turnController", turnController);
@@ -114,7 +114,6 @@ public class Drive implements Subsystem {
         else {
             SmartDashboard.putNumber("gyro", -31337);
         }
-
         SmartDashboard.putNumber("leftTalon", leftFrontTalonSR.get());
         SmartDashboard.putNumber("rightTalon", rightFrontTalonSR.get());
         SmartDashboard.putNumber("leftEncoder", leftEncoder.getDistance());
@@ -200,12 +199,12 @@ public class Drive implements Subsystem {
     }
 
     public boolean turnAngle() {
-        System.out.println("Turn rate: " + turnReceiver.getOutput() + " Angle: " + ahrs.getAngle() + " Time: " + Timer.getFPGATimestamp());
+        System.out.println("Turn setpoint: " + turnController.getSetpoint() + " Angle: " + ahrs.getYaw() + " Time: " + Timer.getFPGATimestamp());
         turnController.updateTable();
-        if (turnReceiver.getOutput() == 0) {
+        if (Math.abs(turnController.getSetpoint() - ahrs.getYaw()) < Constants.Drive.TURN_TOLERANCE_DEGREES) {
             return true;
         }
-        setLeftRightPower(turnReceiver.getOutput(), -turnReceiver.getOutput());
+        setLeftRightPower(-turnReceiver.getOutput(), turnReceiver.getOutput());
         return false;
     }
 
