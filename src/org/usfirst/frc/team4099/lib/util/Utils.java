@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 public class Utils {
     /**
@@ -71,10 +72,19 @@ public class Utils {
     public static double[] getNumbersFromUrl(String urlToRead) throws FileNotFoundException {
         for (int i = 0; i < 3; i++) {
             String html = getHTML(Constants.Vision.UDOO_ADDRESS + urlToRead);
+            System.out.println("HTML: " + html);
             if (!html.equals("-1")) {
                 return getNumbersFromString(html);
             }
         }
         throw new FileNotFoundException();
+    }
+
+    public static double getAverageFromList(List<Double> list) {
+        double total = 0;
+        for(Double d : list) {
+            total += d;
+        }
+        return total / list.size();
     }
 }

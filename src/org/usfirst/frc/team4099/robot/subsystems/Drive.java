@@ -6,6 +6,8 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team4099.lib.drive.DriveSignal;
 import org.usfirst.frc.team4099.lib.drive.PIDOutputReceiver;
+import org.usfirst.frc.team4099.lib.util.LimitedQueue;
+import org.usfirst.frc.team4099.lib.util.Utils;
 import org.usfirst.frc.team4099.robot.Constants;
 import org.usfirst.frc.team4099.robot.loops.Loop;
 
@@ -28,10 +30,10 @@ public class Drive implements Subsystem {
     private static final double kUTurn = 0.045;
     private static final double tUTurn = .07;
 
-    private static final double kPTurn = kUTurn * .6;
-    private static final double kITurn = tUTurn / 2;
-    private static final double kDTurn = tUTurn / 8;
-    private static final double kFTurn = 0.00;
+    private static final double kPTurn = 0.0115;//kUTurn * .6;
+    private static final double kITurn = 0.0000;//tUTurn / 2;
+    private static final double kDTurn = 0.00;//tUTurn / 8;
+    private static final double kFTurn = 0.00;//0.00;
 
     private static final double kPForward = 0.015;
     private static final double kIForward = 0.00;
@@ -48,6 +50,8 @@ public class Drive implements Subsystem {
 
     public Encoder leftEncoder;
     public Encoder rightEncoder;
+
+    private LimitedQueue<Double> lastErrors = new LimitedQueue<>(10);
 
     private Drive() {
         leftFrontTalonSR = new Talon(Constants.Drive.LEFT_FRONT_ID);
@@ -201,7 +205,8 @@ public class Drive implements Subsystem {
     public boolean turnAngle() {
         System.out.println("Turn setpoint: " + turnController.getSetpoint() + " Angle: " + ahrs.getYaw() + " Time: " + Timer.getFPGATimestamp());
         turnController.updateTable();
-        if (Math.abs(turnController.getSetpoint() - ahrs.getYaw()) < Constants.Drive.TURN_TOLERANCE_DEGREES) {
+        lastErrors.add(Math.abs(turnController.getSetpoint() - ahrs.getYaw()));
+        if (Utils.getAverageFromList(lastErrors) < Constants.Drive.TURN_TOLERANCE_DEGREES) {
             return true;
         }
         setLeftRightPower(-turnReceiver.getOutput(), turnReceiver.getOutput());

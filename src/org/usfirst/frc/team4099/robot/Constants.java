@@ -49,7 +49,7 @@ public class Constants {
     }
 
     public class Vision {
-        public static final String UDOO_ADDRESS = "http://10.40.99.6/";
+        public static final String UDOO_ADDRESS = "http://10.40.99.10/";
     }
 
 }
