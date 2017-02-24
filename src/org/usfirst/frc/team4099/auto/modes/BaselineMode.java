@@ -14,8 +14,10 @@ import org.usfirst.frc.team4099.lib.util.Rotation2D;
 public class BaselineMode extends AutoModeBase {
     private final double initialForwardDistance;
     private double turningAngle;
+    private boolean turnAround;
 
-    public BaselineMode(AutonomousInitParameters initParameters, double Angle) {
+    public BaselineMode(AutonomousInitParameters initParameters, boolean turnAround) {
+        this.turnAround = turnAround;
         this.initialForwardDistance = initParameters.getDistanceInMeters();
         this.turningAngle = initParameters.getTurnAngle().getDegrees();
     }

@@ -23,7 +23,7 @@ public class Constants {
         public static final double TURN_TOLERANCE_DEGREES = 3;
         public static final double FORWARD_TOLERANCE_METERS = .05;
 
-        public static final double TURN_MAX_POWER = .25;
+        public static final double TURN_MAX_POWER = .35;
         public static final double FORWARD_MAX_POWER = .5;
 
     }
@@ -49,7 +49,7 @@ public class Constants {
     }
 
     public class Vision {
-        public static final String UDOO_ADDRESS = "http://10.40.99.6/";
+        public static final String UDOO_ADDRESS = "http://10.40.99.10/";
     }
 
 }

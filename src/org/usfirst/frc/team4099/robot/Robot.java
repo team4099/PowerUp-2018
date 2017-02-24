@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team4099.SmartDashboardInteractions;
 import org.usfirst.frc.team4099.auto.AutoModeExecuter;
+import org.usfirst.frc.team4099.lib.drive.DriveSignal;
 import org.usfirst.frc.team4099.lib.util.CrashTracker;
 import org.usfirst.frc.team4099.robot.drive.CDriveHelper;
 import org.usfirst.frc.team4099.robot.drive.TankDriveHelper;
@@ -126,7 +127,7 @@ public class Robot extends IterativeRobot {
     @Override
     public void autonomousPeriodic() {
         try {
-            mDrive.turnAngle();
+//            mDrive.turnAngle();
             outputAllToSmartDashboard();
             updateDashboardFeedback();
         } catch (Throwable t) {
@@ -158,6 +159,8 @@ public class Robot extends IterativeRobot {
             mIntake.updateIntake(toggleUp, toggleGrab);
             if(climbing) {
                 mClimber.setClimbingMode(Climber.ClimberState.CLIMBING);
+            } else {
+                mClimber.setClimbingMode(Climber.ClimberState.NOT_CLIMBING);
             }
 
             outputAllToSmartDashboard();
@@ -177,7 +180,8 @@ public class Robot extends IterativeRobot {
             mDisabledLooper.stop(); // end DisabledLooper
             mDrive.zeroSensors();
             mDrive.setAutonomousTurning();
-            mDrive.setAngleSetpoint(30);
+            mDrive.setAngleSetpoint(90);
+            potato = true;
             LiveWindow.setEnabled(true);
         } catch (Throwable t) {
             CrashTracker.logThrowableCrash("testInit", t);
@@ -189,9 +193,19 @@ public class Robot extends IterativeRobot {
     public void testPeriodic() {
         try {
             LiveWindow.run();
-            if(potato)
+            if(potato) {
                 potato = !mDrive.turnAngle();
+            } else {
+                mDrive.setOpenLoop(DriveSignal.NEUTRAL);
+            }
             System.out.println("potato:" + potato);
+//            DriveSignal lSignal = new DriveSignal(1, -1);
+//            DriveSignal rSignal = new DriveSignal(-1, 1);
+//            if(mControls.getClimber()) {
+//                mDrive.setOpenLoop(lSignal);
+//            } else {
+//                mDrive.setOpenLoop(rSignal);
+//            }
             mDrive.leftEncoder.updateTable();
             mDrive.rightEncoder.updateTable();
             outputAllToSmartDashboard();
