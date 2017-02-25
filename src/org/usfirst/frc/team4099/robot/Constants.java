@@ -23,8 +23,8 @@ public class Constants {
         public static final double TURN_TOLERANCE_DEGREES = 3;
         public static final double FORWARD_TOLERANCE_METERS = .05;
 
-        public static final double TURN_MAX_POWER = .35;
-        public static final double FORWARD_MAX_POWER = .5;
+        public static final double AUTO_TURN_MAX_POWER = .35;
+        public static final double AUTO_FORWARD_MAX_POWER = .5;
 
     }
 

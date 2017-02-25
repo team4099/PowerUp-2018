@@ -33,7 +33,7 @@ public class Robot extends IterativeRobot {
     private SmartDashboardInteractions mSmartDashboardInteractions = new SmartDashboardInteractions();
 
     private boolean logging = true;
-    private boolean potato = true;
+    private boolean isTurning = true;
 
     public Robot() {
         CrashTracker.logRobotConstruction();
@@ -103,7 +103,7 @@ public class Robot extends IterativeRobot {
     public void teleopInit() {
         try {
             CrashTracker.logTeleopInit();
-            potato = true;
+            isTurning = true;
             mEnabledLooper.start(); // start EnabledLooper
             mDisabledLooper.stop(); // end DisabledLooper
 
@@ -140,7 +140,6 @@ public class Robot extends IterativeRobot {
     @Override
     public void teleopPeriodic() {
         try {
-            potato = true;
             double throttle = mControls.getThrottle();
             double turn = mControls.getTurn();
             boolean isQuickTurn = mControls.getQuickTurn();
@@ -181,8 +180,9 @@ public class Robot extends IterativeRobot {
             mDrive.zeroSensors();
             mDrive.setAutonomousTurning();
             mDrive.setAngleSetpoint(90);
-            potato = true;
+            isTurning = true;
             LiveWindow.setEnabled(true);
+            startLiveWindowMode();
         } catch (Throwable t) {
             CrashTracker.logThrowableCrash("testInit", t);
             throw t;
@@ -193,12 +193,12 @@ public class Robot extends IterativeRobot {
     public void testPeriodic() {
         try {
             LiveWindow.run();
-            if(potato) {
-                potato = !mDrive.turnAngle();
+            if(isTurning) {
+                isTurning = !mDrive.turnAngle();
             } else {
                 mDrive.setOpenLoop(DriveSignal.NEUTRAL);
             }
-            System.out.println("potato:" + potato);
+            System.out.println("isTurning:" + isTurning);
 //            DriveSignal lSignal = new DriveSignal(1, -1);
 //            DriveSignal rSignal = new DriveSignal(-1, 1);
 //            if(mControls.getClimber()) {
@@ -206,9 +206,9 @@ public class Robot extends IterativeRobot {
 //            } else {
 //                mDrive.setOpenLoop(rSignal);
 //            }
-            mDrive.leftEncoder.updateTable();
-            mDrive.rightEncoder.updateTable();
+
             outputAllToSmartDashboard();
+            updateLiveWindowTables();
             updateDashboardFeedback();
         } catch (Throwable t) {
 
@@ -226,6 +226,14 @@ public class Robot extends IterativeRobot {
             mIntake.outputToSmartDashboard();
             mClimber.outputToSmartDashboard();
         }
+    }
+
+    private void startLiveWindowMode() {
+        mDrive.startLiveWindowMode();
+    }
+
+    private void updateLiveWindowTables() {
+        mDrive.updateLiveWindowTables();
     }
 
     private void updateDashboardFeedback() {

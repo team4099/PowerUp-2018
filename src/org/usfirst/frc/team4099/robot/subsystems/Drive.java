@@ -6,8 +6,6 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team4099.lib.drive.DriveSignal;
 import org.usfirst.frc.team4099.lib.drive.PIDOutputReceiver;
-import org.usfirst.frc.team4099.lib.util.LimitedQueue;
-import org.usfirst.frc.team4099.lib.util.Utils;
 import org.usfirst.frc.team4099.robot.Constants;
 import org.usfirst.frc.team4099.robot.loops.Loop;
 
@@ -27,13 +25,10 @@ public class Drive implements Subsystem {
         AUTONOMOUS_DRIVING
     }
 
-    private static final double kUTurn = 0.045;
-    private static final double tUTurn = .07;
-
-    private static final double kPTurn = 0.0115;//kUTurn * .6;
-    private static final double kITurn = 0.0000;//tUTurn / 2;
-    private static final double kDTurn = 0.00;//tUTurn / 8;
-    private static final double kFTurn = 0.00;//0.00;
+    private static final double kPTurn = 0.0115;
+    private static final double kITurn = 0.0000;
+    private static final double kDTurn = 0.00;
+    private static final double kFTurn = 0.00;
 
     private static final double kPForward = 0.015;
     private static final double kIForward = 0.00;
@@ -51,7 +46,8 @@ public class Drive implements Subsystem {
     public Encoder leftEncoder;
     public Encoder rightEncoder;
 
-    private LimitedQueue<Double> lastErrors = new LimitedQueue<>(10);
+//    private LimitedQueue<Double> lastTurnErrors = new LimitedQueue<>(10);
+//    private LimitedQueue<Double> lastForwardErrors = new LimitedQueue<>(10);
 
     private Drive() {
         leftFrontTalonSR = new Talon(Constants.Drive.LEFT_FRONT_ID);
@@ -64,40 +60,28 @@ public class Drive implements Subsystem {
 
         leftEncoder = new Encoder(Constants.Drive.LEFT_ENCODER_A, Constants.Drive.LEFT_ENCODER_B, false, Encoder.EncodingType.k4X);
         leftEncoder.setDistancePerPulse(Constants.Drive.LEFT_ENCODER_DISTANCE_PER_PULSE);
-        leftEncoder.startLiveWindowMode();
 
         rightEncoder = new Encoder(Constants.Drive.RIGHT_ENCODER_A, Constants.Drive.RIGHT_ENCODER_B, false, Encoder.EncodingType.k4X);
         rightEncoder.setDistancePerPulse(Constants.Drive.RIGHT_ENCODER_DISTANCE_PER_PULSE);
-        rightEncoder.startLiveWindowMode();
 
         turnReceiver = new PIDOutputReceiver();
         turnController = new PIDController(kPTurn, kITurn, kDTurn, kFTurn, ahrs, turnReceiver);
         turnController.setInputRange(-180, 180);
-        turnController.setOutputRange(-Constants.Drive.TURN_MAX_POWER, Constants.Drive.TURN_MAX_POWER);
+        turnController.setOutputRange(-Constants.Drive.AUTO_TURN_MAX_POWER, Constants.Drive.AUTO_TURN_MAX_POWER);
         turnController.setAbsoluteTolerance(Constants.Drive.TURN_TOLERANCE_DEGREES);
         turnController.setContinuous(true);
-        turnController.startLiveWindowMode();
 
         leftReceiver = new PIDOutputReceiver();
         leftController = new PIDController(kPForward, kIForward, kDForward, kFForward, leftEncoder, leftReceiver);
-        leftController.setOutputRange(-Constants.Drive.FORWARD_MAX_POWER, Constants.Drive.FORWARD_MAX_POWER);
+        leftController.setOutputRange(-Constants.Drive.AUTO_FORWARD_MAX_POWER, Constants.Drive.AUTO_FORWARD_MAX_POWER);
         leftController.setPercentTolerance(Constants.Drive.FORWARD_TOLERANCE_METERS);
         leftController.setContinuous(false);
-        leftController.startLiveWindowMode();
 
         rightReceiver = new PIDOutputReceiver();
         rightController = new PIDController(kPForward, kIForward, kDForward, kFForward, rightEncoder, rightReceiver);
-        rightController.setOutputRange(-Constants.Drive.FORWARD_MAX_POWER, Constants.Drive.FORWARD_MAX_POWER);
+        rightController.setOutputRange(-Constants.Drive.AUTO_FORWARD_MAX_POWER, Constants.Drive.AUTO_FORWARD_MAX_POWER);
         rightController.setPercentTolerance(Constants.Drive.FORWARD_TOLERANCE_METERS);
         rightController.setContinuous(false);
-        rightController.startLiveWindowMode();
-
-        LiveWindow.addActuator("Drive", "turnController", turnController);
-        LiveWindow.addActuator("Drive", "leftController", leftController);
-        LiveWindow.addActuator("Drive", "rightController", rightController);
-        LiveWindow.addSensor("Drive", "Gyro", ahrs);
-        LiveWindow.addSensor("Drive", "leftEncoder", leftEncoder);
-        LiveWindow.addSensor("Drive", "rightEncoder", rightEncoder);
     }
 
     public static Drive getInstance() { // singleton
@@ -122,6 +106,33 @@ public class Drive implements Subsystem {
         SmartDashboard.putNumber("rightTalon", rightFrontTalonSR.get());
         SmartDashboard.putNumber("leftEncoder", leftEncoder.getDistance());
         SmartDashboard.putNumber("rightEncoder", rightEncoder.getDistance());
+    }
+
+    public void startLiveWindowMode() {
+        LiveWindow.addActuator("Drive", "turnController", turnController);
+        LiveWindow.addActuator("Drive", "leftController", leftController);
+        LiveWindow.addActuator("Drive", "rightController", rightController);
+        LiveWindow.addSensor("Drive", "Gyro", ahrs);
+        LiveWindow.addSensor("Drive", "leftEncoder", leftEncoder);
+        LiveWindow.addSensor("Drive", "rightEncoder", rightEncoder);
+        leftEncoder.startLiveWindowMode();
+        rightEncoder.startLiveWindowMode();
+        leftController.startLiveWindowMode();
+        rightController.startLiveWindowMode();
+    }
+
+    public void stopLiveWindowMode() {
+        leftEncoder.stopLiveWindowMode();
+        rightEncoder.stopLiveWindowMode();
+        leftController.stopLiveWindowMode();
+        rightController.stopLiveWindowMode();
+    }
+
+    public void updateLiveWindowTables() {
+        leftEncoder.updateTable();
+        rightEncoder.updateTable();
+        leftController.updateTable();
+        rightController.updateTable();
     }
 
     @Override
@@ -156,7 +167,6 @@ public class Drive implements Subsystem {
         }
         turnController.disable();
 
-
         setLeftRightPower(signal.getLeftMotor(), signal.getRightMotor());
     }
 
@@ -167,18 +177,18 @@ public class Drive implements Subsystem {
     public void setForwardSetpoint(double distance) {
         System.out.println("Set setpoint to " + distance);
         setAutonomousDriving();
-        rightController.enable();
         leftController.enable();
-        rightController.setSetpoint(distance);
+        rightController.enable();
         leftController.setSetpoint(distance);
+        rightController.setSetpoint(distance);
     }
 
     public boolean goForward() {
         System.out.println("Moving rate of right: " + rightReceiver.getOutput() + " Distance: " + ahrs.getDisplacementX() + " Time: " + Timer.getFPGATimestamp());
         System.out.println("Moving rate of left: " + rightReceiver.getOutput() + " Distance: " + ahrs.getDisplacementX()+ " Time: " + Timer.getFPGATimestamp());
-        rightController.updateTable();
-        leftController.updateTable();
-        if(rightReceiver.getOutput() == 0 || leftReceiver.getOutput() == 0){
+//        double leftError = Math.abs(leftController.getSetpoint())
+//        lastForwardErrors.add(Math.abs(left))
+        if(leftController.onTarget() || rightController.onTarget() || currentState != DriveControlState.AUTONOMOUS_DRIVING){
             return true;
         }
         setLeftRightPower(leftReceiver.getOutput(), rightReceiver.getOutput());
@@ -186,8 +196,8 @@ public class Drive implements Subsystem {
     }
 
     public void finishForward() {
-        rightController.disable();
         leftController.disable();
+        rightController.disable();
         setOpenLoop(DriveSignal.NEUTRAL);
     }
 
@@ -204,9 +214,8 @@ public class Drive implements Subsystem {
 
     public boolean turnAngle() {
         System.out.println("Turn setpoint: " + turnController.getSetpoint() + " Angle: " + ahrs.getYaw() + " Time: " + Timer.getFPGATimestamp());
-        turnController.updateTable();
-        lastErrors.add(Math.abs(turnController.getSetpoint() - ahrs.getYaw()));
-        if (Utils.getAverageFromList(lastErrors) < Constants.Drive.TURN_TOLERANCE_DEGREES) {
+//        lastTurnErrors.add(Math.abs(turnController.getSetpoint() - ahrs.getYaw()));
+        if (turnController.onTarget() || currentState != DriveControlState.AUTONOMOUS_TURNING) {
             return true;
         }
         setLeftRightPower(-turnReceiver.getOutput(), turnReceiver.getOutput());
@@ -231,9 +240,6 @@ public class Drive implements Subsystem {
         @Override
         public void onLoop() {
             synchronized (Drive.this) {
-//                rightEncoder.updateTable();
-//                leftEncoder.updateTable();
-//                System.out.println(rightEncoder.getDistance());
                 switch (currentState) {
                     case OPEN_LOOP:
                         break;
