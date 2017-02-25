@@ -39,16 +39,21 @@ public class OneGearMode extends AutoModeBase {
     @Override
     protected void routine() throws AutoModeEndedException {
         runAction(new ForwardAction(initialForwardDistance));
-        if(initialTurn.getDegrees() == 0) { // we're lined up, put the gear on the peg
-            // we're in center lane rn
+        // If in center lane (already lined up with peg - don't use vision here
+        // TODO: check if using vision is necessary in center lane
+        if(initialTurn.getDegrees() == 0) {
             runAction(new SetGrabberAction(Intake.GrabberPosition.OPEN));
-            runAction(new WaitAction(1));
+            runAction(new WaitAction(0.5));
             runAction(new ForwardAction(BACK_OUT_AMOUNT));
-            if(goToBaseline) {  // if we now want to go to the baseline, go
+
+            if(goToBaseline) {
                 Rotation2D turn = Rotation2D.fromDegrees(90);
+                // Go to left side of airship if we're red, otherwise go to right.
+                // This is because the loading station is on the right if red, left if blue
+                // so if you want to get gears dropped by teammates, going around airship makes it faster
                 if(DriverStation.getInstance().getAlliance() == DriverStation.Alliance.Blue) {
                     turn = turn.inverse();
-                } //dafaq? fix plz ^^^
+                }
                 runAction(new TurnAction(turn));
                 runAction(new ForwardAction(SIDE_AMOUNT));
                 runAction(new TurnAction(turn.inverse()));
@@ -63,17 +68,17 @@ public class OneGearMode extends AutoModeBase {
                 runAction(new TurnAction(turnToPeg));
                 runAction(new ForwardAction(distanceToPeg));
                 runAction(new SetGrabberAction(Intake.GrabberPosition.OPEN));
-                runAction(new WaitAction(1));
+                runAction(new WaitAction(0.5));
                 runAction(new ForwardAction(BACK_OUT_AMOUNT));
-                if(goToBaseline){
-                    // back out and go to baseline
-                    runAction(new TurnAction(initialTurn.inverse()));
-                    runAction(new ForwardAction(1.5));
-
-                }
+                runAction(new TurnAction(turnToPeg.inverse()));
 
             } catch (FileNotFoundException e) {
+                System.out.println("Couldn't find lift... fix ur vision");
+            }
+            if(goToBaseline){
+                // back out and go to baseline
                 runAction(new TurnAction(initialTurn.inverse()));
+                runAction(new ForwardAction(1.5));
             }
         }
         if(turnAround) {

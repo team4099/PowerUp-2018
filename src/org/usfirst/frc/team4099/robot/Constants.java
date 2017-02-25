@@ -3,6 +3,15 @@ package org.usfirst.frc.team4099.robot;
 public class Constants {
 
     public class Gains {
+        public static final double TURN_P = 0.0115;
+        public static final double TURN_I = 0.0000;
+        public static final double TURN_D = 0.0000;
+        public static final double TURN_F = 0.0000;
+
+        public static final double FORWARD_P = 0.0115;
+        public static final double FORWARD_I = 0.0000;
+        public static final double FORWARD_D = 0.0000;
+        public static final double FORWARD_F = 0.0000;
 
     }
 
@@ -20,7 +29,7 @@ public class Constants {
         public static final double LEFT_ENCODER_DISTANCE_PER_PULSE = 1;
         public static final double RIGHT_ENCODER_DISTANCE_PER_PULSE = 1;
 
-        public static final double TURN_TOLERANCE_DEGREES = 3;
+        public static final double TURN_TOLERANCE_DEGREES = 2;
         public static final double FORWARD_TOLERANCE_METERS = .05;
 
         public static final double AUTO_TURN_MAX_POWER = .35;

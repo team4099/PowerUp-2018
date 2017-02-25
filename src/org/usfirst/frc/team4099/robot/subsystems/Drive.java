@@ -25,16 +25,6 @@ public class Drive implements Subsystem {
         AUTONOMOUS_DRIVING
     }
 
-    private static final double kPTurn = 0.0115;
-    private static final double kITurn = 0.0000;
-    private static final double kDTurn = 0.00;
-    private static final double kFTurn = 0.00;
-
-    private static final double kPForward = 0.015;
-    private static final double kIForward = 0.00;
-    private static final double kDForward = 0.6;
-    private static final double kFForward = 0.00;
-
     private PIDController turnController;
     private PIDController leftController;
     private PIDController rightController;
@@ -65,20 +55,20 @@ public class Drive implements Subsystem {
         rightEncoder.setDistancePerPulse(Constants.Drive.RIGHT_ENCODER_DISTANCE_PER_PULSE);
 
         turnReceiver = new PIDOutputReceiver();
-        turnController = new PIDController(kPTurn, kITurn, kDTurn, kFTurn, ahrs, turnReceiver);
+        turnController = new PIDController(Constants.Gains.TURN_D, Constants.Gains.FORWARD_I, Constants.Gains.FORWARD_D, Constants.Gains.FORWARD_F, ahrs, turnReceiver);
         turnController.setInputRange(-180, 180);
         turnController.setOutputRange(-Constants.Drive.AUTO_TURN_MAX_POWER, Constants.Drive.AUTO_TURN_MAX_POWER);
         turnController.setAbsoluteTolerance(Constants.Drive.TURN_TOLERANCE_DEGREES);
         turnController.setContinuous(true);
 
         leftReceiver = new PIDOutputReceiver();
-        leftController = new PIDController(kPForward, kIForward, kDForward, kFForward, leftEncoder, leftReceiver);
+        leftController = new PIDController(Constants.Gains.FORWARD_P, Constants.Gains.FORWARD_I, Constants.Gains.FORWARD_D, Constants.Gains.FORWARD_F, leftEncoder, leftReceiver);
         leftController.setOutputRange(-Constants.Drive.AUTO_FORWARD_MAX_POWER, Constants.Drive.AUTO_FORWARD_MAX_POWER);
         leftController.setPercentTolerance(Constants.Drive.FORWARD_TOLERANCE_METERS);
         leftController.setContinuous(false);
 
         rightReceiver = new PIDOutputReceiver();
-        rightController = new PIDController(kPForward, kIForward, kDForward, kFForward, rightEncoder, rightReceiver);
+        rightController = new PIDController(Constants.Gains.FORWARD_P, Constants.Gains.FORWARD_I, Constants.Gains.FORWARD_D, Constants.Gains.FORWARD_F, rightEncoder, rightReceiver);
         rightController.setOutputRange(-Constants.Drive.AUTO_FORWARD_MAX_POWER, Constants.Drive.AUTO_FORWARD_MAX_POWER);
         rightController.setPercentTolerance(Constants.Drive.FORWARD_TOLERANCE_METERS);
         rightController.setContinuous(false);
