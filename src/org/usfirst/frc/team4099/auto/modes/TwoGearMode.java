@@ -41,6 +41,7 @@ public class TwoGearMode extends OneGearMode {
             runAction(new TurnAction(turnToGear));
             runAction(new ForwardAction(distanceToGear));
             runAction(new SetGrabberAction(Intake.GrabberPosition.CLOSED));
+            runAction(new TurnAction(Rotation2D.fromDegrees(179.9)));
             runAction(new TurnAction(turnToGear.inverse()));
             runAction(new ForwardAction(distanceToGear));
             // back at spot after OneGearMode, not facing peg yet
