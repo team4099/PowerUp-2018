@@ -64,13 +64,13 @@ public class Drive implements Subsystem {
         leftReceiver = new PIDOutputReceiver();
         leftController = new PIDController(Constants.Gains.FORWARD_P, Constants.Gains.FORWARD_I, Constants.Gains.FORWARD_D, Constants.Gains.FORWARD_F, leftEncoder, leftReceiver);
         leftController.setOutputRange(-Constants.Drive.AUTO_FORWARD_MAX_POWER, Constants.Drive.AUTO_FORWARD_MAX_POWER);
-        leftController.setPercentTolerance(Constants.Drive.FORWARD_TOLERANCE_METERS);
+        leftController.setAbsoluteTolerance(Constants.Drive.FORWARD_TOLERANCE_METERS);
         leftController.setContinuous(false);
 
         rightReceiver = new PIDOutputReceiver();
         rightController = new PIDController(Constants.Gains.FORWARD_P, Constants.Gains.FORWARD_I, Constants.Gains.FORWARD_D, Constants.Gains.FORWARD_F, rightEncoder, rightReceiver);
         rightController.setOutputRange(-Constants.Drive.AUTO_FORWARD_MAX_POWER, Constants.Drive.AUTO_FORWARD_MAX_POWER);
-        rightController.setPercentTolerance(Constants.Drive.FORWARD_TOLERANCE_METERS);
+        rightController.setAbsoluteTolerance(Constants.Drive.FORWARD_TOLERANCE_METERS);
         rightController.setContinuous(false);
     }
 
@@ -174,8 +174,8 @@ public class Drive implements Subsystem {
     }
 
     public boolean goForward() {
-        System.out.println("Moving rate of right: " + rightReceiver.getOutput() + " Distance: " + ahrs.getDisplacementX() + " Time: " + Timer.getFPGATimestamp());
-        System.out.println("Moving rate of left: " + rightReceiver.getOutput() + " Distance: " + ahrs.getDisplacementX()+ " Time: " + Timer.getFPGATimestamp());
+        System.out.println("Moving rate of right: " + rightReceiver.getOutput() + " Distance: " + rightEncoder.getDistance() + " Time: " + Timer.getFPGATimestamp());
+        System.out.println("Moving rate of left: " + leftReceiver.getOutput() + " Distance: " + leftEncoder.getDistance() + " Time: " + Timer.getFPGATimestamp());
 //        double leftError = Math.abs(leftController.getSetpoint())
 //        lastForwardErrors.add(Math.abs(left))
         if(leftController.onTarget() || rightController.onTarget() || currentState != DriveControlState.AUTONOMOUS_DRIVING){
