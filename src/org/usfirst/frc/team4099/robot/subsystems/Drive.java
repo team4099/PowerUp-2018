@@ -55,7 +55,7 @@ public class Drive implements Subsystem {
         rightEncoder.setDistancePerPulse(Constants.Drive.RIGHT_ENCODER_DISTANCE_PER_PULSE);
 
         turnReceiver = new PIDOutputReceiver();
-        turnController = new PIDController(Constants.Gains.TURN_D, Constants.Gains.FORWARD_I, Constants.Gains.FORWARD_D, Constants.Gains.FORWARD_F, ahrs, turnReceiver);
+        turnController = new PIDController(Constants.Gains.TURN_P, Constants.Gains.TURN_I, Constants.Gains.TURN_D, Constants.Gains.TURN_F, ahrs, turnReceiver);
         turnController.setInputRange(-180, 180);
         turnController.setOutputRange(-Constants.Drive.AUTO_TURN_MAX_POWER, Constants.Drive.AUTO_TURN_MAX_POWER);
         turnController.setAbsoluteTolerance(Constants.Drive.TURN_TOLERANCE_DEGREES);
