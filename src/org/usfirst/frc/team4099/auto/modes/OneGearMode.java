@@ -4,7 +4,7 @@ package org.usfirst.frc.team4099.auto.modes;
 import edu.wpi.first.wpilibj.DriverStation;
 import org.usfirst.frc.team4099.auto.AutoModeEndedException;
 import org.usfirst.frc.team4099.auto.actions.ForwardAction;
-import org.usfirst.frc.team4099.auto.actions.SetGrabberAction;
+import org.usfirst.frc.team4099.auto.actions.SetIntakeAction;
 import org.usfirst.frc.team4099.auto.actions.TurnAction;
 import org.usfirst.frc.team4099.auto.actions.WaitAction;
 import org.usfirst.frc.team4099.lib.util.AutonomousInitParameters;
@@ -42,7 +42,7 @@ public class OneGearMode extends AutoModeBase {
         // If in center lane (already lined up with peg - don't use vision here
         // TODO: check if using vision is necessary in center lane
         if(initialTurn.getDegrees() == 0) {
-            runAction(new SetGrabberAction(Intake.GrabberPosition.OPEN));
+            runAction(new SetIntakeAction(Intake.IntakePosition.UP_AND_OPEN));
             runAction(new WaitAction(0.5));
             runAction(new ForwardAction(BACK_OUT_AMOUNT));
 
@@ -67,7 +67,7 @@ public class OneGearMode extends AutoModeBase {
                 double distanceToPeg = visionInfo[2];
                 runAction(new TurnAction(turnToPeg));
                 runAction(new ForwardAction(distanceToPeg));
-                runAction(new SetGrabberAction(Intake.GrabberPosition.OPEN));
+                runAction(new SetIntakeAction(Intake.IntakePosition.UP_AND_OPEN));
                 runAction(new WaitAction(0.5));
                 runAction(new ForwardAction(BACK_OUT_AMOUNT));
                 runAction(new TurnAction(turnToPeg.inverse()));

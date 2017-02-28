@@ -36,10 +36,9 @@ public class TwoGearMode extends OneGearMode {
             Rotation2D turnToGear = Rotation2D.fromDegrees(gearVision[0]);
             double distanceToGear = gearVision[1];
             runAction(new TurnAction(turnToGear));
-            runAction(new SetIntakeAction(Intake.IntakePosition.DOWN));
+            runAction(new SetIntakeAction(Intake.IntakePosition.DOWN_AND_OPEN));
             runAction(new ForwardAction(distanceToGear));
-            runAction(new SetGrabberAction(Intake.GrabberPosition.CLOSED));
-            runAction(new SetIntakeAction(Intake.IntakePosition.UP));
+            runAction(new SetIntakeAction(Intake.IntakePosition.UP_AND_CLOSED));
             runAction(new TurnAction(Rotation2D.fromDegrees(179.9)));
             runAction(new TurnAction(turnToGear.inverse()));
             runAction(new ForwardAction(distanceToGear));
@@ -47,7 +46,7 @@ public class TwoGearMode extends OneGearMode {
 
             runAction(new TurnAction(turnToGear)); // now facing peg again
             runAction(new ForwardAction(-BACK_OUT_AMOUNT));
-            runAction(new SetGrabberAction(Intake.GrabberPosition.OPEN));
+            runAction(new SetIntakeAction(Intake.IntakePosition.UP_AND_OPEN));
             runAction(new WaitAction(0.5));
             runAction(new ForwardAction(BACK_OUT_AMOUNT));
             // We're backed out of 2nd peg run. Go to baseline like OneGear handles it

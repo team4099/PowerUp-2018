@@ -32,7 +32,7 @@ public class SetIntakeAction implements Action {
 
     @Override
     public void start() {
-        mIntake.updateIntake(positionToSet, mIntake.getGrabberPosition());
+        mIntake.updateIntake(positionToSet);
         isDone = true;
     }
 }
