@@ -144,8 +144,7 @@ public class Robot extends IterativeRobot {
             double turn = mControls.getTurn();
             boolean isQuickTurn = mControls.getQuickTurn();
 
-            boolean toggleGrab = mControls.getToggleIntakeGrab();
-            boolean toggleUp = mControls.getToggleIntakeUp();
+            boolean toggleIntake = mControls.getToggleIntake();
 
             boolean climbing = mControls.getClimber();
 
@@ -155,7 +154,7 @@ public class Robot extends IterativeRobot {
             mDrive.setOpenLoop(mCDriveHelper.curvatureDrive(throttle, turn, isQuickTurn));
 
             //mDrive.setOpenLoop(mTDriveHelper.tankDrive(throttle, turn));
-            mIntake.updateIntake(toggleUp, toggleGrab);
+            mIntake.updateIntake(toggleIntake);
             if(climbing) {
                 mClimber.setClimbingMode(Climber.ClimberState.CLIMBING);
             } else {

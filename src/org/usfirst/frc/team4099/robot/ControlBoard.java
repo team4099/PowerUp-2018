@@ -35,7 +35,7 @@ public class ControlBoard {
         return driver.getBButton();
     }
 
-    public boolean getToggleIntakeGrab() {
+    public boolean getToggleIntake() {
         return driver.getAButton();
     }
 
