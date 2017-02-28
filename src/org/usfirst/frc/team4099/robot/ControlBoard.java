@@ -8,9 +8,11 @@ public class ControlBoard {
         return sInstance;
     }
     private final LogitechF310Gamepad driver;
+//    private final LogitechF310Gamepad operator;
 
     private ControlBoard() {
         driver = new LogitechF310Gamepad(Constants.Joysticks.DRIVER_PORT);
+//        operator = new LogitechF310Gamepad(Constants.Joysticks.SHOTGUN_PORT);
     }
 
     public double getThrottle() {
@@ -26,18 +28,18 @@ public class ControlBoard {
      * @return  true/false, depending on if the joystick is depressed
      */
     public boolean getQuickTurn() {
-        return driver.getRightJoystickButton();
+        return driver.getLeftShoulderButton();
     }
 
     public boolean getToggleIntakeUp() {
-        return driver.getAButton();
-    }
-
-    public boolean getToggleIntakeGrab() {
         return driver.getBButton();
     }
 
-    public double getClimberPower() {
-        return driver.getLeftTriggerAxis();
+    public boolean getToggleIntakeGrab() {
+        return driver.getAButton();
+    }
+
+    public boolean getClimber() {
+        return driver.getYButton();
     }
 }

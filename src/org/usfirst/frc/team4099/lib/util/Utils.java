@@ -1,13 +1,15 @@
 package org.usfirst.frc.team4099.lib.util;
 
+import org.usfirst.frc.team4099.robot.Constants;
+
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 public class Utils {
-    private Utils() {}
-
     /**
      * Limits the given input to the given magnitude.
      * @param v         value to limit
@@ -39,7 +41,7 @@ public class Utils {
         return (value >= 0)? 1 : -1;
     }
 
-    public static String getHTML(String urlToRead) throws Exception {
+    private static String getHTML(String urlToRead) {
         try {
             StringBuilder result = new StringBuilder();
             URL url = new URL(urlToRead);
@@ -58,12 +60,31 @@ public class Utils {
         }
     }
 
-    public static int[] getNumbersFromString(String htmlOutput) {
+    private static double[] getNumbersFromString(String htmlOutput) {
         String[] htmlArray = htmlOutput.split(",");
-        int[] anglesArray = new int[htmlArray.length];
+        double[] anglesArray = new double[htmlArray.length];
         for(int i = 0; i < htmlArray.length; i++) {
-            anglesArray[i] = Integer.parseInt(htmlArray[i]);
+            anglesArray[i] = Double.parseDouble(htmlArray[i]);
         }
         return anglesArray;
+    }
+
+    public static double[] getNumbersFromUrl(String urlToRead) throws FileNotFoundException {
+        for (int i = 0; i < 3; i++) {
+            String html = getHTML(Constants.Vision.UDOO_ADDRESS + urlToRead);
+            System.out.println("HTML: " + html);
+            if (!html.equals("-1")) {
+                return getNumbersFromString(html);
+            }
+        }
+        throw new FileNotFoundException();
+    }
+
+    public static double getAverageFromList(List<Double> list) {
+        double total = 0;
+        for(Double d : list) {
+            total += d;
+        }
+        return total / list.size();
     }
 }

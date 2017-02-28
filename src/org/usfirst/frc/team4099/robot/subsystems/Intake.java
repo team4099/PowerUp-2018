@@ -58,7 +58,7 @@ public class Intake implements Subsystem {
         if(intakePosition != null)
             SmartDashboard.putBoolean("Intake.isUp", intakePosition.equals(IntakePosition.UP));
         if(grabberPosition != null)
-        SmartDashboard.putBoolean("Intake.isClosed", grabberPosition.equals(GrabberPosition.CLOSED));
+            SmartDashboard.putBoolean("Intake.isClosed", grabberPosition.equals(GrabberPosition.CLOSED));
         SmartDashboard.putNumber("Compressor Current Draw", compressor.getCompressorCurrent());
         SmartDashboard.putBoolean("Pressure Switch Value", compressor.getPressureSwitchValue());
     }
@@ -73,7 +73,7 @@ public class Intake implements Subsystem {
     @Override
     public void zeroSensors() {}
 
-    public synchronized void updateIntakePositions(boolean toggleUp, boolean toggleGrab) {
+    public synchronized void updateIntake(boolean toggleUp, boolean toggleGrab) {
         if(toggleUp && !lastToggleUp) {
             if(intakePosition.equals(IntakePosition.DOWN)) {
                 intakePosition = IntakePosition.UP;
@@ -93,27 +93,35 @@ public class Intake implements Subsystem {
         lastToggleUp = toggleUp;
     }
 
-    private synchronized void updateIntakePositions(IntakePosition intakePosition, GrabberPosition grabberPosition) {
+    public synchronized void updateIntake(IntakePosition intakePosition, GrabberPosition grabberPosition) {
         this.intakePosition = intakePosition;
         this.grabberPosition = grabberPosition;
         setIntakePositions();
     }
 
+    public synchronized IntakePosition getIntakePosition() {
+        return this.intakePosition;
+    }
+
+    public synchronized GrabberPosition getGrabberPosition() {
+        return this.grabberPosition;
+    }
+
     private synchronized void setIntakePositions() {
         switch(intakePosition) {
             case UP:
-                gearGrabber.set(DoubleSolenoid.Value.kForward);
+                upAndDown.set(DoubleSolenoid.Value.kReverse);
                 break;
             case DOWN:
-                gearGrabber.set(DoubleSolenoid.Value.kReverse);
+                upAndDown.set(DoubleSolenoid.Value.kForward);
                 break;
         }
         switch(grabberPosition) {
             case OPEN:
-                upAndDown.set(DoubleSolenoid.Value.kReverse);
+                gearGrabber.set(DoubleSolenoid.Value.kForward);
                 break;
             case CLOSED:
-                upAndDown.set(DoubleSolenoid.Value.kForward);
+                gearGrabber.set(DoubleSolenoid.Value.kReverse);
         }
     }
 
@@ -124,7 +132,7 @@ public class Intake implements Subsystem {
     private final Loop mLoop = new Loop() {
         @Override
         public void onStart() {
-            updateIntakePositions(IntakePosition.UP, GrabberPosition.CLOSED);
+            updateIntake(IntakePosition.UP, GrabberPosition.CLOSED);
         }
 
         @Override

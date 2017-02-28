@@ -3,6 +3,15 @@ package org.usfirst.frc.team4099.robot;
 public class Constants {
 
     public class Gains {
+        public static final double TURN_P = 0.0115;
+        public static final double TURN_I = 0.0000;
+        public static final double TURN_D = 0.0000;
+        public static final double TURN_F = 0.0000;
+
+        public static final double FORWARD_P = 0.0115;
+        public static final double FORWARD_I = 0.0000;
+        public static final double FORWARD_D = 0.0000;
+        public static final double FORWARD_F = 0.0000;
 
     }
 
@@ -11,6 +20,21 @@ public class Constants {
         public static final int RIGHT_FRONT_ID = 0;
         public static final int LEFT_BACK_ID = 3;
         public static final int RIGHT_BACK_ID = 1;
+
+        public static final int LEFT_ENCODER_A = 0;
+        public static final int LEFT_ENCODER_B = 1;
+        public static final int RIGHT_ENCODER_A = 2;
+        public static final int RIGHT_ENCODER_B = 3;
+
+        public static final double LEFT_ENCODER_DISTANCE_PER_PULSE = 1;
+        public static final double RIGHT_ENCODER_DISTANCE_PER_PULSE = 1;
+
+        public static final double TURN_TOLERANCE_DEGREES = 2;
+        public static final double FORWARD_TOLERANCE_METERS = .05;
+
+        public static final double AUTO_TURN_MAX_POWER = .35;
+        public static final double AUTO_FORWARD_MAX_POWER = .5;
+
     }
 
     public class Joysticks {
@@ -23,14 +47,18 @@ public class Constants {
     }
 
     public class Climber {
-        public static final int CLIMBER_TALON_ID = 5;
+        public static final int CLIMBER_TALON_ID = 4;
     }
 
     public class Intake {
-        public static final int UP_DOWN_SOLENOID_FORWARD = 2;
-        public static final int UP_DOWN_SOLENOID_REVERSE = 3;
-        public static final int GRAB_SOLENOID_FORWARD = 0;
-        public static final int GRAB_SOLENOID_REVERSE = 1;
+        public static final int UP_DOWN_SOLENOID_FORWARD = 1;
+        public static final int UP_DOWN_SOLENOID_REVERSE = 0;
+        public static final int GRAB_SOLENOID_FORWARD = 3;
+        public static final int GRAB_SOLENOID_REVERSE = 2;
+    }
+
+    public class Vision {
+        public static final String UDOO_ADDRESS = "http://10.40.99.10/";
     }
 
 }

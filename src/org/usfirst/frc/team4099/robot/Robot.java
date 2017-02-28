@@ -1,7 +1,11 @@
 package org.usfirst.frc.team4099.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.usfirst.frc.team4099.SmartDashboardInteractions;
+import org.usfirst.frc.team4099.auto.AutoModeExecuter;
+import org.usfirst.frc.team4099.lib.drive.DriveSignal;
 import org.usfirst.frc.team4099.lib.util.CrashTracker;
 import org.usfirst.frc.team4099.robot.drive.CDriveHelper;
 import org.usfirst.frc.team4099.robot.drive.TankDriveHelper;
@@ -25,7 +29,11 @@ public class Robot extends IterativeRobot {
     private Looper mDisabledLooper = new Looper("disabledLooper");
     private Looper mEnabledLooper = new Looper("enabledLooper");
 
+    private AutoModeExecuter mAutoModeExecuter = null;
+    private SmartDashboardInteractions mSmartDashboardInteractions = new SmartDashboardInteractions();
+
     private boolean logging = true;
+    private boolean isTurning = true;
 
     public Robot() {
         CrashTracker.logRobotConstruction();
@@ -44,6 +52,8 @@ public class Robot extends IterativeRobot {
             mEnabledLooper.register(BrownoutDefender.getInstance());
 
             mDisabledLooper.register(VoltageEstimator.getInstance());
+
+            mSmartDashboardInteractions.initWithDefaults();
 
         } catch (Throwable t) {
             CrashTracker.logThrowableCrash("robotInit", t);
@@ -70,8 +80,18 @@ public class Robot extends IterativeRobot {
         try {
             CrashTracker.logAutoInit();
 
-            mEnabledLooper.start(); // start EnabledLooper
+            if (mAutoModeExecuter != null) {
+                mAutoModeExecuter.stop();
+            }
+            mAutoModeExecuter = null;
+
             mDisabledLooper.stop(); // end DisabledLooper
+            mEnabledLooper.start(); // start EnabledLooper
+            mDrive.zeroSensors();
+
+            mAutoModeExecuter = new AutoModeExecuter();
+            mAutoModeExecuter.setAutoMode(mSmartDashboardInteractions.getSelectedAutonMode());
+            mAutoModeExecuter.start();
 
         } catch (Throwable t) {
             CrashTracker.logThrowableCrash("autonomousInit", t);
@@ -83,7 +103,7 @@ public class Robot extends IterativeRobot {
     public void teleopInit() {
         try {
             CrashTracker.logTeleopInit();
-
+            isTurning = true;
             mEnabledLooper.start(); // start EnabledLooper
             mDisabledLooper.stop(); // end DisabledLooper
 
@@ -107,9 +127,11 @@ public class Robot extends IterativeRobot {
     @Override
     public void autonomousPeriodic() {
         try {
+//            mDrive.turnAngle();
             outputAllToSmartDashboard();
             updateDashboardFeedback();
         } catch (Throwable t) {
+
             CrashTracker.logThrowableCrash("autonomousPeriodic", t);
             throw t;
         }
@@ -125,21 +147,72 @@ public class Robot extends IterativeRobot {
             boolean toggleGrab = mControls.getToggleIntakeGrab();
             boolean toggleUp = mControls.getToggleIntakeUp();
 
-            double climberPower = mControls.getClimberPower();
+            boolean climbing = mControls.getClimber();
 
             SmartDashboard.putBoolean("isQuickTurn", isQuickTurn);
             SmartDashboard.putNumber("voltage", VoltageEstimator.getInstance().getAverageVoltage());
 
             mDrive.setOpenLoop(mCDriveHelper.curvatureDrive(throttle, turn, isQuickTurn));
+
             //mDrive.setOpenLoop(mTDriveHelper.tankDrive(throttle, turn));
-            mIntake.updateIntakePositions(toggleUp, toggleGrab);
-            mClimber.setClimberPower(climberPower);
+            mIntake.updateIntake(toggleUp, toggleGrab);
+            if(climbing) {
+                mClimber.setClimbingMode(Climber.ClimberState.CLIMBING);
+            } else {
+                mClimber.setClimbingMode(Climber.ClimberState.NOT_CLIMBING);
+            }
 
             outputAllToSmartDashboard();
             updateDashboardFeedback(); // things such as is aligned?, etc
 
         } catch (Throwable t) {
             CrashTracker.logThrowableCrash("teleopPeriodic", t);
+            throw t;
+        }
+    }
+
+    @Override
+    public void testInit() {
+        try {
+            CrashTracker.logAutoInit();
+            mEnabledLooper.start(); // start EnabledLooper
+            mDisabledLooper.stop(); // end DisabledLooper
+            mDrive.zeroSensors();
+            mDrive.setAutonomousTurning();
+            mDrive.setAngleSetpoint(90);
+            isTurning = true;
+            LiveWindow.setEnabled(true);
+            startLiveWindowMode();
+        } catch (Throwable t) {
+            CrashTracker.logThrowableCrash("testInit", t);
+            throw t;
+        }
+    }
+
+    @Override
+    public void testPeriodic() {
+        try {
+            LiveWindow.run();
+            if(isTurning) {
+                isTurning = !mDrive.turnAngle();
+            } else {
+                mDrive.setOpenLoop(DriveSignal.NEUTRAL);
+            }
+            System.out.println("isTurning:" + isTurning);
+//            DriveSignal lSignal = new DriveSignal(1, -1);
+//            DriveSignal rSignal = new DriveSignal(-1, 1);
+//            if(mControls.getClimber()) {
+//                mDrive.setOpenLoop(lSignal);
+//            } else {
+//                mDrive.setOpenLoop(rSignal);
+//            }
+
+            outputAllToSmartDashboard();
+            updateLiveWindowTables();
+            updateDashboardFeedback();
+        } catch (Throwable t) {
+
+            CrashTracker.logThrowableCrash("testPeriodic", t);
             throw t;
         }
     }
@@ -153,6 +226,14 @@ public class Robot extends IterativeRobot {
             mIntake.outputToSmartDashboard();
             mClimber.outputToSmartDashboard();
         }
+    }
+
+    private void startLiveWindowMode() {
+        mDrive.startLiveWindowMode();
+    }
+
+    private void updateLiveWindowTables() {
+        mDrive.updateLiveWindowTables();
     }
 
     private void updateDashboardFeedback() {
