@@ -156,6 +156,8 @@ public class Drive implements Subsystem {
             currentState = DriveControlState.OPEN_LOOP;
         }
         turnController.disable();
+        leftController.disable();
+        rightController.disable();
 
         setLeftRightPower(signal.getLeftMotor(), signal.getRightMotor());
     }
