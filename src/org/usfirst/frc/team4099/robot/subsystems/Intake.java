@@ -2,6 +2,7 @@ package org.usfirst.frc.team4099.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team4099.robot.Constants;
 import org.usfirst.frc.team4099.robot.loops.Loop;
@@ -15,6 +16,8 @@ public class Intake implements Subsystem {
     private boolean lastToggleIntake;
 
     private Compressor compressor;
+
+    private double upTime;
 
     public enum IntakePosition {
         UP_AND_CLOSED, UP_AND_OPEN, DOWN_AND_OPEN;
@@ -32,6 +35,7 @@ public class Intake implements Subsystem {
                 Constants.Intake.GRAB_SOLENOID_REVERSE);
 
         intakePosition = IntakePosition.UP_AND_CLOSED;
+        upTime = -100;
     }
 
     public static Intake getInstance() {
@@ -72,6 +76,7 @@ public class Intake implements Subsystem {
     public synchronized void updateIntake(boolean toggleIntake) {
         if(toggleIntake && !lastToggleIntake) {
             if(intakePosition.equals(IntakePosition.DOWN_AND_OPEN)) {
+                this.upTime = Timer.getFPGATimestamp();
                 intakePosition = IntakePosition.UP_AND_CLOSED;
             } else if(intakePosition.equals(IntakePosition.UP_AND_CLOSED)){
                 intakePosition = IntakePosition.DOWN_AND_OPEN;
@@ -95,14 +100,21 @@ public class Intake implements Subsystem {
     private synchronized void setIntakePositions() {
         switch(intakePosition) {
             case UP_AND_CLOSED:
+                if(upTime == -1) {
+                    upTime = Timer.getFPGATimestamp();
+                }
                 gearGrabber.set(DoubleSolenoid.Value.kReverse);
-                upAndDown.set(DoubleSolenoid.Value.kReverse);
+                if(Timer.getFPGATimestamp() - upTime > .2) {
+                    upAndDown.set(DoubleSolenoid.Value.kReverse);
+                }
                 break;
             case UP_AND_OPEN:
                 gearGrabber.set(DoubleSolenoid.Value.kForward);
+                upTime = -1;
                 break;
             case DOWN_AND_OPEN:
                 upAndDown.set(DoubleSolenoid.Value.kForward);
+                upTime = -1;
                 break;
         }
     }
