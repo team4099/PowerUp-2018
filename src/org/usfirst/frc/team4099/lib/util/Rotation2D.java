@@ -14,6 +14,9 @@ public class Rotation2D implements Interpolable<Rotation2D> {
     protected double cos_angle_;
     protected double sin_angle_;
 
+    public static Rotation2D FORWARDS = Rotation2D.fromDegrees(0);
+    public static Rotation2D BACKWARDS = Rotation2D.fromDegrees(179.9);
+
     public Rotation2D() {
         this(1, 0, false);
     }

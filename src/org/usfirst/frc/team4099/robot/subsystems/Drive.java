@@ -49,10 +49,12 @@ public class Drive implements Subsystem {
         ahrs = new AHRS(SPI.Port.kMXP);
 
         leftEncoder = new Encoder(Constants.Drive.LEFT_ENCODER_A, Constants.Drive.LEFT_ENCODER_B, false, Encoder.EncodingType.k4X);
-        leftEncoder.setDistancePerPulse(Constants.Drive.LEFT_ENCODER_DISTANCE_PER_PULSE);
+        leftEncoder.setSamplesToAverage(Constants.Drive.ENCODER_SAMPLES_TO_AVERAGE);
+        leftEncoder.setDistancePerPulse(Constants.Drive.LEFT_ENCODER_INCHES_PER_PULSE);
 
         rightEncoder = new Encoder(Constants.Drive.RIGHT_ENCODER_A, Constants.Drive.RIGHT_ENCODER_B, false, Encoder.EncodingType.k4X);
-        rightEncoder.setDistancePerPulse(Constants.Drive.RIGHT_ENCODER_DISTANCE_PER_PULSE);
+        rightEncoder.setSamplesToAverage(Constants.Drive.ENCODER_SAMPLES_TO_AVERAGE);
+        rightEncoder.setDistancePerPulse(Constants.Drive.RIGHT_ENCODER_INCHES_PER_PULSE);
 
         turnReceiver = new PIDOutputReceiver();
         turnController = new PIDController(Constants.Gains.TURN_P, Constants.Gains.TURN_I, Constants.Gains.TURN_D, Constants.Gains.TURN_F, ahrs, turnReceiver);
@@ -64,13 +66,13 @@ public class Drive implements Subsystem {
         leftReceiver = new PIDOutputReceiver();
         leftController = new PIDController(Constants.Gains.FORWARD_P, Constants.Gains.FORWARD_I, Constants.Gains.FORWARD_D, Constants.Gains.FORWARD_F, leftEncoder, leftReceiver);
         leftController.setOutputRange(-Constants.Drive.AUTO_FORWARD_MAX_POWER, Constants.Drive.AUTO_FORWARD_MAX_POWER);
-        leftController.setAbsoluteTolerance(Constants.Drive.FORWARD_TOLERANCE_METERS);
+        leftController.setAbsoluteTolerance(Constants.Drive.FORWARD_TOLERANCE_INCHES);
         leftController.setContinuous(false);
 
         rightReceiver = new PIDOutputReceiver();
         rightController = new PIDController(Constants.Gains.FORWARD_P, Constants.Gains.FORWARD_I, Constants.Gains.FORWARD_D, Constants.Gains.FORWARD_F, rightEncoder, rightReceiver);
         rightController.setOutputRange(-Constants.Drive.AUTO_FORWARD_MAX_POWER, Constants.Drive.AUTO_FORWARD_MAX_POWER);
-        rightController.setAbsoluteTolerance(Constants.Drive.FORWARD_TOLERANCE_METERS);
+        rightController.setAbsoluteTolerance(Constants.Drive.FORWARD_TOLERANCE_INCHES);
         rightController.setContinuous(false);
     }
 

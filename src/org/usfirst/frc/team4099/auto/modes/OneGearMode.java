@@ -1,5 +1,4 @@
 package org.usfirst.frc.team4099.auto.modes;
-// put in a gear, and go put it on the peg
 
 import edu.wpi.first.wpilibj.DriverStation;
 import org.usfirst.frc.team4099.auto.AutoModeEndedException;
@@ -8,8 +7,10 @@ import org.usfirst.frc.team4099.auto.actions.SetIntakeAction;
 import org.usfirst.frc.team4099.auto.actions.TurnAction;
 import org.usfirst.frc.team4099.auto.actions.WaitAction;
 import org.usfirst.frc.team4099.lib.util.AutonomousInitParameters;
+import org.usfirst.frc.team4099.lib.util.LiftVision;
 import org.usfirst.frc.team4099.lib.util.Rotation2D;
 import org.usfirst.frc.team4099.lib.util.Utils;
+import org.usfirst.frc.team4099.robot.Constants;
 import org.usfirst.frc.team4099.robot.subsystems.Intake;
 
 import java.io.FileNotFoundException;
@@ -19,18 +20,14 @@ import java.io.FileNotFoundException;
  */
 public class OneGearMode extends AutoModeBase {
 
-    private static final double BACK_OUT_AMOUNT = -1.5;
-    private static final double SIDE_AMOUNT = 3;
-    private static final double BASELINE_DISTANCE = 2.6;
-
     private final double initialForwardDistance;
     private final Rotation2D initialTurn;
-    private final boolean goToBaseline;
+    private final boolean backOut;
     private final boolean turnAround;
 
 
-    public OneGearMode(AutonomousInitParameters initParameters, boolean goToBaseline, boolean turnAround) {
-        this.goToBaseline = goToBaseline;
+    public OneGearMode(AutonomousInitParameters initParameters, boolean backOut, boolean turnAround) {
+        this.backOut = backOut;
         this.turnAround = turnAround;
         this.initialForwardDistance = initParameters.getDistanceInMeters();
         this.initialTurn = initParameters.getTurnAngle();
@@ -43,10 +40,11 @@ public class OneGearMode extends AutoModeBase {
         // TODO: check if using vision is necessary in center lane
         if(initialTurn.getDegrees() == 0) {
             runAction(new SetIntakeAction(Intake.IntakePosition.UP_AND_OPEN));
-            runAction(new WaitAction(0.5));
-            runAction(new ForwardAction(BACK_OUT_AMOUNT));
+            runAction(new WaitAction(1));
 
-            if(goToBaseline) {
+            if(backOut) {
+                runAction(new ForwardAction(Constants.Autonomous.BACK_OUT_INCHES));
+
                 Rotation2D turn = Rotation2D.fromDegrees(90);
                 // Go to left side of airship if we're red, otherwise go to right.
                 // This is because the loading station is on the right if red, left if blue
@@ -55,34 +53,34 @@ public class OneGearMode extends AutoModeBase {
                     turn = turn.inverse();
                 }
                 runAction(new TurnAction(turn));
-                runAction(new ForwardAction(SIDE_AMOUNT));
+                runAction(new ForwardAction(Constants.Autonomous.AIRSHIP_WIDTH_INCHES));
                 runAction(new TurnAction(turn.inverse()));
-                runAction(new ForwardAction(1.7));
+                runAction(new ForwardAction(Constants.Autonomous.DISTANCE_PAST_AIRSHIP_INCHES));
             }
         } else {
             runAction(new TurnAction(initialTurn)); // turn towards air ship
             try {
-                double[] visionInfo = Utils.getNumbersFromUrl("get_lift"); // vision[1]=turn, vision[2]=dis(m)
-                Rotation2D turnToPeg = Rotation2D.fromDegrees(visionInfo[1]);
-                double distanceToPeg = visionInfo[2];
-                runAction(new TurnAction(turnToPeg));
-                runAction(new ForwardAction(distanceToPeg));
+                LiftVision liftVision = Utils.getLiftLocation();
+                runAction(new TurnAction(liftVision.getTurnAngle()));
+                runAction(new ForwardAction(liftVision.getDistance()));
                 runAction(new SetIntakeAction(Intake.IntakePosition.UP_AND_OPEN));
-                runAction(new WaitAction(0.5));
-                runAction(new ForwardAction(BACK_OUT_AMOUNT));
-                runAction(new TurnAction(turnToPeg.inverse()));
+                runAction(new WaitAction(Constants.Autonomous.WAIT_TIME_ON_LIFT));
+                if(backOut) {
+                    runAction(new ForwardAction(Constants.Autonomous.BACK_OUT_INCHES));
+                    runAction(new TurnAction(liftVision.getTurnAngle().inverse()));
+                }
 
             } catch (FileNotFoundException e) {
                 System.out.println("Couldn't find lift... fix ur vision");
             }
-            if(goToBaseline){
-                // back out and go to baseline
+            if(backOut){
+                // back out and go past airship
                 runAction(new TurnAction(initialTurn.inverse()));
-                runAction(new ForwardAction(1.5));
+                runAction(new ForwardAction(Constants.Autonomous.DISTANCE_PAST_AIRSHIP_INCHES));
             }
         }
         if(turnAround) {
-            runAction(new TurnAction(Rotation2D.fromDegrees(179.9)));
+            runAction(new TurnAction(Rotation2D.BACKWARDS, true));
         }
 
     }

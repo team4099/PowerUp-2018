@@ -26,14 +26,16 @@ public class Constants {
         public static final int RIGHT_ENCODER_A = 2;
         public static final int RIGHT_ENCODER_B = 3;
 
-        public static final double LEFT_ENCODER_DISTANCE_PER_PULSE = 1;
-        public static final double RIGHT_ENCODER_DISTANCE_PER_PULSE = 1;
+        public static final double LEFT_ENCODER_INCHES_PER_PULSE = 1;
+        public static final double RIGHT_ENCODER_INCHES_PER_PULSE = 1;
 
         public static final double TURN_TOLERANCE_DEGREES = 2;
-        public static final double FORWARD_TOLERANCE_METERS = .05;
+        public static final double FORWARD_TOLERANCE_INCHES = 3;
 
         public static final double AUTO_TURN_MAX_POWER = .35;
         public static final double AUTO_FORWARD_MAX_POWER = .5;
+
+        public static final int ENCODER_SAMPLES_TO_AVERAGE = 10;
 
     }
 
@@ -57,8 +59,16 @@ public class Constants {
         public static final int GRAB_SOLENOID_REVERSE = 2;
     }
 
-    public class Vision {
+    public class Autonomous {
         public static final String UDOO_ADDRESS = "http://10.40.99.10/";
+
+        public static final double BACK_OUT_INCHES = -40;
+        public static final double AIRSHIP_WIDTH_INCHES = 100;
+        public static final double DISTANCE_PAST_AIRSHIP_INCHES = 60;
+
+        public static final double EXTRA_INCHES = 5;
+
+        public static final double WAIT_TIME_ON_LIFT = 1;
     }
 
 }

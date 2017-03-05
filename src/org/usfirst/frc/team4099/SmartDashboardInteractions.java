@@ -75,13 +75,13 @@ public class SmartDashboardInteractions {
      */
     enum AutonOption {
         ONE_GEAR("One Gear"),
-        ONE_GEAR_AND_BASELINE("One Gear and Baseline"),
-        ONE_GEAR_AND_BASELINE_AND_TURN("One Gear and Baseline and Turn Around"),
+        ONE_GEAR_AND_BACK_OUT("One Gear, Baseline"),
+        ONE_GEAR_AND_BACK_OUT_AND_TURN("One Gear, Baseline, Turn Around"),
         TWO_GEAR("Two Gears"),
-        TWO_GEAR_AND_BASELINE("Two Gears and Baseline"),
-        TWO_GEAR_AND_BASELINE_AND_TURN("Two Gears and Baseline and Turn Around"),
+        TWO_GEAR_AND_BACK_OUT("Two Gears, Back Out"),
+        TWO_GEAR_AND_BACK_OUT_AND_TURN("Two Gears, Back Out, Turn Around"),
         BASELINE("Just Baseline"),
-        BASELINE_AND_TURN("Just Baseline and Turn"),
+        BASELINE_AND_TURN("Just Baseline, Turn Around"),
         STAND_STILL("Stand Still"),
         TEST_DRIVE("TEST ONLY Driving");
 
@@ -93,7 +93,7 @@ public class SmartDashboardInteractions {
     }
 
     enum AutonLane {
-        LEFT_LANE(2.3, "1"), CENTER_LANE(2.4, "2"), RIGHT_LANE(2.3, "3");
+        LEFT_LANE(75, "1"), CENTER_LANE(60, "2"), RIGHT_LANE(75, "3");
 
         public final double distanceToDrive;
         public final String numberString;
@@ -118,15 +118,15 @@ public class SmartDashboardInteractions {
         switch (autonOption) {
             case ONE_GEAR:
                 return new OneGearMode(getAimingHintForLane(autonLane), false, false);
-            case ONE_GEAR_AND_BASELINE:
+            case ONE_GEAR_AND_BACK_OUT:
                 return new OneGearMode(getAimingHintForLane(autonLane), true, false);
-            case ONE_GEAR_AND_BASELINE_AND_TURN:
+            case ONE_GEAR_AND_BACK_OUT_AND_TURN:
                 return new OneGearMode(getAimingHintForLane(autonLane), true, true);
             case TWO_GEAR:
                 return new TwoGearMode(getAimingHintForLane(autonLane), false, false);
-            case TWO_GEAR_AND_BASELINE:
+            case TWO_GEAR_AND_BACK_OUT:
                 return new TwoGearMode(getAimingHintForLane(autonLane), true, false);
-            case TWO_GEAR_AND_BASELINE_AND_TURN:
+            case TWO_GEAR_AND_BACK_OUT_AND_TURN:
                 return new TwoGearMode(getAimingHintForLane(autonLane), true, true);
             case BASELINE:
                 return new BaselineMode(getAimingHintForLane(autonLane), false);

@@ -15,9 +15,18 @@ public class TurnAction implements Action {
     private double finishAngle;
 
     public TurnAction(Rotation2D degreesToTurn) {
+        this(degreesToTurn, false);
+    }
+
+    public TurnAction(Rotation2D degreesToTurn, boolean absolutePosition) {
         this.mDrive = Drive.getInstance();
         this.degreesToTurn = degreesToTurn.getDegrees();
         this.isDone = false;
+        if(absolutePosition) {
+            finishAngle = this.degreesToTurn;
+        } else {
+            finishAngle = Math.IEEEremainder(mDrive.getAHRS().getYaw() + this.degreesToTurn, 360);
+        }
     }
 
     @Override
@@ -37,7 +46,6 @@ public class TurnAction implements Action {
 
     @Override
     public void start() {
-        finishAngle = Math.IEEEremainder(mDrive.getAHRS().getYaw() + degreesToTurn, 360);
         mDrive.setAngleSetpoint(finishAngle);
     }
 }

@@ -69,15 +69,25 @@ public class Utils {
         return anglesArray;
     }
 
-    public static double[] getNumbersFromUrl(String urlToRead) throws FileNotFoundException {
+    public static double[] getNumbersFromUrl(String urlToReadFromUdoo) throws FileNotFoundException {
         for (int i = 0; i < 3; i++) {
-            String html = getHTML(Constants.Vision.UDOO_ADDRESS + urlToRead);
+            String html = getHTML(Constants.Autonomous.UDOO_ADDRESS + urlToReadFromUdoo);
             System.out.println("HTML: " + html);
             if (!html.equals("-1")) {
                 return getNumbersFromString(html);
             }
         }
         throw new FileNotFoundException();
+    }
+
+    public static GearVision getGearLocation() throws FileNotFoundException {
+        double[] gearVision = getNumbersFromUrl("get_gear");
+        return new GearVision(gearVision[0], gearVision[1]);
+    }
+
+    public static LiftVision getLiftLocation() throws FileNotFoundException {
+        double[] liftVision = getNumbersFromUrl("get_lift");
+        return new LiftVision(liftVision[0], liftVision[1], liftVision[2]);
     }
 
     public static double getAverageFromList(List<Double> list) {
