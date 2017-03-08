@@ -1,6 +1,5 @@
 package org.usfirst.frc.team4099.robot;
 
-import org.usfirst.frc.team4099.lib.joystick.DualShock4Gamepad;
 import org.usfirst.frc.team4099.lib.joystick.JoystickUtils;
 import org.usfirst.frc.team4099.lib.joystick.XboxOneGamepad;
 
@@ -10,11 +9,11 @@ public class ControlBoard {
         return sInstance;
     }
     private final XboxOneGamepad driver;
-    private final DualShock4Gamepad operator;
+    private final XboxOneGamepad operator;
 
     private ControlBoard() {
         driver = new XboxOneGamepad(Constants.Joysticks.DRIVER_PORT);
-        operator = new DualShock4Gamepad(Constants.Joysticks.SHOTGUN_PORT);
+        operator = new XboxOneGamepad(Constants.Joysticks.SHOTGUN_PORT);
     }
 
     public double getThrottle() {
@@ -34,8 +33,12 @@ public class ControlBoard {
         //return driver.getXButton();
     }
 
-    public boolean getToggleIntakeUp() {
-        return driver.getBButton();
+    public boolean getIntakeUp() {
+        return operator.getDPadUp();
+    }
+
+    public boolean getIntakeDown() {
+        return operator.getDPadDown();
     }
 
     public boolean getToggleIntake() {
@@ -45,4 +48,9 @@ public class ControlBoard {
     public boolean getClimber() {
         return operator.getYButton();
     }
+
+    public boolean getToggleIntakeClosed() {
+        return operator.getDPadRight();
+    }
+
 }

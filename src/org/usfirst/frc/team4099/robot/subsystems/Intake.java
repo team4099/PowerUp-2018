@@ -20,7 +20,7 @@ public class Intake implements Subsystem {
     private double upTime;
 
     public enum IntakePosition {
-        UP_AND_CLOSED, UP_AND_OPEN, DOWN_AND_OPEN;
+        UP_AND_CLOSED, UP_AND_OPEN, DOWN_AND_OPEN, DOWN_AND_CLOSED;
     }
 
     private IntakePosition intakePosition;
@@ -82,6 +82,8 @@ public class Intake implements Subsystem {
                 intakePosition = IntakePosition.UP_AND_OPEN;
             } else if(intakePosition.equals(IntakePosition.UP_AND_OPEN)){
                 intakePosition = IntakePosition.DOWN_AND_OPEN;
+            } else if(intakePosition.equals(IntakePosition.DOWN_AND_CLOSED)) {
+                intakePosition = IntakePosition.UP_AND_CLOSED;
             }
         }
 
@@ -116,6 +118,11 @@ public class Intake implements Subsystem {
             case DOWN_AND_OPEN:
                 upAndDown.set(DoubleSolenoid.Value.kForward);
                 gearGrabber.set(DoubleSolenoid.Value.kForward);
+                upTime = -1;
+                break;
+            case DOWN_AND_CLOSED:
+                upAndDown.set(DoubleSolenoid.Value.kForward);
+                gearGrabber.set(DoubleSolenoid.Value.kReverse);
                 upTime = -1;
                 break;
         }

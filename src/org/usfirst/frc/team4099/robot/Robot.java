@@ -35,6 +35,8 @@ public class Robot extends IterativeRobot {
     private boolean logging = true;
     private boolean isTurning = true;
 
+    private boolean lastToggleIntakeClosed = false;
+
     public Robot() {
         CrashTracker.logRobotConstruction();
     }
@@ -145,6 +147,9 @@ public class Robot extends IterativeRobot {
             boolean isQuickTurn = mControls.getQuickTurn();
 
             boolean toggleIntake = mControls.getToggleIntake();
+            boolean toggleIntakeClosed = mControls.getToggleIntakeClosed();
+            boolean setIntakeUp = mControls.getIntakeUp();
+            boolean setIntakeDown = mControls.getIntakeDown();
 
             boolean climbing = mControls.getClimber();
 
@@ -153,8 +158,30 @@ public class Robot extends IterativeRobot {
 
             mDrive.setOpenLoop(mCDriveHelper.curvatureDrive(throttle, turn, isQuickTurn));
 
-            //mDrive.setOpenLoop(mTDriveHelper.tankDrive(throttle, turn));
             mIntake.updateIntake(toggleIntake);
+            if(toggleIntakeClosed && !lastToggleIntakeClosed) {
+                if(mIntake.getIntakePosition().equals(Intake.IntakePosition.DOWN_AND_CLOSED))
+                    mIntake.updateIntake(Intake.IntakePosition.DOWN_AND_OPEN);
+                else if(mIntake.getIntakePosition().equals(Intake.IntakePosition.DOWN_AND_OPEN))
+                    mIntake.updateIntake(Intake.IntakePosition.DOWN_AND_CLOSED);
+                else if(mIntake.getIntakePosition().equals(Intake.IntakePosition.UP_AND_CLOSED))
+                    mIntake.updateIntake(Intake.IntakePosition.UP_AND_OPEN);
+                else if(mIntake.getIntakePosition().equals(Intake.IntakePosition.UP_AND_OPEN))
+                    mIntake.updateIntake(Intake.IntakePosition.UP_AND_CLOSED);
+            } else if(setIntakeUp) {
+                if(mIntake.getIntakePosition().equals(Intake.IntakePosition.DOWN_AND_OPEN) || mIntake.getIntakePosition().equals(Intake.IntakePosition.UP_AND_OPEN))
+                    mIntake.updateIntake(Intake.IntakePosition.UP_AND_OPEN);
+                else
+                    mIntake.updateIntake(Intake.IntakePosition.UP_AND_CLOSED);
+            } else if(setIntakeDown) {
+                if(mIntake.getIntakePosition().equals(Intake.IntakePosition.DOWN_AND_OPEN) || mIntake.getIntakePosition().equals(Intake.IntakePosition.UP_AND_OPEN))
+                    mIntake.updateIntake(Intake.IntakePosition.DOWN_AND_OPEN);
+                else
+                    mIntake.updateIntake(Intake.IntakePosition.DOWN_AND_CLOSED);
+            }
+
+            lastToggleIntakeClosed = toggleIntakeClosed;
+
             if(climbing) {
                 mClimber.setClimbingMode(Climber.ClimberState.CLIMBING);
             } else {
