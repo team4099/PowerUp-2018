@@ -1,26 +1,28 @@
 package org.usfirst.frc.team4099.robot;
 
-import org.usfirst.frc.team4099.lib.joystick.LogitechF310Gamepad;
+import org.usfirst.frc.team4099.lib.joystick.DualShock4Gamepad;
+import org.usfirst.frc.team4099.lib.joystick.JoystickUtils;
+import org.usfirst.frc.team4099.lib.joystick.XboxOneGamepad;
 
 public class ControlBoard {
     private static ControlBoard sInstance = new ControlBoard();
     public static ControlBoard getInstance() {
         return sInstance;
     }
-    private final LogitechF310Gamepad driver;
-//    private final LogitechF310Gamepad operator;
+    private final XboxOneGamepad driver;
+    private final DualShock4Gamepad operator;
 
     private ControlBoard() {
-        driver = new LogitechF310Gamepad(Constants.Joysticks.DRIVER_PORT);
-//        operator = new LogitechF310Gamepad(Constants.Joysticks.SHOTGUN_PORT);
+        driver = new XboxOneGamepad(Constants.Joysticks.DRIVER_PORT);
+        operator = new DualShock4Gamepad(Constants.Joysticks.SHOTGUN_PORT);
     }
 
     public double getThrottle() {
-        return driver.getLeftYAxis();
+        return -driver.getRightTriggerAxis() + driver.getLeftTriggerAxis();
     }
 
     public double getTurn() {
-        return driver.getRightXAxis();
+        return driver.getLeftXAxis();
     }
 
     /**
@@ -28,7 +30,8 @@ public class ControlBoard {
      * @return  true/false, depending on if the joystick is depressed
      */
     public boolean getQuickTurn() {
-        return driver.getLeftShoulderButton();
+        return Math.abs(JoystickUtils.deadbandNoShape(getThrottle(), 0.02)) < 0.01;
+        //return driver.getXButton();
     }
 
     public boolean getToggleIntakeUp() {
@@ -36,10 +39,10 @@ public class ControlBoard {
     }
 
     public boolean getToggleIntake() {
-        return driver.getAButton();
+        return operator.getAButton();
     }
 
     public boolean getClimber() {
-        return driver.getYButton();
+        return operator.getYButton();
     }
 }

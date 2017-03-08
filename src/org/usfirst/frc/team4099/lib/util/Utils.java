@@ -46,7 +46,8 @@ public class Utils {
             StringBuilder result = new StringBuilder();
             URL url = new URL(urlToRead);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setConnectTimeout(1000);
+            conn.setConnectTimeout(Constants.Autonomous.CONNECTION_TIMEOUT_MILLIS);
+            conn.setReadTimeout(Constants.Autonomous.CONNECTION_TIMEOUT_MILLIS);
             conn.setRequestMethod("GET");
             BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String line;
@@ -70,7 +71,7 @@ public class Utils {
     }
 
     public static double[] getNumbersFromUrl(String urlToReadFromUdoo) throws FileNotFoundException {
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < Constants.Autonomous.NUMBER_OF_TRIES; i++) {
             String html = getHTML(Constants.Autonomous.UDOO_ADDRESS + urlToReadFromUdoo);
             System.out.println("HTML: " + html);
             if (!html.equals("-1")) {
@@ -82,12 +83,12 @@ public class Utils {
 
     public static GearVision getGearLocation() throws FileNotFoundException {
         double[] gearVision = getNumbersFromUrl("get_gear");
-        return new GearVision(gearVision[0], gearVision[1]);
+        return new GearVision(gearVision[0], gearVision[1] * 39.37);
     }
 
     public static LiftVision getLiftLocation() throws FileNotFoundException {
         double[] liftVision = getNumbersFromUrl("get_lift");
-        return new LiftVision(liftVision[0], liftVision[1], liftVision[2]);
+        return new LiftVision(liftVision[0], liftVision[1], liftVision[2] * 39.37);
     }
 
     public static double getAverageFromList(List<Double> list) {

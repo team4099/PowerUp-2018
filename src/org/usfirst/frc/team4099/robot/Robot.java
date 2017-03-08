@@ -177,8 +177,8 @@ public class Robot extends IterativeRobot {
             mEnabledLooper.start(); // start EnabledLooper
             mDisabledLooper.stop(); // end DisabledLooper
             mDrive.zeroSensors();
-            mDrive.setAutonomousTurning();
-            mDrive.setAngleSetpoint(90);
+            mDrive.setAutonomousDriving();
+            mDrive.setForwardSetpoint(60);
             isTurning = true;
             LiveWindow.setEnabled(true);
             startLiveWindowMode();
@@ -193,7 +193,7 @@ public class Robot extends IterativeRobot {
         try {
             LiveWindow.run();
             if(isTurning) {
-                isTurning = !mDrive.turnAngle();
+                isTurning = !mDrive.goForward();
             } else {
                 mDrive.setOpenLoop(DriveSignal.NEUTRAL);
             }

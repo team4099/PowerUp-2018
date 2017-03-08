@@ -23,7 +23,7 @@ public class SmartDashboardInteractions {
     private static final String SELECTED_AUTO_MODE = "selected_auto_mode";
     private static final String SELECTED_AUTO_LANE = "selected_auto_lane";
 
-    private static final AutonOption DEFAULT_MODE = AutonOption.BASELINE;
+    private static final AutonOption DEFAULT_MODE = AutonOption.ONE_GEAR;
     private static final AutonLane DEFAULT_LANE = AutonLane.LEFT_LANE;
 
     public void initWithDefaults() {
@@ -75,13 +75,13 @@ public class SmartDashboardInteractions {
      */
     enum AutonOption {
         ONE_GEAR("One Gear"),
-        ONE_GEAR_AND_BACK_OUT("One Gear, Baseline"),
-        ONE_GEAR_AND_BACK_OUT_AND_TURN("One Gear, Baseline, Turn Around"),
+        ONE_GEAR_AND_BACK_OUT("One Gear, Back Out"),
+        ONE_GEAR_AND_BACK_OUT_AND_TURN("One Gear, Back Out, Turn Around"),
         TWO_GEAR("Two Gears"),
         TWO_GEAR_AND_BACK_OUT("Two Gears, Back Out"),
         TWO_GEAR_AND_BACK_OUT_AND_TURN("Two Gears, Back Out, Turn Around"),
-        BASELINE("Just Baseline"),
-        BASELINE_AND_TURN("Just Baseline, Turn Around"),
+        BASELINE("Baseline"),
+        BASELINE_AND_TURN("Baseline, Turn Around"),
         STAND_STILL("Stand Still"),
         TEST_DRIVE("TEST ONLY Driving");
 
@@ -93,7 +93,7 @@ public class SmartDashboardInteractions {
     }
 
     enum AutonLane {
-        LEFT_LANE(75, "1"), CENTER_LANE(60, "2"), RIGHT_LANE(75, "3");
+        LEFT_LANE(60, "1"), CENTER_LANE(60, "2"), RIGHT_LANE(75, "3");
 
         public final double distanceToDrive;
         public final String numberString;
@@ -106,11 +106,11 @@ public class SmartDashboardInteractions {
 
     private AutonomousInitParameters getAimingHintForLane(AutonLane lane) {
         if (lane == AutonLane.LEFT_LANE) {
-            return new AutonomousInitParameters(lane.distanceToDrive, Rotation2D.fromDegrees(30), -1);
+            return new AutonomousInitParameters(lane.distanceToDrive, Rotation2D.fromDegrees(60), -1);
         } else if (lane == AutonLane.CENTER_LANE) {
             return new AutonomousInitParameters(lane.distanceToDrive, Rotation2D.fromDegrees(0), -1);
         } else {/* if (lane == AutonLane.RIGHT_LANE) {*/
-            return new AutonomousInitParameters(lane.distanceToDrive, Rotation2D.fromDegrees(-30), -1);
+            return new AutonomousInitParameters(lane.distanceToDrive, Rotation2D.fromDegrees(-60), -1);
         }
     }
 

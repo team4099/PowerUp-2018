@@ -59,9 +59,13 @@ public class OneGearMode extends AutoModeBase {
             }
         } else {
             runAction(new TurnAction(initialTurn)); // turn towards air ship
+            System.out.println("Finished initial turn");
             try {
                 LiftVision liftVision = Utils.getLiftLocation();
+                System.out.println("Vision Turn: " + liftVision.getTurnAngle());
+                System.out.println("Vision distance: " + liftVision.getDistance());
                 runAction(new TurnAction(liftVision.getTurnAngle()));
+                System.out.println("Finish vision turn");
                 runAction(new ForwardAction(liftVision.getDistance()));
                 runAction(new SetIntakeAction(Intake.IntakePosition.UP_AND_OPEN));
                 runAction(new WaitAction(Constants.Autonomous.WAIT_TIME_ON_LIFT));
@@ -72,6 +76,7 @@ public class OneGearMode extends AutoModeBase {
 
             } catch (FileNotFoundException e) {
                 System.out.println("Couldn't find lift... fix ur vision");
+                runAction(new ForwardAction(20));
             }
             if(backOut){
                 // back out and go past airship

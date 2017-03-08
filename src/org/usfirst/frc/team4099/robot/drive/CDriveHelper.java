@@ -39,6 +39,9 @@ public class CDriveHelper {
         //TODO: because it used to come after the negativeInertia code
         wheel = -JoystickUtils.deadbandNoShape(wheel, kWheelDeadband);
 
+        if (isQuickTurn)
+            wheel = wheel / 1.75;
+
         //TODO: test this, does it really make controls feel better?
         double wheelNonLinearity = 0.5;
         wheel = Math.sin(Math.PI / 2.0 * wheelNonLinearity * wheel) / Math.sin(Math.PI / 2.0 * wheelNonLinearity);

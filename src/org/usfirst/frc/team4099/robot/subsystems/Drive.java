@@ -2,7 +2,6 @@ package org.usfirst.frc.team4099.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.*;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team4099.lib.drive.DriveSignal;
 import org.usfirst.frc.team4099.lib.drive.PIDOutputReceiver;
@@ -48,7 +47,7 @@ public class Drive implements Subsystem {
 
         ahrs = new AHRS(SPI.Port.kMXP);
 
-        leftEncoder = new Encoder(Constants.Drive.LEFT_ENCODER_A, Constants.Drive.LEFT_ENCODER_B, false, Encoder.EncodingType.k4X);
+        leftEncoder = new Encoder(Constants.Drive.LEFT_ENCODER_A, Constants.Drive.LEFT_ENCODER_B, true, Encoder.EncodingType.k4X);
         leftEncoder.setSamplesToAverage(Constants.Drive.ENCODER_SAMPLES_TO_AVERAGE);
         leftEncoder.setDistancePerPulse(Constants.Drive.LEFT_ENCODER_INCHES_PER_PULSE);
 
@@ -65,15 +64,19 @@ public class Drive implements Subsystem {
 
         leftReceiver = new PIDOutputReceiver();
         leftController = new PIDController(Constants.Gains.FORWARD_P, Constants.Gains.FORWARD_I, Constants.Gains.FORWARD_D, Constants.Gains.FORWARD_F, leftEncoder, leftReceiver);
+        leftController.setInputRange(-200, 200);
         leftController.setOutputRange(-Constants.Drive.AUTO_FORWARD_MAX_POWER, Constants.Drive.AUTO_FORWARD_MAX_POWER);
         leftController.setAbsoluteTolerance(Constants.Drive.FORWARD_TOLERANCE_INCHES);
         leftController.setContinuous(false);
 
         rightReceiver = new PIDOutputReceiver();
         rightController = new PIDController(Constants.Gains.FORWARD_P, Constants.Gains.FORWARD_I, Constants.Gains.FORWARD_D, Constants.Gains.FORWARD_F, rightEncoder, rightReceiver);
+        rightController.setInputRange(-200, 200);
         rightController.setOutputRange(-Constants.Drive.AUTO_FORWARD_MAX_POWER, Constants.Drive.AUTO_FORWARD_MAX_POWER);
         rightController.setAbsoluteTolerance(Constants.Drive.FORWARD_TOLERANCE_INCHES);
         rightController.setContinuous(false);
+
+        this.zeroSensors();
     }
 
     public static Drive getInstance() { // singleton
@@ -98,19 +101,23 @@ public class Drive implements Subsystem {
         SmartDashboard.putNumber("rightTalon", rightFrontTalonSR.get());
         SmartDashboard.putNumber("leftEncoder", leftEncoder.getDistance());
         SmartDashboard.putNumber("rightEncoder", rightEncoder.getDistance());
+        SmartDashboard.putNumber("leftEncoderRaw", leftEncoder.get());
+        SmartDashboard.putNumber("rightEncoderRaw", rightEncoder.get());
     }
 
     public void startLiveWindowMode() {
-        LiveWindow.addActuator("Drive", "turnController", turnController);
-        LiveWindow.addActuator("Drive", "leftController", leftController);
-        LiveWindow.addActuator("Drive", "rightController", rightController);
-        LiveWindow.addSensor("Drive", "Gyro", ahrs);
-        LiveWindow.addSensor("Drive", "leftEncoder", leftEncoder);
-        LiveWindow.addSensor("Drive", "rightEncoder", rightEncoder);
-        leftEncoder.startLiveWindowMode();
-        rightEncoder.startLiveWindowMode();
-        leftController.startLiveWindowMode();
-        rightController.startLiveWindowMode();
+//        System.out.println("do a potato");
+//        LiveWindow.addActuator("Drive", "turnController", turnController);
+//        LiveWindow.addActuator("Drive", "leftController", leftController);
+//        LiveWindow.addActuator("Drive", "rightController", rightController);
+//        LiveWindow.addSensor("Drive", "Gyro", ahrs);
+//        LiveWindow.addSensor("Drive", "leftEncoder", leftEncoder);
+//        LiveWindow.addSensor("Drive", "rightEncoder", rightEncoder);
+//        leftEncoder.startLiveWindowMode();
+//        rightEncoder.startLiveWindowMode();
+//        leftController.startLiveWindowMode();
+//        rightController.startLiveWindowMode();
+
     }
 
     public void stopLiveWindowMode() {
@@ -121,10 +128,10 @@ public class Drive implements Subsystem {
     }
 
     public void updateLiveWindowTables() {
-        leftEncoder.updateTable();
-        rightEncoder.updateTable();
-        leftController.updateTable();
-        rightController.updateTable();
+//        leftEncoder.updateTable();
+//        rightEncoder.updateTable();
+//        leftController.updateTable();
+//        rightController.updateTable();
     }
 
     @Override
@@ -147,6 +154,7 @@ public class Drive implements Subsystem {
      * @param right
      */
     private synchronized void setLeftRightPower(double left, double right) {
+//        System.out.println("Left: " + left + "Right: " + right);
         leftFrontTalonSR.set(-left);
         leftBackTalonSR.set(-left);
         rightFrontTalonSR.set(right);
@@ -178,14 +186,17 @@ public class Drive implements Subsystem {
     }
 
     public boolean goForward() {
-        System.out.println("Moving rate of right: " + rightReceiver.getOutput() + " Distance: " + rightEncoder.getDistance() + " Time: " + Timer.getFPGATimestamp());
-        System.out.println("Moving rate of left: " + leftReceiver.getOutput() + " Distance: " + leftEncoder.getDistance() + " Time: " + Timer.getFPGATimestamp());
+//        System.out.println("Moving rate of right: " + rightReceiver.getOutput() + " Distance: " + rightEncoder.pidGet() + " Time: " + Timer.getFPGATimestamp());
+//        System.out.println("Moving rate of left: " + leftReceiver.getOutput() + " Distance: " + leftEncoder.pidGet() + " Time: " + Timer.getFPGATimestamp());
+//        System.out.println("Left Setpoint: " + leftController.getSetpoint());
+//        System.out.println("Right Setpoint: " + rightController.getSetpoint());
+
 //        double leftError = Math.abs(leftController.getSetpoint())
 //        lastForwardErrors.add(Math.abs(left))
-        if(leftController.onTarget() || rightController.onTarget() || currentState != DriveControlState.AUTONOMOUS_DRIVING){
+        if(leftController.onTarget() || currentState != DriveControlState.AUTONOMOUS_DRIVING){
             return true;
         }
-        setLeftRightPower(leftReceiver.getOutput(), rightReceiver.getOutput());
+        setLeftRightPower(-leftReceiver.getOutput(), -leftReceiver.getOutput() - rightReceiver.getOutput() * .15);
         return false;
     }
 

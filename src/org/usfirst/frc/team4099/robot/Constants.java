@@ -21,13 +21,13 @@ public class Constants {
         public static final int LEFT_BACK_ID = 3;
         public static final int RIGHT_BACK_ID = 1;
 
-        public static final int LEFT_ENCODER_A = 0;
-        public static final int LEFT_ENCODER_B = 1;
-        public static final int RIGHT_ENCODER_A = 2;
-        public static final int RIGHT_ENCODER_B = 3;
+        public static final int LEFT_ENCODER_A = 2;
+        public static final int LEFT_ENCODER_B = 3;
+        public static final int RIGHT_ENCODER_A = 0;
+        public static final int RIGHT_ENCODER_B = 1;
 
-        public static final double LEFT_ENCODER_INCHES_PER_PULSE = 1;
-        public static final double RIGHT_ENCODER_INCHES_PER_PULSE = 1;
+        public static final double LEFT_ENCODER_INCHES_PER_PULSE = 0.0942408377;
+        public static final double RIGHT_ENCODER_INCHES_PER_PULSE = 0.08612440191;
 
         public static final double TURN_TOLERANCE_DEGREES = 2;
         public static final double FORWARD_TOLERANCE_INCHES = 3;
@@ -61,6 +61,8 @@ public class Constants {
 
     public class Autonomous {
         public static final String UDOO_ADDRESS = "http://10.40.99.10/";
+        public static final int CONNECTION_TIMEOUT_MILLIS = 1000;
+        public static final int NUMBER_OF_TRIES = 5;
 
         public static final double BACK_OUT_INCHES = -40;
         public static final double AIRSHIP_WIDTH_INCHES = 100;

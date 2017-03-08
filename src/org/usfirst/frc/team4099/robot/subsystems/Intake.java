@@ -79,9 +79,9 @@ public class Intake implements Subsystem {
                 this.upTime = Timer.getFPGATimestamp();
                 intakePosition = IntakePosition.UP_AND_CLOSED;
             } else if(intakePosition.equals(IntakePosition.UP_AND_CLOSED)){
-                intakePosition = IntakePosition.DOWN_AND_OPEN;
-            } else {
                 intakePosition = IntakePosition.UP_AND_OPEN;
+            } else if(intakePosition.equals(IntakePosition.UP_AND_OPEN)){
+                intakePosition = IntakePosition.DOWN_AND_OPEN;
             }
         }
 
@@ -110,10 +110,12 @@ public class Intake implements Subsystem {
                 break;
             case UP_AND_OPEN:
                 gearGrabber.set(DoubleSolenoid.Value.kForward);
+                upAndDown.set(DoubleSolenoid.Value.kReverse);
                 upTime = -1;
                 break;
             case DOWN_AND_OPEN:
                 upAndDown.set(DoubleSolenoid.Value.kForward);
+                gearGrabber.set(DoubleSolenoid.Value.kForward);
                 upTime = -1;
                 break;
         }

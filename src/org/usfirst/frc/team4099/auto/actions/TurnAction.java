@@ -22,10 +22,10 @@ public class TurnAction implements Action {
         this.mDrive = Drive.getInstance();
         this.degreesToTurn = degreesToTurn.getDegrees();
         this.isDone = false;
-        if(absolutePosition) {
+        if(!absolutePosition) {
             finishAngle = this.degreesToTurn;
         } else {
-            finishAngle = Math.IEEEremainder(mDrive.getAHRS().getYaw() + this.degreesToTurn, 360);
+            finishAngle = (180 + mDrive.getAHRS().getYaw() + this.degreesToTurn) % 360 - 180;
         }
     }
 
@@ -37,6 +37,7 @@ public class TurnAction implements Action {
     @Override
     public void update() {
         isDone = mDrive.turnAngle();
+        System.out.println("Still turning "  + isDone);
     }
 
     @Override
