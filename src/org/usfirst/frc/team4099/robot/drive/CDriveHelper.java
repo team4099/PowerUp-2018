@@ -76,12 +76,17 @@ public class CDriveHelper {
         SmartDashboard.putNumber("joystickThrottle", throttle);
         lastThrottle = throttle;
 
-        if (Utils.around(wheel, 0.0, 0.15)) { // if moving straight
-            double beta = 0.1;
+//        if (Utils.around(wheel, 0.0, 0.15)) { // if moving straight
+//            double beta = 0.1;
+//
+//            negativeInertia = (1 - beta) * negativeInertia +
+//                    beta * Utils.limit(throttle, 1.0) * 2;
+//        }
 
-            negativeInertia = (1 - beta) * negativeInertia +
+        double beta = 0.1;
+
+        negativeInertia = (1 - beta) * negativeInertia +
                     beta * Utils.limit(throttle, 1.0) * 2;
-        }
 
         if (Utils.around(throttle, 0.0, 0.075)) { // if wanting to brake (low throttle)
             if (!Utils.around(negativeInertia, 0.0, 0.0001))
@@ -92,9 +97,9 @@ public class CDriveHelper {
             //TODO: find the optimal value for negativeInertia decrease per iteration
             //TODO: testing 0.1, 0.15, 0.2, 0.25, 0.3, 0.5, 1.0, etc.
             if (negativeInertia > 1) {
-                negativeInertia -= 0.1;
+                negativeInertia -= 0.2;
             } else if (negativeInertia < -1) {
-                negativeInertia += 0.1;
+                negativeInertia += 0.2;
             } else {
                 negativeInertia = 0.0;
             }
@@ -106,6 +111,8 @@ public class CDriveHelper {
         double angularPower;
 
         if (isQuickTurn) {
+
+            wheel /= 1.75;
             if (Math.abs(throttle) < 0.2) {
                 double alpha = 0.1;
                 mQuickStopAccumulator = (1 - alpha) * mQuickStopAccumulator + // used for "negative inertia"
@@ -118,9 +125,9 @@ public class CDriveHelper {
             angularPower = Math.abs(throttle) * wheel * kTurnSensitivity - mQuickStopAccumulator;
 
             if (mQuickStopAccumulator > 1) {
-                mQuickStopAccumulator -= 1.0;
+                mQuickStopAccumulator -= 0.5;
             } else if (mQuickStopAccumulator < -1) {
-                mQuickStopAccumulator += 1.0;
+                mQuickStopAccumulator += 0.5;
             } else {
                 mQuickStopAccumulator = 0.0;
             }

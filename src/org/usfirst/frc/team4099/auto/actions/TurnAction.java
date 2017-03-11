@@ -10,7 +10,6 @@ import org.usfirst.frc.team4099.robot.subsystems.Drive;
 public class TurnAction implements Action {
 
     private Drive mDrive;
-    private double degreesToTurn;
     private boolean isDone;
     private double finishAngle;
 
@@ -20,12 +19,11 @@ public class TurnAction implements Action {
 
     public TurnAction(Rotation2D degreesToTurn, boolean absolutePosition) {
         this.mDrive = Drive.getInstance();
-        this.degreesToTurn = degreesToTurn.getDegrees();
         this.isDone = false;
         if(!absolutePosition) {
-            finishAngle = this.degreesToTurn;
+            finishAngle = degreesToTurn.getDegrees();
         } else {
-            finishAngle = (180 + mDrive.getAHRS().getYaw() + this.degreesToTurn) % 360 - 180;
+            finishAngle = (180 - mDrive.getAHRS().getYaw() + degreesToTurn.getDegrees()) % 360 - 180;
         }
     }
 
