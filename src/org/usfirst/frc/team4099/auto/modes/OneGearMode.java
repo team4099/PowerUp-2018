@@ -5,22 +5,17 @@ import org.usfirst.frc.team4099.auto.AutoModeEndedException;
 import org.usfirst.frc.team4099.auto.actions.ForwardAction;
 import org.usfirst.frc.team4099.auto.actions.SetIntakeAction;
 import org.usfirst.frc.team4099.auto.actions.TurnAction;
-import org.usfirst.frc.team4099.auto.actions.WaitAction;
 import org.usfirst.frc.team4099.lib.util.AutonomousInitParameters;
-import org.usfirst.frc.team4099.lib.util.LiftVision;
 import org.usfirst.frc.team4099.lib.util.Rotation2D;
-import org.usfirst.frc.team4099.lib.util.Utils;
 import org.usfirst.frc.team4099.robot.Constants;
 import org.usfirst.frc.team4099.robot.subsystems.Intake;
-
-import java.io.FileNotFoundException;
 
 /**
  * Created by plato2000 on 2/13/17.
  */
 public class OneGearMode extends AutoModeBase {
 
-    private final double initialForwardDistance;
+    private final double initialForwardSeconds;
     private final Rotation2D initialTurn;
     private final boolean backOut;
     private final boolean turnAround;
@@ -29,18 +24,19 @@ public class OneGearMode extends AutoModeBase {
     public OneGearMode(AutonomousInitParameters initParameters, boolean backOut, boolean turnAround) {
         this.backOut = backOut;
         this.turnAround = turnAround;
-        this.initialForwardDistance = initParameters.getDistanceInMeters();
+        this.initialForwardSeconds = initParameters.getInitalForwardSeconds();
         this.initialTurn = initParameters.getTurnAngle();
     }
 
     @Override
     protected void routine() throws AutoModeEndedException {
-        runAction(new ForwardAction(initialForwardDistance));
+        runAction(new ForwardAction(initialForwardSeconds));
         // If in center lane (already lined up with peg - don't use vision here
         // TODO: check if using vision is necessary in center lane
+        System.out.println("initialTurn " + initialTurn.getDegrees());
         if(initialTurn.getDegrees() == 0) {
-            runAction(new SetIntakeAction(Intake.IntakePosition.UP_AND_OPEN));
-            runAction(new WaitAction(1));
+            runAction(new SetIntakeAction(Intake.IntakePosition.DOWN_AND_OPEN));
+            runAction(new ForwardAction(-1));
 
             if(backOut) {
                 runAction(new ForwardAction(Constants.Autonomous.BACK_OUT_INCHES));
@@ -60,24 +56,25 @@ public class OneGearMode extends AutoModeBase {
         } else {
             runAction(new TurnAction(initialTurn)); // turn towards air ship
             System.out.println("Finished initial turn");
-            try {
-                LiftVision liftVision = Utils.getLiftLocation();
-                System.out.println("Vision Turn: " + liftVision.getTurnAngle());
-                System.out.println("Vision distance: " + liftVision.getDistance());
-                runAction(new TurnAction(liftVision.getTurnAngle()));
-                System.out.println("Finish vision turn");
-                runAction(new ForwardAction(liftVision.getDistance()));
-                runAction(new SetIntakeAction(Intake.IntakePosition.UP_AND_OPEN));
-                runAction(new WaitAction(Constants.Autonomous.WAIT_TIME_ON_LIFT));
-                if(backOut) {
-                    runAction(new ForwardAction(Constants.Autonomous.BACK_OUT_INCHES));
-                    runAction(new TurnAction(liftVision.getTurnAngle().inverse()));
-                }
-
-            } catch (FileNotFoundException e) {
-                System.out.println("Couldn't find lift... fix ur vision");
-                runAction(new ForwardAction(20));
-            }
+//            try {
+//                LiftVision liftVision = Utils.getLiftLocation();
+//                System.out.println("Vision Turn: " + liftVision.getTurnAngle());
+//                System.out.println("Vision distance: " + liftVision.getDistance());
+//                runAction(new TurnAction(liftVision.getTurnAngle()));
+//                System.out.println("Finish vision turn");
+//                runAction(new SetIntakeAction(Intake.IntakePosition.DOWN_AND_OPEN));
+//                runAction(new ForwardAction(-2));
+//                if(backOut) {
+//                    runAction(new ForwardAction(Constants.Autonomous.BACK_OUT_INCHES));
+//                    runAction(new TurnAction(liftVision.getTurnAngle().inverse()));
+//                }
+//
+//            } catch (FileNotFoundException e) {
+            System.out.println("Couldn't find lift... fix ur vision");
+            runAction(new ForwardAction(4, true));
+            runAction(new SetIntakeAction(Intake.IntakePosition.DOWN_AND_OPEN));
+            runAction(new ForwardAction(-1));
+//            }
             if(backOut){
                 // back out and go past airship
                 runAction(new TurnAction(initialTurn.inverse()));

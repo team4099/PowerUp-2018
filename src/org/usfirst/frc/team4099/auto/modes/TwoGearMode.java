@@ -28,7 +28,7 @@ public class TwoGearMode extends OneGearMode {
         this.backOut = backOut;
         this.initialTurn = initParameters.getTurnAngle();
         this.turnAround = turnAround;
-        this.initialForward = initParameters.getDistanceInMeters();
+        this.initialForward = initParameters.getInitalForwardSeconds();
     }
 
     @Override

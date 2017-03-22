@@ -16,13 +16,14 @@ public class BaselineMode extends AutoModeBase {
 
     public BaselineMode(AutonomousInitParameters initParameters, boolean turnAround) {
         this.turnAround = turnAround;
-        this.initialForwardDistance = initParameters.getDistanceInMeters();
+        this.initialForwardDistance = initParameters.getInitalForwardSeconds();
         this.turningAngle = initParameters.getTurnAngle().getDegrees();
     }
 
     @Override
     protected void routine() throws AutoModeEndedException {
         runAction(new ForwardAction(initialForwardDistance));
+//        runAction(new TurnAction(Rotation2D.fromDegrees(60)));
     }
 
 

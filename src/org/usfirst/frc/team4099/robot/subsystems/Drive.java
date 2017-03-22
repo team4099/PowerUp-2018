@@ -228,9 +228,38 @@ public class Drive implements Subsystem {
     }
 
     public void finishTurn() {
+        System.out.println("Finished turn");
         turnController.disable();
         setOpenLoop(DriveSignal.NEUTRAL);
     }
+
+    public void arcadeDrive(double outputMagnitude, double curve) {
+        final double leftOutput;
+        final double rightOutput;
+
+        if (curve < 0) {
+            double value = Math.log(-curve);
+            double ratio = (value - .5) / (value + .5);
+            if (ratio == 0) {
+                ratio = .0000000001;
+            }
+            leftOutput = outputMagnitude / ratio;
+            rightOutput = outputMagnitude;
+        } else if (curve > 0) {
+            double value = Math.log(curve);
+            double ratio = (value - .5) / (value + .5);
+            if (ratio == 0) {
+                ratio = .0000000001;
+            }
+            leftOutput = outputMagnitude;
+            rightOutput = outputMagnitude / ratio;
+        } else {
+            leftOutput = outputMagnitude;
+            rightOutput = outputMagnitude;
+        }
+        setLeftRightPower(leftOutput, rightOutput);
+    }
+
 
     public Loop getLoop() {
         return mLoop;

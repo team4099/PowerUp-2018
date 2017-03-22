@@ -93,7 +93,7 @@ public class SmartDashboardInteractions {
     }
 
     enum AutonLane {
-        LEFT_LANE(60, "1"), CENTER_LANE(60, "2"), RIGHT_LANE(75, "3");
+        LEFT_LANE(2.25, "1"), CENTER_LANE(3, "2"), RIGHT_LANE(2.25, "3");
 
         public final double distanceToDrive;
         public final String numberString;

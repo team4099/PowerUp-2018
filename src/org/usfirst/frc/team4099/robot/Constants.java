@@ -33,9 +33,13 @@ public class Constants {
         public static final double FORWARD_TOLERANCE_INCHES = 3;
 
         public static final double AUTO_TURN_MAX_POWER = .35;
-        public static final double AUTO_FORWARD_MAX_POWER = .5;
+        public static final double AUTO_FORWARD_MAX_POWER = .35;
+
+        public static final double AUTO_FORWARD_SLOW_POWER = .25;
 
         public static final int ENCODER_SAMPLES_TO_AVERAGE = 10;
+
+        public static final double FORWARD_KP = 0.07;
 
     }
 

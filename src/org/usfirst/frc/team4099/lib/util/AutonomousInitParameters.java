@@ -14,7 +14,7 @@ public class AutonomousInitParameters {
         this.trackID = trackID;
     }
 
-    public double getDistanceInMeters() {
+    public double getInitalForwardSeconds() {
         return distanceInMeters;
     }
 

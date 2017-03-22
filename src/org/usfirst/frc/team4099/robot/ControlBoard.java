@@ -1,19 +1,20 @@
 package org.usfirst.frc.team4099.robot;
 
+import org.usfirst.frc.team4099.lib.joystick.DualShock4Gamepad;
 import org.usfirst.frc.team4099.lib.joystick.JoystickUtils;
-import org.usfirst.frc.team4099.lib.joystick.XboxOneGamepad;
 
 public class ControlBoard {
     private static ControlBoard sInstance = new ControlBoard();
     public static ControlBoard getInstance() {
         return sInstance;
     }
-    private final XboxOneGamepad driver;
-    private final XboxOneGamepad operator;
+    private final DualShock4Gamepad driver;
+//    private final XboxOneGamepad operator;
 
     private ControlBoard() {
-        driver = new XboxOneGamepad(Constants.Joysticks.DRIVER_PORT);
-        operator = new XboxOneGamepad(Constants.Joysticks.SHOTGUN_PORT);
+//        driver = new XboxOneGamepad(Constants.Joysticks.DRIVER_PORT);
+        driver = new DualShock4Gamepad(Constants.Joysticks.DRIVER_PORT);
+//        operator = new XboxOneGamepad(Constants.Joysticks.SHOTGUN_PORT);
     }
 
     public double getThrottle() {
@@ -25,7 +26,7 @@ public class ControlBoard {
     }
 
     /**
-     * Should the bot drive in quick turn mode?
+     * Should the bot arcadeDrive in quick turn mode?
      * @return  true/false, depending on if the joystick is depressed
      */
     public boolean getQuickTurn() {
@@ -34,23 +35,23 @@ public class ControlBoard {
     }
 
     public boolean getIntakeUp() {
-        return operator.getDPadUp();
+        return driver.getDPadUp();
     }
 
     public boolean getIntakeDown() {
-        return operator.getDPadDown();
+        return driver.getDPadDown();
     }
 
     public boolean getToggleIntake() {
-        return operator.getAButton();
+        return driver.getAButton();
     }
 
     public boolean getClimber() {
-        return operator.getYButton();
+        return driver.getYButton();
     }
 
     public boolean getToggleIntakeClosed() {
-        return operator.getDPadRight();
+        return driver.getDPadRight();
     }
 
 }
