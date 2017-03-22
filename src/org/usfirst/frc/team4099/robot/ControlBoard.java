@@ -25,6 +25,10 @@ public class ControlBoard {
         return driver.getLeftXAxis();
     }
 
+    public boolean getToggleSlowMode() {
+        return driver.getAButton();
+    }
+
     /**
      * Should the bot arcadeDrive in quick turn mode?
      * @return  true/false, depending on if the joystick is depressed

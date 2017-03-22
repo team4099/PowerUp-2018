@@ -37,6 +37,8 @@ public class Robot extends IterativeRobot {
 
     private boolean lastToggleIntakeClosed = false;
 
+    private double slowFactor = 1;
+
     public Robot() {
         CrashTracker.logRobotConstruction();
     }
@@ -150,13 +152,19 @@ public class Robot extends IterativeRobot {
             boolean toggleIntakeClosed = mControls.getToggleIntakeClosed();
             boolean setIntakeUp = mControls.getIntakeUp();
             boolean setIntakeDown = mControls.getIntakeDown();
+            boolean toggleSlowMode = mControls.getToggleSlowMode();
 
             boolean climbing = mControls.getClimber();
 
             SmartDashboard.putBoolean("isQuickTurn", isQuickTurn);
             SmartDashboard.putNumber("voltage", VoltageEstimator.getInstance().getAverageVoltage());
 
-            mDrive.setOpenLoop(mCDriveHelper.curvatureDrive(throttle, turn, isQuickTurn));
+            if (setIntakeDown)
+                slowFactor = 0.5;
+            else if (toggleSlowMode)
+                slowFactor = 1.5 - slowFactor;
+
+            mDrive.setOpenLoop(mCDriveHelper.curvatureDrive(throttle * slowFactor, turn * slowFactor, isQuickTurn));
 
             mIntake.updateIntake(toggleIntake);
             if(toggleIntakeClosed && !lastToggleIntakeClosed) {
