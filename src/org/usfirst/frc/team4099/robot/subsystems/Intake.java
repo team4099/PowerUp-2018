@@ -106,7 +106,7 @@ public class Intake implements Subsystem {
                     upTime = Timer.getFPGATimestamp();
                 }
                 gearGrabber.set(DoubleSolenoid.Value.kReverse);
-                if(Timer.getFPGATimestamp() - upTime > .2) {
+                if(Timer.getFPGATimestamp() - upTime > .4) {
                     upAndDown.set(DoubleSolenoid.Value.kReverse);
                 }
                 break;

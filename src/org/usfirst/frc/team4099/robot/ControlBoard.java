@@ -2,19 +2,20 @@ package org.usfirst.frc.team4099.robot;
 
 import org.usfirst.frc.team4099.lib.joystick.DualShock4Gamepad;
 import org.usfirst.frc.team4099.lib.joystick.JoystickUtils;
+import org.usfirst.frc.team4099.lib.joystick.XboxOneGamepad;
 
 public class ControlBoard {
     private static ControlBoard sInstance = new ControlBoard();
     public static ControlBoard getInstance() {
         return sInstance;
     }
-    private final DualShock4Gamepad driver;
-//    private final XboxOneGamepad operator;
+    private final XboxOneGamepad driver;
+    private final DualShock4Gamepad operator;
 
     private ControlBoard() {
-//        driver = new XboxOneGamepad(Constants.Joysticks.DRIVER_PORT);
-        driver = new DualShock4Gamepad(Constants.Joysticks.DRIVER_PORT);
-//        operator = new XboxOneGamepad(Constants.Joysticks.SHOTGUN_PORT);
+        driver = new XboxOneGamepad(Constants.Joysticks.DRIVER_PORT);
+//        driver = new DualShock4Gamepad(Constants.Joysticks.DRIVER_PORT);
+        operator = new DualShock4Gamepad(Constants.Joysticks.SHOTGUN_PORT);
     }
 
     public double getThrottle() {
@@ -39,23 +40,23 @@ public class ControlBoard {
     }
 
     public boolean getIntakeUp() {
-        return driver.getDPadUp();
+        return operator.getDPadUp();
     }
 
     public boolean getIntakeDown() {
-        return driver.getDPadDown();
+        return operator.getDPadDown();
     }
 
     public boolean getToggleIntake() {
-        return driver.getAButton();
+        return operator.getAButton();
     }
 
     public boolean getClimber() {
-        return driver.getYButton();
+        return operator.getYButton();
     }
 
     public boolean getToggleIntakeClosed() {
-        return driver.getDPadRight();
+        return operator.getDPadRight();
     }
 
 }

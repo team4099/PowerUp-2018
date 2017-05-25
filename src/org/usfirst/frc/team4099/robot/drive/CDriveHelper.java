@@ -40,7 +40,7 @@ public class CDriveHelper {
         wheel = -JoystickUtils.deadbandNoShape(wheel, kWheelDeadband);
 
         if (isQuickTurn)
-            wheel = wheel / 1.75;
+            wheel = wheel / 1.55;
 
         //TODO: test this, does it really make controls feel better?
         double wheelNonLinearity = 0.5;

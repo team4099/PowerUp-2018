@@ -24,7 +24,7 @@ public class SmartDashboardInteractions {
     private static final String SELECTED_AUTO_LANE = "selected_auto_lane";
 
     private static final AutonOption DEFAULT_MODE = AutonOption.ONE_GEAR;
-    private static final AutonLane DEFAULT_LANE = AutonLane.LEFT_LANE;
+    private static final AutonLane DEFAULT_LANE = AutonLane.CENTER_LANE;
 
     public void initWithDefaults() {
         SmartDashboard.putBoolean(HOOD_TUNING_MODE, false);
@@ -93,7 +93,7 @@ public class SmartDashboardInteractions {
     }
 
     enum AutonLane {
-        LEFT_LANE(2.25, "1"), CENTER_LANE(3, "2"), RIGHT_LANE(2.25, "3");
+        LEFT_LANE(2.5, "1"), CENTER_LANE(6, "2"), RIGHT_LANE(2.25, "3");
 
         public final double distanceToDrive;
         public final String numberString;

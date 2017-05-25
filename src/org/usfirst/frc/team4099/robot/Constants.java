@@ -32,7 +32,7 @@ public class Constants {
         public static final double TURN_TOLERANCE_DEGREES = 2;
         public static final double FORWARD_TOLERANCE_INCHES = 3;
 
-        public static final double AUTO_TURN_MAX_POWER = .35;
+        public static final double AUTO_TURN_MAX_POWER = .45;
         public static final double AUTO_FORWARD_MAX_POWER = .35;
 
         public static final double AUTO_FORWARD_SLOW_POWER = .25;
@@ -64,7 +64,7 @@ public class Constants {
     }
 
     public class Autonomous {
-        public static final String UDOO_ADDRESS = "http://10.40.99.10/";
+        public static final String UDOO_ADDRESS = "http://10.40.99.10:5800/";
         public static final int CONNECTION_TIMEOUT_MILLIS = 1000;
         public static final int NUMBER_OF_TRIES = 5;
 

@@ -1,5 +1,6 @@
 package org.usfirst.frc.team4099.robot.subsystems;
 
+import com.ctre.CANTalon;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -11,10 +12,7 @@ import org.usfirst.frc.team4099.robot.loops.Loop;
 public class Drive implements Subsystem {
 
     private static Drive sInstance = new Drive();
-    private Talon leftFrontTalonSR,
-                  leftBackTalonSR,
-                  rightFrontTalonSR,
-                  rightBackTalonSR;
+    private CANSpeedController leftFrontSRX, leftBackSRX, rightFrontSRX, rightBackSRX;
     private AHRS ahrs;
     private DriveControlState currentState = DriveControlState.OPEN_LOOP;
 
@@ -39,11 +37,11 @@ public class Drive implements Subsystem {
 //    private LimitedQueue<Double> lastForwardErrors = new LimitedQueue<>(10);
 
     private Drive() {
-        leftFrontTalonSR = new Talon(Constants.Drive.LEFT_FRONT_ID);
-        leftBackTalonSR = new Talon(Constants.Drive.LEFT_BACK_ID);
+        leftFrontSRX = new CANTalon(Constants.Drive.LEFT_FRONT_ID);
+        leftBackSRX = new CANTalon(Constants.Drive.LEFT_BACK_ID);
 
-        rightFrontTalonSR = new Talon(Constants.Drive.RIGHT_FRONT_ID);
-        rightBackTalonSR = new Talon(Constants.Drive.RIGHT_BACK_ID);
+        rightFrontSRX = new CANTalon(Constants.Drive.RIGHT_FRONT_ID);
+        rightBackSRX = new CANTalon(Constants.Drive.RIGHT_BACK_ID);
 
         ahrs = new AHRS(SPI.Port.kMXP);
 
@@ -97,8 +95,8 @@ public class Drive implements Subsystem {
         else {
             SmartDashboard.putNumber("gyro", -31337);
         }
-        SmartDashboard.putNumber("leftTalon", leftFrontTalonSR.get());
-        SmartDashboard.putNumber("rightTalon", rightFrontTalonSR.get());
+        SmartDashboard.putNumber("leftTalon", leftFrontSRX.get());
+        SmartDashboard.putNumber("rightTalon", rightFrontSRX.get());
         SmartDashboard.putNumber("leftEncoder", leftEncoder.getDistance());
         SmartDashboard.putNumber("rightEncoder", rightEncoder.getDistance());
         SmartDashboard.putNumber("leftEncoderRaw", leftEncoder.get());
@@ -155,10 +153,10 @@ public class Drive implements Subsystem {
      */
     private synchronized void setLeftRightPower(double left, double right) {
 //        System.out.println("Left: " + left + "Right: " + right);
-        leftFrontTalonSR.set(-left);
-        leftBackTalonSR.set(-left);
-        rightFrontTalonSR.set(right);
-        rightBackTalonSR.set(right);
+        leftFrontSRX.set(-left);
+        leftBackSRX.set(-left);
+        rightFrontSRX.set(right);
+        rightBackSRX.set(right);
     }
 
     public synchronized void setOpenLoop(DriveSignal signal) {

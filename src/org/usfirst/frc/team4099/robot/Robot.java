@@ -92,6 +92,7 @@ public class Robot extends IterativeRobot {
             mDisabledLooper.stop(); // end DisabledLooper
             mEnabledLooper.start(); // start EnabledLooper
             mDrive.zeroSensors();
+            mDrive.getAHRS().zeroYaw();
 
             mAutoModeExecuter = new AutoModeExecuter();
             mAutoModeExecuter.setAutoMode(mSmartDashboardInteractions.getSelectedAutonMode());
@@ -152,19 +153,17 @@ public class Robot extends IterativeRobot {
             boolean toggleIntakeClosed = mControls.getToggleIntakeClosed();
             boolean setIntakeUp = mControls.getIntakeUp();
             boolean setIntakeDown = mControls.getIntakeDown();
-            boolean toggleSlowMode = mControls.getToggleSlowMode();
+//            boolean toggleSlowMode = mControls.getToggleSlowMode();
 
             boolean climbing = mControls.getClimber();
 
             SmartDashboard.putBoolean("isQuickTurn", isQuickTurn);
             SmartDashboard.putNumber("voltage", VoltageEstimator.getInstance().getAverageVoltage());
 
-            if (setIntakeDown)
-                slowFactor = 0.5;
-            else if (toggleSlowMode)
-                slowFactor = 1.5 - slowFactor;
+//            if (toggleSlowMode)
+//                slowFactor = 1.5 - slowFactor;
 
-            mDrive.setOpenLoop(mCDriveHelper.curvatureDrive(throttle * slowFactor, turn * slowFactor, isQuickTurn));
+            mDrive.setOpenLoop(mCDriveHelper.curvatureDrive(throttle, turn, isQuickTurn));
 
             mIntake.updateIntake(toggleIntake);
             if(toggleIntakeClosed && !lastToggleIntakeClosed) {

@@ -1,10 +1,10 @@
 package org.usfirst.frc.team4099.auto.modes;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import org.usfirst.frc.team4099.auto.AutoModeEndedException;
 import org.usfirst.frc.team4099.auto.actions.ForwardAction;
 import org.usfirst.frc.team4099.auto.actions.SetIntakeAction;
 import org.usfirst.frc.team4099.auto.actions.TurnAction;
+import org.usfirst.frc.team4099.auto.actions.WaitAction;
 import org.usfirst.frc.team4099.lib.util.AutonomousInitParameters;
 import org.usfirst.frc.team4099.lib.util.Rotation2D;
 import org.usfirst.frc.team4099.robot.Constants;
@@ -30,30 +30,17 @@ public class OneGearMode extends AutoModeBase {
 
     @Override
     protected void routine() throws AutoModeEndedException {
-        runAction(new ForwardAction(initialForwardSeconds));
         // If in center lane (already lined up with peg - don't use vision here
         // TODO: check if using vision is necessary in center lane
         System.out.println("initialTurn " + initialTurn.getDegrees());
         if(initialTurn.getDegrees() == 0) {
+            runAction(new ForwardAction(initialForwardSeconds, true, true));
             runAction(new SetIntakeAction(Intake.IntakePosition.DOWN_AND_OPEN));
+            runAction(new WaitAction(.75));
             runAction(new ForwardAction(-1));
 
-            if(backOut) {
-                runAction(new ForwardAction(Constants.Autonomous.BACK_OUT_INCHES));
-
-                Rotation2D turn = Rotation2D.fromDegrees(90);
-                // Go to left side of airship if we're red, otherwise go to right.
-                // This is because the loading station is on the right if red, left if blue
-                // so if you want to get gears dropped by teammates, going around airship makes it faster
-                if(DriverStation.getInstance().getAlliance() == DriverStation.Alliance.Blue) {
-                    turn = turn.inverse();
-                }
-                runAction(new TurnAction(turn));
-                runAction(new ForwardAction(Constants.Autonomous.AIRSHIP_WIDTH_INCHES));
-                runAction(new TurnAction(turn.inverse()));
-                runAction(new ForwardAction(Constants.Autonomous.DISTANCE_PAST_AIRSHIP_INCHES));
-            }
         } else {
+            runAction(new ForwardAction(initialForwardSeconds, false, true));
             runAction(new TurnAction(initialTurn)); // turn towards air ship
             System.out.println("Finished initial turn");
 //            try {
@@ -71,9 +58,9 @@ public class OneGearMode extends AutoModeBase {
 //
 //            } catch (FileNotFoundException e) {
             System.out.println("Couldn't find lift... fix ur vision");
-            runAction(new ForwardAction(4, true));
+            runAction(new ForwardAction(4, true, false));
             runAction(new SetIntakeAction(Intake.IntakePosition.DOWN_AND_OPEN));
-            runAction(new ForwardAction(-1));
+            runAction(new ForwardAction(-1, false, false));
 //            }
             if(backOut){
                 // back out and go past airship
