@@ -21,3 +21,4 @@ out/
 .idea/workspace.xml
 /gradle/
 /sysProps.xml
+!/libs/pathfinder.jar
