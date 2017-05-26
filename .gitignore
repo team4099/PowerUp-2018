@@ -19,3 +19,5 @@ dist/
 out/
 .idea/
 .idea/workspace.xml
+/gradle/
+/sysProps.xml
