@@ -22,3 +22,4 @@ out/
 /gradle/
 /sysProps.xml
 !/libs/pathfinder.jar
+,gradle
