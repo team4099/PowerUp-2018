@@ -15,6 +15,7 @@ import org.usfirst.frc.team4099.robot.loops.VoltageEstimator
 import org.usfirst.frc.team4099.robot.subsystems.Climber
 import org.usfirst.frc.team4099.robot.subsystems.Drive
 import org.usfirst.frc.team4099.robot.subsystems.Intake
+import edu.wpi.first.wpilibj.CameraServer;
 
 class Robot : IterativeRobot() {
 
@@ -44,25 +45,23 @@ class Robot : IterativeRobot() {
     }
 
 
-    override fun robotInit() {
-        try {
-            CrashTracker.logRobotInit()
+    override fun robotInit() = try {
+        CrashTracker.logRobotInit()
 
-            //TODO: add the robot state estimator here
-            mEnabledLooper.register(mDrive.loop)
-            mEnabledLooper.register(mIntake.loop)
-            mEnabledLooper.register(mClimber.loop)
-            mEnabledLooper.register(BrownoutDefender.instance)
+        //TODO: add the robot state estimator here
+        CameraServer.getInstance().startAutomaticCapture()
+        mEnabledLooper.register(mDrive.loop)
+        mEnabledLooper.register(mIntake.loop)
+        mEnabledLooper.register(mClimber.loop)
+        mEnabledLooper.register(BrownoutDefender.instance)
 
-            mDisabledLooper.register(VoltageEstimator.instance)
+        mDisabledLooper.register(VoltageEstimator.instance)
 
-            mSmartDashboardInteractions.initWithDefaults()
+        mSmartDashboardInteractions.initWithDefaults()
 
-        } catch (t: Throwable) {
-            CrashTracker.logThrowableCrash("robotInit", t)
-            throw t
-        }
-
+    } catch (t: Throwable) {
+        CrashTracker.logThrowableCrash("robotInit", t)
+        throw t
     }
 
     override fun disabledInit() {
