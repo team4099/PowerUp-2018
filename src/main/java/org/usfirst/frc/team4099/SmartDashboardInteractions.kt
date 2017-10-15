@@ -65,11 +65,7 @@ class SmartDashboardInteractions {
      */
     internal enum class AutonOption constructor(val nameStr: String) {
         ONE_GEAR("One Gear"),
-        ONE_GEAR_AND_BACK_OUT("One Gear, Back Out"),
-        ONE_GEAR_AND_BACK_OUT_AND_TURN("One Gear, Back Out, Turn Around"),
         BASELINE("Baseline"),
-        BASELINE_AND_TURN("Baseline, Turn Around"),
-        STAND_STILL("Stand Still"),
         TEST_DRIVE("TEST ONLY Driving")
     }
 
@@ -89,10 +85,7 @@ class SmartDashboardInteractions {
     private fun createAutoMode(autonOption: AutonOption, autonLane: AutonLane): AutoModeBase {
         when (autonOption) {
             SmartDashboardInteractions.AutonOption.ONE_GEAR -> return OneGearMode(getAimingHintForLane(autonLane), false, false)
-            SmartDashboardInteractions.AutonOption.ONE_GEAR_AND_BACK_OUT -> return OneGearMode(getAimingHintForLane(autonLane), true, false)
-            SmartDashboardInteractions.AutonOption.ONE_GEAR_AND_BACK_OUT_AND_TURN -> return OneGearMode(getAimingHintForLane(autonLane), true, true)
             SmartDashboardInteractions.AutonOption.BASELINE -> return BaselineMode(getAimingHintForLane(autonLane), false)
-            SmartDashboardInteractions.AutonOption.BASELINE_AND_TURN -> return BaselineMode(getAimingHintForLane(autonLane), true)
             SmartDashboardInteractions.AutonOption.TEST_DRIVE -> return object : AutoModeBase() {
                 @Throws(AutoModeEndedException::class)
                 override fun routine() {

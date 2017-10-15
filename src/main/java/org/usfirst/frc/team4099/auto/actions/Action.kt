@@ -12,9 +12,7 @@ interface Action {
      *
      * @return boolean
      */
-    fun isFinished(): Boolean {
-        return false
-    }
+    fun isFinished() = false
 
     /**
      * Called by runAction in AutoModeBase iteratively until isFinished returns
