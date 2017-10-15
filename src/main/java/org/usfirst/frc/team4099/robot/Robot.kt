@@ -95,6 +95,7 @@ class Robot : IterativeRobot() {
             mAutoModeExecuter = AutoModeExecuter()
             mAutoModeExecuter!!.setAutoMode(mSmartDashboardInteractions.selectedAutonMode)
             mAutoModeExecuter!!.start()
+            mSmartDashboardInteractions.isInHoodTuningMode
 
         } catch (t: Throwable) {
             CrashTracker.logThrowableCrash("autonomousInit", t)
@@ -209,8 +210,6 @@ class Robot : IterativeRobot() {
             mEnabledLooper.start() // start EnabledLooper
             mDisabledLooper.stop() // end DisabledLooper
             mDrive.zeroSensors()
-            mDrive.setAutonomousDriving()
-            mDrive.setForwardSetpoint(60.0)
             isTurning = true
             LiveWindow.setEnabled(true)
             startLiveWindowMode()
@@ -225,7 +224,7 @@ class Robot : IterativeRobot() {
         try {
             LiveWindow.run()
             if (isTurning) {
-                isTurning = !mDrive.goForward()
+//                isTurning = !mDrive.goForward()
             } else {
                 mDrive.setOpenLoop(DriveSignal.NEUTRAL)
             }
