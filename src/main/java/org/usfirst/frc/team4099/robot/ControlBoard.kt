@@ -1,12 +1,13 @@
 package org.usfirst.frc.team4099.robot
 
 import org.usfirst.frc.team4099.lib.joystick.DualShock4Gamepad
+import org.usfirst.frc.team4099.lib.joystick.Gamepad
 import org.usfirst.frc.team4099.lib.joystick.JoystickUtils
-import org.usfirst.frc.team4099.lib.joystick.LogitechF310Gamepad
+import org.usfirst.frc.team4099.lib.joystick.XboxOneGamepad
 
 class ControlBoard private constructor() {
-    private val driver: LogitechF310Gamepad = LogitechF310Gamepad(Constants.Joysticks.DRIVER_PORT)
-    private val operator: DualShock4Gamepad = DualShock4Gamepad(Constants.Joysticks.SHOTGUN_PORT)
+    private val driver: Gamepad = XboxOneGamepad(Constants.Joysticks.DRIVER_PORT)
+    private val operator: Gamepad = DualShock4Gamepad(Constants.Joysticks.SHOTGUN_PORT)
 
     val throttle: Double
         get() = -driver.rightTriggerAxis + driver.leftTriggerAxis
@@ -21,7 +22,6 @@ class ControlBoard private constructor() {
      * Should the bot arcadeDrive in quick turn mode?
      * @return  true/false, depending on if the joystick is depressed
      */
-    //return driver.getXButton();
     val quickTurn: Boolean
         get() = Math.abs(JoystickUtils.deadbandNoShape(throttle, 0.02)) < 0.01
 
