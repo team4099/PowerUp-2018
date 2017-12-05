@@ -1,5 +1,6 @@
 package org.usfirst.frc.team4099.robot
 
+import edu.wpi.first.wpilibj.CameraServer
 import edu.wpi.first.wpilibj.IterativeRobot
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -49,6 +50,7 @@ class Robot : IterativeRobot() {
             CrashTracker.logRobotInit()
 
             //TODO: add the robot state estimator here
+            CameraServer.getInstance().startAutomaticCapture()
             mEnabledLooper.register(mDrive.loop)
             mEnabledLooper.register(mIntake.loop)
             mEnabledLooper.register(mClimber.loop)
@@ -62,7 +64,6 @@ class Robot : IterativeRobot() {
             CrashTracker.logThrowableCrash("robotInit", t)
             throw t
         }
-
     }
 
     override fun disabledInit() {
@@ -96,6 +97,7 @@ class Robot : IterativeRobot() {
             mAutoModeExecuter = AutoModeExecuter()
             mAutoModeExecuter!!.setAutoMode(mSmartDashboardInteractions.selectedAutonMode)
             mAutoModeExecuter!!.start()
+            mSmartDashboardInteractions.isInHoodTuningMode
 
         } catch (t: Throwable) {
             CrashTracker.logThrowableCrash("autonomousInit", t)
@@ -210,8 +212,6 @@ class Robot : IterativeRobot() {
             mEnabledLooper.start() // start EnabledLooper
             mDisabledLooper.stop() // end DisabledLooper
             mDrive.zeroSensors()
-            mDrive.setAutonomousDriving()
-            mDrive.setForwardSetpoint(60.0)
             isTurning = true
             LiveWindow.setEnabled(true)
             startLiveWindowMode()
@@ -226,7 +226,7 @@ class Robot : IterativeRobot() {
         try {
             LiveWindow.run()
             if (isTurning) {
-                isTurning = !mDrive.goForward()
+//                isTurning = !mDrive.goForward()
             } else {
                 mDrive.setOpenLoop(DriveSignal.NEUTRAL)
             }

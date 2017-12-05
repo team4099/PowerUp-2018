@@ -9,59 +9,59 @@ import edu.wpi.first.wpilibj.Joystick
  * Flight Mode (Mode Light = Off)
  */
 
-class XboxOneGamepad(port: Int) : Joystick(port) {
+class XboxOneGamepad(port: Int) : Joystick(port), Gamepad {
 
-    val leftXAxis: Double
+    override val leftXAxis: Double
         get() = this.getRawAxis(0)
 
-    val leftYAxis: Double
+    override val leftYAxis: Double
         get() = this.getRawAxis(1)
 
-    val leftTriggerAxis: Double
+    override val leftTriggerAxis: Double
         get() = this.getRawAxis(2)
 
-    val rightTriggerAxis: Double
+    override val rightTriggerAxis: Double
         get() = this.getRawAxis(3)
 
-    val rightXAxis: Double
+    override val rightXAxis: Double
         get() = this.getRawAxis(4)
 
-    val rightYAxis: Double
+    override val rightYAxis: Double
         get() = this.getRawAxis(5)
 
-    val aButton: Boolean
+    override val aButton: Boolean
         get() = this.getRawButton(1)
 
-    val bButton: Boolean
+    override val bButton: Boolean
         get() = this.getRawButton(2)
 
-    val xButton: Boolean
+    override val xButton: Boolean
         get() = this.getRawButton(3)
 
-    val yButton: Boolean
+    override val yButton: Boolean
         get() = this.getRawButton(4)
 
-    val leftJoystickButton: Boolean
+    override val leftJoystickButton: Boolean
         get() = this.getRawButton(6)
 
-    val rightJoystickButton: Boolean
+    override val rightJoystickButton: Boolean
         get() = this.getRawButton(7)
 
-    val leftShoulderButton: Boolean
+    override val leftShoulderButton: Boolean
         get() = this.getRawButton(5)
 
-    val rightShoulderButton: Boolean
+    override val rightShoulderButton: Boolean
         get() = this.getRawButton(6)
 
-    val dPadUp: Boolean
+    override val dPadUp: Boolean
         get() = this.pov == 0 || this.pov == 360
 
-    val dPadDown: Boolean
+    override val dPadDown: Boolean
         get() = this.pov == 180
 
-    val dPadLeft: Boolean
+    override val dPadLeft: Boolean
         get() = this.pov == 270
 
-    val dPadRight: Boolean
+    override val dPadRight: Boolean
         get() = this.pov == 90
 }
