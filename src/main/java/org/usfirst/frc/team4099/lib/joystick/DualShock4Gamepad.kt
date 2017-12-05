@@ -1,5 +1,7 @@
 package org.usfirst.frc.team4099.lib.joystick
 
+import edu.wpi.first.wpilibj.Joystick
+
 /**
  * Controller Settings for Correct Mappings
  * ----------------------------------------
@@ -7,7 +9,7 @@ package org.usfirst.frc.team4099.lib.joystick
  * Flight Mode (Mode Light = Off)
  */
 
-class DualShock4Gamepad(port: Int): Gamepad(port) {
+class DualShock4Gamepad(port: Int) : Joystick(port), Gamepad {
 
     override val leftXAxis: Double
         get() = this.getRawAxis(0)
