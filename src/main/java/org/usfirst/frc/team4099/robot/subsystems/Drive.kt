@@ -1,7 +1,6 @@
 package org.usfirst.frc.team4099.robot.subsystems
 
-import com.ctre.MotorControl.CANTalon
-import com.ctre.MotorControl.SmartMotorController
+import com.ctre.CANTalon
 import com.kauailabs.navx.frc.AHRS
 import edu.wpi.first.wpilibj.SPI
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -25,13 +24,13 @@ class Drive private constructor() : Subsystem {
 
     init {
 
-        leftSlaveSRX.changeControlMode(SmartMotorController.TalonControlMode.Follower)
+        leftSlaveSRX.changeControlMode(CANTalon.TalonControlMode.Follower)
         leftSlaveSRX.set(Constants.Drive.LEFT_FRONT_ID.toDouble())
-        leftSRX.changeControlMode(SmartMotorController.TalonControlMode.PercentVbus)
+        leftSRX.changeControlMode(CANTalon.TalonControlMode.PercentVbus)
 
-        rightSlaveSRX.changeControlMode(SmartMotorController.TalonControlMode.Follower)
+        rightSlaveSRX.changeControlMode(CANTalon.TalonControlMode.Follower)
         rightSlaveSRX.set(Constants.Drive.RIGHT_FRONT_ID.toDouble())
-        rightSRX.changeControlMode(SmartMotorController.TalonControlMode.PercentVbus)
+        rightSRX.changeControlMode(CANTalon.TalonControlMode.PercentVbus)
 
 
         ahrs = AHRS(SPI.Port.kMXP)
