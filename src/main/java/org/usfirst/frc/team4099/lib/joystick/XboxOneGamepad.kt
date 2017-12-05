@@ -1,7 +1,5 @@
 package org.usfirst.frc.team4099.lib.joystick
 
-import edu.wpi.first.wpilibj.Joystick
-
 /**
  * Controller Settings for Correct Mappings
  * ----------------------------------------
@@ -9,7 +7,7 @@ import edu.wpi.first.wpilibj.Joystick
  * Flight Mode (Mode Light = Off)
  */
 
-class XboxOneGamepad(port: Int) : Joystick(port), Gamepad {
+class XboxOneGamepad(port: Int): Gamepad(port) {
 
     override val leftXAxis: Double
         get() = this.getRawAxis(0)

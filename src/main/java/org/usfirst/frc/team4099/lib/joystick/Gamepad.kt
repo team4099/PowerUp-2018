@@ -1,39 +1,41 @@
 package org.usfirst.frc.team4099.lib.joystick
 
-interface Gamepad {
-    val leftXAxis: Double
+import edu.wpi.first.wpilibj.Joystick
 
-    val leftYAxis: Double
+abstract class Gamepad(port: Int): Joystick(port) {
+    abstract val leftXAxis: Double
 
-    val leftTriggerAxis: Double
+    abstract val leftYAxis: Double
 
-    val rightTriggerAxis: Double
+    abstract val leftTriggerAxis: Double
 
-    val rightXAxis: Double
+    abstract val rightTriggerAxis: Double
 
-    val rightYAxis: Double
+    abstract val rightXAxis: Double
 
-    val aButton: Boolean
+    abstract val rightYAxis: Double
 
-    val bButton: Boolean
+    abstract val aButton: Boolean
 
-    val xButton: Boolean
+    abstract val bButton: Boolean
 
-    val yButton: Boolean
+    abstract val xButton: Boolean
 
-    val leftJoystickButton: Boolean
+    abstract val yButton: Boolean
 
-    val rightJoystickButton: Boolean
+    abstract val leftJoystickButton: Boolean
 
-    val leftShoulderButton: Boolean
+    abstract val rightJoystickButton: Boolean
 
-    val rightShoulderButton: Boolean
+    abstract val leftShoulderButton: Boolean
 
-    val dPadUp: Boolean
+    abstract val rightShoulderButton: Boolean
 
-    val dPadDown: Boolean
+    abstract val dPadUp: Boolean
 
-    val dPadLeft: Boolean
+    abstract val dPadDown: Boolean
 
-    val dPadRight: Boolean
+    abstract val dPadLeft: Boolean
+
+    abstract val dPadRight: Boolean
 }
