@@ -19,6 +19,6 @@ dist/
 out/
 .idea/
 .idea/workspace.xml
-/gradle/
+.gradle/
 /sysProps.xml
 !/libs/pathfinder.jar
