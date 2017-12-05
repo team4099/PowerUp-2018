@@ -26,7 +26,7 @@ class Robot : IterativeRobot() {
     private val mCDriveHelper = CDriveHelper.instance
     private val mTDriveHelper = TankDriveHelper.instance
 
-    private val mControls = ControlBoard.instance
+    private val mControls = SteeringWheelControlBoard.instance
     private val mDisabledLooper = Looper("disabledLooper")
     private val mEnabledLooper = Looper("enabledLooper")
 
