@@ -1,33 +1,23 @@
-![Steamworks 2017](assets/steamworks_logo.png)
+![Power Up 2018](assets/powerup_logo.jpg)
 
-# Falcons FIRST (#4099)
-We are a school-based _FIRST&reg; Robotics Competition_ team from Poolesville High School, located in Poolesville, Maryland. Visit our website at [https://www.falconsfirst.com/](https://www.falconsfirst.com).
+# The Falcons (#4099)
+We are a school-based _FIRST&reg; Robotics Competition_ team from Poolesville High School, located in Poolesville, Maryland. Visit our website at [https://www.team4099.com/](https://www.team4099.com).
 
 ## Getting Started with IntelliJ IDEA
-1. Download and install Eclipse.
-2. Download and installed the FRC Plugins for Eclipse.
-3. Create a new Robot project in Eclipse, and be sure to set your team number up in Eclipse.
-4. Create a new IntelliJ project, with package `org.usfirst.frc.team4099.robot` and main class `Robot.java`.
-5. Install NetConsole from the following link: https://github.com/ThomasJClark/netconsole-idea-plugin/releases/
-6. Download and install the NavX-MXP libraries.
-7. `Ctrl-Alt-Shift-S` to edit the project settings, and go to the **Libraries** subsection, and add the FRC Plugins and NavX Plugins.
-8. Copy the NavX plugins to the following directory: `C:\Users\<username>\wpilib\user\java\lib`
+1. Download and install IntelliJ IDEA Community Edition.
+2. Download Gradle and add it to your PATH variable.
+3. Open IntelliJ and import this project's build.gradle. At this point, IntelliJ should automatically begin downloading the dependencies needed.
 
 ## Code Organization
 
 
 ## Things To Do
-* Implement smart shutdown of subsystems when in risk of brownout.
+* Implement motion profiling for autonomous mode
+* Add communication with JeVois Smart Camera for autonomous mode
+* Implement pneumatic shifter for drivetrain (teleop use only)
+* Implement autoshifting for drivetrain
 
 ## Joystick Controls
-We used two Xbox controllers (currently using the F310 gamepad by Logitech), one for the *driver*, who controls the movement of the robot, and one for the *shotgun*, who operates the turret, gear intake, etc.
-
-### Driver
-* Left Y Joystick: Throttle (Speed)
-* Right X Joystick: Curvature
-* Right X Joystick Depressed: Quick Turn
-
-### Shotgun
-* None yet
+We used two Xbox controllers (currently using the F310 gamepad by Logitech), one for the *driver*, who controls the movement of the robot, and one for the *operator*, who operates each subsystem.
 
 
