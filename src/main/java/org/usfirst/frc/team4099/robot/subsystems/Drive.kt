@@ -26,7 +26,6 @@ class Drive private constructor() : Subsystem {
     private var currentState = DriveControlState.OPEN_LOOP
 
     init {
-
         leftSlave1SRX.changeControlMode(CANTalon.TalonControlMode.Follower)
         leftSlave1SRX.set(Constants.Drive.LEFT_MASTER_ID.toDouble())
         leftSlave2SRX.changeControlMode(CANTalon.TalonControlMode.Follower)
@@ -38,7 +37,6 @@ class Drive private constructor() : Subsystem {
         rightSlave2SRX.changeControlMode(CANTalon.TalonControlMode.Follower)
         rightSlave2SRX.set(Constants.Drive.RIGHT_MASTER_ID.toDouble())
         rightMasterSRX.changeControlMode(CANTalon.TalonControlMode.PercentVbus)
-
 
         ahrs = AHRS(SPI.Port.kMXP)
 
@@ -110,7 +108,8 @@ class Drive private constructor() : Subsystem {
                 when (currentState) {
                     Drive.DriveControlState.OPEN_LOOP -> {
                     }
-                    else -> {}
+                    else -> {
+                    }
                 }
             }
         }

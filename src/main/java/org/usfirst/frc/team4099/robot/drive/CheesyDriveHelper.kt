@@ -26,14 +26,14 @@ class CheesyDriveHelper {
         var throttle = throttle
         var wheel = wheel
         throttle = JoystickUtils.deadband(throttle, kThrottleDeadband)
-        //TODO: see if moving wheel in the beginning makes a difference in throttle stop
-        //TODO: because it used to come after the negativeInertia code
+        // TODO: see if moving wheel in the beginning makes a difference in throttle stop
+        // TODO: because it used to come after the negativeInertia code
         wheel = -JoystickUtils.deadbandNoShape(wheel, kWheelDeadband)
 
         if (isQuickTurn)
             wheel /= 1.55
 
-        //TODO: test this, does it really make controls feel better?
+        // TODO: test this, does it really make controls feel better?
         val wheelNonLinearity = 0.5
         wheel = Math.sin(Math.PI / 2.0 * wheelNonLinearity * wheel) / Math.sin(Math.PI / 2.0 * wheelNonLinearity)
         wheel = Math.sin(Math.PI / 2.0 * wheelNonLinearity * wheel) / Math.sin(Math.PI / 2.0 * wheelNonLinearity)
@@ -60,7 +60,7 @@ class CheesyDriveHelper {
                 if (throttle > lastThrottle + kMaxThrottleDelta)
                     throttle = lastThrottle + kMaxThrottleDelta
                 else if (throttle < lastThrottle - kMaxThrottleDelta)
-                    throttle = lastThrottle - kMaxThrottleDelta// for - to more - decreases
+                    throttle = lastThrottle - kMaxThrottleDelta // for - to more - decreases
             }
         }
         SmartDashboard.putNumber("joystickThrottle", throttle)
@@ -105,7 +105,7 @@ class CheesyDriveHelper {
             if (Math.abs(throttle) < 0.2) {
                 val alpha = 0.1
                 quickStopAccumulator = (1 - alpha) * quickStopAccumulator + // used for "negative inertia"
-                        alpha * Utils.limit(wheel, 1.0) * 2.0
+                                       alpha * Utils.limit(wheel, 1.0) * 2.0
             }
             overPower = 0.5
             angularPower = wheel
