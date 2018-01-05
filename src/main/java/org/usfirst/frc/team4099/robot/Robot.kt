@@ -4,41 +4,32 @@ import edu.wpi.first.wpilibj.CameraServer
 import edu.wpi.first.wpilibj.IterativeRobot
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
-import org.usfirst.frc.team4099.SmartDashboardInteractions
+import org.usfirst.frc.team4099.AutonomousSelector
 import org.usfirst.frc.team4099.auto.AutoModeExecuter
 import org.usfirst.frc.team4099.lib.drive.DriveSignal
 import org.usfirst.frc.team4099.lib.util.CrashTracker
-import org.usfirst.frc.team4099.robot.drive.CDriveHelper
+import org.usfirst.frc.team4099.robot.drive.CheesyDriveHelper
 import org.usfirst.frc.team4099.robot.drive.TankDriveHelper
 import org.usfirst.frc.team4099.robot.loops.BrownoutDefender
 import org.usfirst.frc.team4099.robot.loops.Looper
 import org.usfirst.frc.team4099.robot.loops.VoltageEstimator
-import org.usfirst.frc.team4099.robot.subsystems.Climber
 import org.usfirst.frc.team4099.robot.subsystems.Drive
-import org.usfirst.frc.team4099.robot.subsystems.Intake
 
 class Robot : IterativeRobot() {
 
-    private val mDrive = Drive.instance
-    private val mIntake = Intake.instance
-    private val mClimber = Climber.instance
+    private val drive = Drive.instance
 
-    private val mCDriveHelper = CDriveHelper.instance
-    private val mTDriveHelper = TankDriveHelper.instance
+    private val cheesyDriveHelper = CheesyDriveHelper.instance
+    private val tankDriveHelper = TankDriveHelper.instance
 
-    private val mControls = ControlBoard.instance
-    private val mDisabledLooper = Looper("disabledLooper")
-    private val mEnabledLooper = Looper("enabledLooper")
+    private val controls = ControlBoard.instance
+    private val disabledLooper = Looper("disabledLooper")
+    private val enabledLooper = Looper("enabledLooper")
 
-    private var mAutoModeExecuter: AutoModeExecuter? = null
-    private val mSmartDashboardInteractions = SmartDashboardInteractions()
+    private var autoModeExecuter: AutoModeExecuter? = null
 
     private val logging = true
     private var isTurning = true
-
-    private var lastToggleIntakeClosed = false
-
-    private val slowFactor = 1.0
 
     init {
         CrashTracker.logRobotConstruction()
@@ -51,14 +42,12 @@ class Robot : IterativeRobot() {
 
             //TODO: add the robot state estimator here
             CameraServer.getInstance().startAutomaticCapture()
-            mEnabledLooper.register(mDrive.loop)
-            mEnabledLooper.register(mIntake.loop)
-            mEnabledLooper.register(mClimber.loop)
-            mEnabledLooper.register(BrownoutDefender.instance)
+            enabledLooper.register(drive.loop)
 
-            mDisabledLooper.register(VoltageEstimator.instance)
+            enabledLooper.register(BrownoutDefender.instance)
 
-            mSmartDashboardInteractions.initWithDefaults()
+            disabledLooper.register(VoltageEstimator.instance)
+
 
         } catch (t: Throwable) {
             CrashTracker.logThrowableCrash("robotInit", t)
@@ -70,8 +59,8 @@ class Robot : IterativeRobot() {
         try {
             CrashTracker.logDisabledInit()
 
-            mEnabledLooper.stop() // end EnabledLooper
-            mDisabledLooper.start() // start DisabledLooper
+            enabledLooper.stop() // end EnabledLooper
+            disabledLooper.start() // start DisabledLooper
 
         } catch (t: Throwable) {
             CrashTracker.logThrowableCrash("disabledInit", t)
@@ -84,20 +73,19 @@ class Robot : IterativeRobot() {
         try {
             CrashTracker.logAutoInit()
 
-            if (mAutoModeExecuter != null) {
-                mAutoModeExecuter!!.stop()
+            if (autoModeExecuter != null) {
+                autoModeExecuter!!.stop()
             }
-            mAutoModeExecuter = null
+            autoModeExecuter = null
 
-            mDisabledLooper.stop() // end DisabledLooper
-            mEnabledLooper.start() // start EnabledLooper
-            mDrive.zeroSensors()
-            mDrive.getAHRS()!!.zeroYaw()
+            disabledLooper.stop() // end DisabledLooper
+            enabledLooper.start() // start EnabledLooper
+            drive.zeroSensors()
+            drive.getAHRS()?.zeroYaw()
 
-            mAutoModeExecuter = AutoModeExecuter()
-            mAutoModeExecuter!!.setAutoMode(mSmartDashboardInteractions.selectedAutonMode)
-            mAutoModeExecuter!!.start()
-            mSmartDashboardInteractions.isInHoodTuningMode
+            autoModeExecuter = AutoModeExecuter()
+            autoModeExecuter?.setAutoMode(AutonomousSelector.getSelectedAutoMode())
+            autoModeExecuter?.start()
 
         } catch (t: Throwable) {
             CrashTracker.logThrowableCrash("autonomousInit", t)
@@ -110,8 +98,8 @@ class Robot : IterativeRobot() {
         try {
             CrashTracker.logTeleopInit()
             isTurning = true
-            mEnabledLooper.start() // start EnabledLooper
-            mDisabledLooper.stop() // end DisabledLooper
+            enabledLooper.start() // start EnabledLooper
+            disabledLooper.stop() // end DisabledLooper
 
         } catch (t: Throwable) {
             CrashTracker.logThrowableCrash("teleopInit", t)
@@ -133,11 +121,9 @@ class Robot : IterativeRobot() {
 
     override fun autonomousPeriodic() {
         try {
-            //            mDrive.turnAngle();
             outputAllToSmartDashboard()
             updateDashboardFeedback()
         } catch (t: Throwable) {
-
             CrashTracker.logThrowableCrash("autonomousPeriodic", t)
             throw t
         }
@@ -146,55 +132,16 @@ class Robot : IterativeRobot() {
 
     override fun teleopPeriodic() {
         try {
-            val throttle = mControls.throttle
-            val turn = mControls.turn
-            val isQuickTurn = mControls.quickTurn
+            val throttle = controls.throttle
+            val turn = controls.turn
+            val isQuickTurn = controls.quickTurn
 
-            val toggleIntake = mControls.toggleIntake
-            val toggleIntakeClosed = mControls.toggleIntakeClosed
-            val setIntakeUp = mControls.intakeUp
-            val setIntakeDown = mControls.intakeDown
-            //            boolean toggleSlowMode = mControls.getToggleSlowMode();
 
-            val climbing = mControls.climber
 
             SmartDashboard.putBoolean("isQuickTurn", isQuickTurn)
             SmartDashboard.putNumber("voltage", VoltageEstimator.instance.averageVoltage)
 
-            //            if (toggleSlowMode)
-            //                slowFactor = 1.5 - slowFactor;
-
-            mDrive.setOpenLoop(mCDriveHelper.curvatureDrive(throttle, turn, isQuickTurn))
-
-            mIntake.updateIntake(toggleIntake)
-            if (toggleIntakeClosed && !lastToggleIntakeClosed) {
-                if (mIntake.intakePosition == Intake.IntakePosition.DOWN_AND_CLOSED)
-                    mIntake.updateIntake(Intake.IntakePosition.DOWN_AND_OPEN)
-                else if (mIntake.intakePosition == Intake.IntakePosition.DOWN_AND_OPEN)
-                    mIntake.updateIntake(Intake.IntakePosition.DOWN_AND_CLOSED)
-                else if (mIntake.intakePosition == Intake.IntakePosition.UP_AND_CLOSED)
-                    mIntake.updateIntake(Intake.IntakePosition.UP_AND_OPEN)
-                else if (mIntake.intakePosition == Intake.IntakePosition.UP_AND_OPEN)
-                    mIntake.updateIntake(Intake.IntakePosition.UP_AND_CLOSED)
-            } else if (setIntakeUp) {
-                if (mIntake.intakePosition == Intake.IntakePosition.DOWN_AND_OPEN || mIntake.intakePosition == Intake.IntakePosition.UP_AND_OPEN)
-                    mIntake.updateIntake(Intake.IntakePosition.UP_AND_OPEN)
-                else
-                    mIntake.updateIntake(Intake.IntakePosition.UP_AND_CLOSED)
-            } else if (setIntakeDown) {
-                if (mIntake.intakePosition == Intake.IntakePosition.DOWN_AND_OPEN || mIntake.intakePosition == Intake.IntakePosition.UP_AND_OPEN)
-                    mIntake.updateIntake(Intake.IntakePosition.DOWN_AND_OPEN)
-                else
-                    mIntake.updateIntake(Intake.IntakePosition.DOWN_AND_CLOSED)
-            }
-
-            lastToggleIntakeClosed = toggleIntakeClosed
-
-            if (climbing) {
-                mClimber.setClimbingMode(Climber.ClimberState.CLIMBING)
-            } else {
-                mClimber.setClimbingMode(Climber.ClimberState.NOT_CLIMBING)
-            }
+            drive.setOpenLoop(cheesyDriveHelper.curvatureDrive(throttle, turn, isQuickTurn))
 
             outputAllToSmartDashboard()
             updateDashboardFeedback() // things such as is aligned?, etc
@@ -209,9 +156,9 @@ class Robot : IterativeRobot() {
     override fun testInit() {
         try {
             CrashTracker.logAutoInit()
-            mEnabledLooper.start() // start EnabledLooper
-            mDisabledLooper.stop() // end DisabledLooper
-            mDrive.zeroSensors()
+            enabledLooper.start() // start EnabledLooper
+            disabledLooper.stop() // end DisabledLooper
+            drive.zeroSensors()
             isTurning = true
             LiveWindow.setEnabled(true)
             startLiveWindowMode()
@@ -228,16 +175,12 @@ class Robot : IterativeRobot() {
             if (isTurning) {
 //                isTurning = !mDrive.goForward()
             } else {
-                mDrive.setOpenLoop(DriveSignal.NEUTRAL)
+                drive.setOpenLoop(DriveSignal.NEUTRAL)
             }
             println("isTurning:" + isTurning)
             //            DriveSignal lSignal = new DriveSignal(1, -1);
             //            DriveSignal rSignal = new DriveSignal(-1, 1);
-            //            if(mControls.getClimber()) {
-            //                mDrive.setOpenLoop(lSignal);
-            //            } else {
-            //                mDrive.setOpenLoop(rSignal);
-            //            }
+
 
             outputAllToSmartDashboard()
             updateLiveWindowTables()
@@ -255,18 +198,17 @@ class Robot : IterativeRobot() {
      */
     private fun outputAllToSmartDashboard() {
         if (logging) {
-            mDrive.outputToSmartDashboard() // subsystems output to SmartDashboard
-            mIntake.outputToSmartDashboard()
-            mClimber.outputToSmartDashboard()
+            drive.outputToSmartDashboard() // subsystems output to SmartDashboard
+
         }
     }
 
     private fun startLiveWindowMode() {
-        mDrive.startLiveWindowMode()
+        drive.startLiveWindowMode()
     }
 
     private fun updateLiveWindowTables() {
-        mDrive.updateLiveWindowTables()
+        drive.updateLiveWindowTables()
     }
 
     private fun updateDashboardFeedback() {

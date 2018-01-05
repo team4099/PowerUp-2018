@@ -13,7 +13,7 @@ import org.usfirst.frc.team4099.lib.util.Utils
  * Credits: Team 254
  */
 
-class CDriveHelper {
+class CheesyDriveHelper {
 
     private var mQuickStopAccumulator: Double = 0.toDouble()
     private var negativeInertia: Double = 0.toDouble()
@@ -146,7 +146,7 @@ class CDriveHelper {
 
     companion object {
 
-        val instance = CDriveHelper()
+        val instance = CheesyDriveHelper()
 
         private val kThrottleDeadband = 0.02
         private val kWheelDeadband = 0.02

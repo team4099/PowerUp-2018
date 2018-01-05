@@ -25,20 +25,6 @@ class ControlBoard private constructor() {
     val quickTurn: Boolean
         get() = Math.abs(JoystickUtils.deadbandNoShape(throttle, 0.02)) < 0.01
 
-    val intakeUp: Boolean
-        get() = operator.dPadUp
-
-    val intakeDown: Boolean
-        get() = operator.dPadDown
-
-    val toggleIntake: Boolean
-        get() = operator.aButton
-
-    val climber: Boolean
-        get() = operator.yButton
-
-    val toggleIntakeClosed: Boolean
-        get() = operator.dPadRight || operator.dPadLeft
 
     companion object {
         val instance = ControlBoard()
