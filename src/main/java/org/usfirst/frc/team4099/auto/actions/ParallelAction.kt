@@ -11,38 +11,38 @@ import java.util.*
  */
 class ParallelAction(actions: List<Action>) : Action {
 
-    private val mActions: ArrayList<Action> = ArrayList(actions.size)
+    private val actions: ArrayList<Action> = ArrayList(actions.size)
 
     init {
         for (action in actions) {
-            mActions.add(action)
+            this.actions.add(action)
         }
     }
 
     override fun isFinished(): Boolean {
-        var all_finished = true
-        for (action in mActions) {
+        var allFinished = true
+        for (action in actions) {
             if (!action.isFinished()) {
-                all_finished = false
+                allFinished = false
             }
         }
-        return all_finished
+        return allFinished
     }
 
     override fun update() {
-        for (action in mActions) {
+        for (action in actions) {
             action.update()
         }
     }
 
     override fun done() {
-        for (action in mActions) {
+        for (action in actions) {
             action.done()
         }
     }
 
     override fun start() {
-        for (action in mActions) {
+        for (action in actions) {
             action.start()
         }
     }

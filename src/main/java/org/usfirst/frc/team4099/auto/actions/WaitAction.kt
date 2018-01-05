@@ -6,11 +6,11 @@ import edu.wpi.first.wpilibj.Timer
  * Action to wait for a given amount of time To use this Action, call
  * runAction(new WaitAction(your_time))
  */
-class WaitAction(private val mTimeToWait: Double) : Action {
-    private var mStartTime: Double = 0.toDouble()
+class WaitAction(private val timeToWait: Double) : Action {
+    private var startTime: Double = 0.toDouble()
 
     override fun isFinished(): Boolean {
-        return Timer.getFPGATimestamp() - mStartTime >= mTimeToWait
+        return Timer.getFPGATimestamp() - startTime >= timeToWait
     }
 
     override fun update() {
@@ -22,6 +22,6 @@ class WaitAction(private val mTimeToWait: Double) : Action {
     }
 
     override fun start() {
-        mStartTime = Timer.getFPGATimestamp()
+        startTime = Timer.getFPGATimestamp()
     }
 }

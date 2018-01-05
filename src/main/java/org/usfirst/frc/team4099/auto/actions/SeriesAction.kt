@@ -7,34 +7,34 @@ import java.util.*
  */
 class SeriesAction(actions: List<Action>) : Action {
 
-    private var mCurAction: Action? = null
-    private val mRemainingActions: ArrayList<Action> = ArrayList(actions.size)
+    private var currentAction: Action? = null
+    private val remainingActions: ArrayList<Action> = ArrayList(actions.size)
 
     init {
         for (action in actions) {
-            mRemainingActions.add(action)
+            remainingActions.add(action)
         }
-        mCurAction = null
+        currentAction = null
     }
 
     override fun isFinished(): Boolean {
-        return mRemainingActions.isEmpty() && mCurAction == null
+        return remainingActions.isEmpty() && currentAction == null
     }
 
     override fun start() {}
 
     override fun update() {
-        if (mCurAction == null) {
-            if (mRemainingActions.isEmpty()) {
+        if (currentAction == null) {
+            if (remainingActions.isEmpty()) {
                 return
             }
-            mCurAction = mRemainingActions.removeAt(0)
-            mCurAction!!.start()
+            currentAction = remainingActions.removeAt(0)
+            currentAction?.start()
         }
-        mCurAction!!.update()
-        if (mCurAction!!.isFinished()) {
-            mCurAction!!.done()
-            mCurAction = null
+        currentAction?.update()
+        if (currentAction?.isFinished() == true) { // have to write that explicitly because its a nullable boolean
+            currentAction?.done()
+            currentAction = null
         }
     }
 

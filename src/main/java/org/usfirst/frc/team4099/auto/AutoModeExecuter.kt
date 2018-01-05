@@ -7,32 +7,28 @@ import org.usfirst.frc.team4099.lib.util.CrashTrackingRunnable
  * Created by plato2000 on 2/13/17.
  */
 class AutoModeExecuter {
-    private var m_auto_mode: AutoModeBase? = null
-    private var m_thread: Thread? = null
+    private var autoMode: AutoModeBase? = null
+    private var thread: Thread? = null
 
-    fun setAutoMode(new_auto_mode: AutoModeBase) {
-        m_auto_mode = new_auto_mode
+    fun setAutoMode(newAutoMode: AutoModeBase) {
+        autoMode = newAutoMode
     }
 
     fun start() {
-        if (m_thread == null) {
-            m_thread = Thread(object : CrashTrackingRunnable() {
+        if (thread == null) {
+            thread = Thread(object : CrashTrackingRunnable() {
                 override fun runCrashTracked() {
-                    if (m_auto_mode != null) {
-                        m_auto_mode!!.run()
-                    }
+                    autoMode?.run()
                 }
             })
-            m_thread!!.start()
+            thread?.start()
         }
 
     }
 
     fun stop() {
-        if (m_auto_mode != null) {
-            m_auto_mode!!.stop()
-        }
-        m_thread = null
+        autoMode?.stop()
+        thread = null
     }
 
 }

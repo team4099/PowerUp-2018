@@ -15,12 +15,12 @@ import org.usfirst.frc.team4099.lib.util.Utils
 
 class CheesyDriveHelper {
 
-    private var mQuickStopAccumulator: Double = 0.toDouble()
+    private var quickStopAccumulator: Double = 0.toDouble()
     private var negativeInertia: Double = 0.toDouble()
 
     private var lastThrottle: Double = 0.toDouble()
 
-    private val mSignal = DriveSignal(0.0, 0.0)
+    private val signal = DriveSignal(0.0, 0.0)
 
     fun curvatureDrive(throttle: Double, wheel: Double, isQuickTurn: Boolean): DriveSignal {
         var throttle = throttle
@@ -104,21 +104,21 @@ class CheesyDriveHelper {
             wheel /= 1.75
             if (Math.abs(throttle) < 0.2) {
                 val alpha = 0.1
-                mQuickStopAccumulator = (1 - alpha) * mQuickStopAccumulator + // used for "negative inertia"
+                quickStopAccumulator = (1 - alpha) * quickStopAccumulator + // used for "negative inertia"
                         alpha * Utils.limit(wheel, 1.0) * 2.0
             }
             overPower = 0.5
             angularPower = wheel
         } else {
             overPower = 0.0
-            angularPower = Math.abs(throttle) * wheel * kTurnSensitivity - mQuickStopAccumulator
+            angularPower = Math.abs(throttle) * wheel * kTurnSensitivity - quickStopAccumulator
 
-            if (mQuickStopAccumulator > 1) {
-                mQuickStopAccumulator -= 0.5
-            } else if (mQuickStopAccumulator < -1) {
-                mQuickStopAccumulator += 0.5
+            if (quickStopAccumulator > 1) {
+                quickStopAccumulator -= 0.5
+            } else if (quickStopAccumulator < -1) {
+                quickStopAccumulator += 0.5
             } else {
-                mQuickStopAccumulator = 0.0
+                quickStopAccumulator = 0.0
             }
         }
 
@@ -138,10 +138,10 @@ class CheesyDriveHelper {
             rightPWM = -1.0
         }
 
-        mSignal.rightMotor = rightPWM
-        mSignal.leftMotor = leftPWM
+        signal.rightMotor = rightPWM
+        signal.leftMotor = leftPWM
 
-        return mSignal
+        return signal
     }
 
     companion object {

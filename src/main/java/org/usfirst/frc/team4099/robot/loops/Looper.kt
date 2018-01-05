@@ -11,10 +11,10 @@ class Looper(private val name: String) {
 
     private var running: Boolean = false
 
-    private val mNotifier: Notifier
+    private val notifier: Notifier
     private val taskRunningLock = Any()
 
-    private val mLoops: MutableList<Loop> = ArrayList()
+    private val loops: MutableList<Loop> = ArrayList()
 
     private var timestamp = 0.0
     private var dt = 0.0
@@ -25,7 +25,7 @@ class Looper(private val name: String) {
             synchronized(taskRunningLock) {
                 if (running) {
                     val now = Timer.getFPGATimestamp()
-                    for (loop in mLoops) {
+                    for (loop in loops) {
                         loop.onLoop()
                     }
                     dt = now - timestamp
@@ -36,14 +36,14 @@ class Looper(private val name: String) {
     }
 
     init {
-        mNotifier = Notifier(runnable)
+        notifier = Notifier(runnable)
         running = false
     }
 
     @Synchronized
     fun register(loop: Loop) {
         synchronized(taskRunningLock) {
-            mLoops.add(loop)
+            loops.add(loop)
         }
     }
 
@@ -53,13 +53,13 @@ class Looper(private val name: String) {
             println("Starting looper: " + name)
             synchronized(taskRunningLock) {
                 timestamp = Timer.getFPGATimestamp()
-                for (loop in mLoops) {
+                for (loop in loops) {
                     loop.onStart()
                 }
 
                 running = true
             }
-            mNotifier.startPeriodic(kPeriod)
+            notifier.startPeriodic(kPeriod)
         }
     }
 
@@ -67,12 +67,12 @@ class Looper(private val name: String) {
     fun stop() {
         if (running) {
             println("Stopping looper: " + name)
-            mNotifier.stop()
+            notifier.stop()
 
             synchronized(taskRunningLock) {
                 running = false
 
-                for (loop in mLoops) {
+                for (loop in loops) {
                     println("Stopping " + loop) // give the loops a name
                     loop.onStop()
                 }

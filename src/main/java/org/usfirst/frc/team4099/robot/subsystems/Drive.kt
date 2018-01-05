@@ -71,10 +71,6 @@ class Drive private constructor() : Subsystem {
 
     }
 
-    @Synchronized override fun stop() {
-        setOpenLoop(DriveSignal.NEUTRAL)
-    }
-
     override fun zeroSensors() {
         if (ahrs.isConnected) {
             ahrs.reset()
@@ -98,6 +94,10 @@ class Drive private constructor() : Subsystem {
         }
 
         setLeftRightPower(signal.leftMotor, signal.rightMotor)
+    }
+
+    @Synchronized override fun stop() {
+        setOpenLoop(DriveSignal.NEUTRAL)
     }
 
     val loop: Loop = object : Loop {

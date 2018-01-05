@@ -9,14 +9,14 @@ package org.usfirst.frc.team4099.lib.util
  */
 
 class LatchedBoolean {
-    private var mLast = false
+    private var last = false
 
     fun update(newValue: Boolean): Boolean {
         var ret = false
-        if (newValue && !mLast)
+        if (newValue && !last)
             ret = true
 
-        mLast = newValue
+        last = newValue
         return ret
     }
 }
