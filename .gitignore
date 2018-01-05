@@ -21,6 +21,5 @@ out/
 .idea/workspace.xml
 .gradle/
 /sysProps.xml
-!/libs/pathfinder.jar
 .gradle
-/gradle
+!gradle/wrapper/gradle-wrapper.jar
