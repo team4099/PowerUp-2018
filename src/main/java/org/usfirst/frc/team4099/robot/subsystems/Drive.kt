@@ -1,7 +1,10 @@
 package org.usfirst.frc.team4099.robot.subsystems
 
+
 import com.ctre.phoenix.motorcontrol.ControlMode
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
+import com.ctre.phoenix.motorcontrol.FeedbackDevice
+import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice
 import com.kauailabs.navx.frc.AHRS
 import edu.wpi.first.wpilibj.SPI
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
@@ -30,10 +33,29 @@ class Drive private constructor() : Subsystem {
         leftSlave1SRX.set(ControlMode.Follower, Constants.Drive.LEFT_MASTER_ID.toDouble())
         leftSlave2SRX.set(ControlMode.Follower, Constants.Drive.LEFT_MASTER_ID.toDouble())
         leftMasterSRX.set(ControlMode.PercentOutput, 0.0)
+        leftMasterSRX.reverseSensor(true)
+        leftMasterSRX.reverseOutput(false)
+        leftMasterSRX.setFeedbackDevice(TalonSRX.FeedbackDevice.CtreMagEncoder_Relative)
+        CANTalon.FeedbackDeviceStatus leftSensorPresent = leftMasterSRX.isSensorPresent(CANTalon.FeedbackDevice.CtreMagEncoder_Relative)
+        if (leftSensorPresent != CANTalon.FeedbackDeviceStatus.FeedbackStatusPresent) {
+            DriverStation.reportError("Could not detect left encoder: " + leftSensorPresent, false)
+        }
 
         rightSlave1SRX.set(ControlMode.Follower, Constants.Drive.RIGHT_MASTER_ID.toDouble())
         rightSlave2SRX.set(ControlMode.Follower, Constants.Drive.RIGHT_MASTER_ID.toDouble())
         rightMasterSRX.set(ControlMode.PercentOutput, 0.0)
+        rightMasterSRX.reverseSensor(false)
+        rightMasterSRX.reverseOutput(true)
+        rightMasterSRX.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative)
+        CANTalon.FeedbackDeviceStatus rightSensorPresent = rightMasterSRX.isSensorPresent(CANTalon.FeedbackDevice.CtreMagEncoder_Relative)
+
+
+
+
+
+        if (rightSensorPresent != CANTalon.FeedbackDeviceStatus.FeedbackStatusPresent) {
+            DriverStation.reportError("Could not detect right encoder: " + rightSensorPresent, false)
+        }
 
         ahrs = AHRS(SPI.Port.kMXP)
 
