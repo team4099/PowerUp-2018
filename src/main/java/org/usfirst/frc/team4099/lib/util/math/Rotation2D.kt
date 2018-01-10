@@ -1,4 +1,8 @@
-package org.usfirst.frc.team4099.lib.util
+package org.usfirst.frc.team4099.lib.util.math
+
+import org.usfirst.frc.team4099.lib.util.Interpolable
+
+import org.usfirst.frc.team4099.lib.util.Utils.epsilonEquals;
 
 import java.text.DecimalFormat
 
@@ -24,6 +28,10 @@ class Rotation2D : Interpolable<Rotation2D> {
     constructor(other: Rotation2D) {
         cos_angle_ = other.cos_angle_
         sin_angle_ = other.sin_angle_
+    }
+
+    constructor(direction: Translation2D, normalize: Boolean) {
+        Rotation2D(direction.x(), direction.y(), normalize);
     }
 
     /**
@@ -80,6 +88,12 @@ class Rotation2D : Interpolable<Rotation2D> {
                 cos_angle_ * other.sin_angle_ + sin_angle_ * other.cos_angle_, true)
     }
 
+    fun normal(): Rotation2D {
+        return Rotation2D(-sin_angle_,cos_angle_,false);
+    }
+
+
+
     /**
      * The inverse of a Rotation2D "undoes" the effect of this rotation.
      *
@@ -89,6 +103,14 @@ class Rotation2D : Interpolable<Rotation2D> {
         return Rotation2D(cos_angle_, -sin_angle_, false)
     }
 
+    fun isParallel(other: Rotation2D): Boolean {
+        return epsilonEquals(Translation2D.cross(toTranslation(), other.toTranslation()),0.0,kEpsilon);
+    }
+
+    fun toTranslation(): Translation2D {
+        return Translation2D(cos_angle_,sin_angle_);
+    }
+
     override fun interpolate(other: Rotation2D, x: Double): Rotation2D {
         if (x <= 0) {
             return Rotation2D(this)
@@ -96,7 +118,7 @@ class Rotation2D : Interpolable<Rotation2D> {
             return Rotation2D(other)
         }
         val angle_diff = inverse().rotateBy(other).radians
-        return this.rotateBy(Rotation2D.fromRadians(angle_diff * x))
+        return this.rotateBy(fromRadians(angle_diff * x))
     }
 
     override fun toString(): String {
@@ -107,8 +129,8 @@ class Rotation2D : Interpolable<Rotation2D> {
     companion object {
         protected val kEpsilon = 1E-9
 
-        var FORWARDS = Rotation2D.fromDegrees(0.0)
-        var BACKWARDS = Rotation2D.fromDegrees(179.9)
+        var FORWARDS = fromDegrees(0.0)
+        var BACKWARDS = fromDegrees(179.9)
 
         fun fromRadians(angle_radians: Double): Rotation2D {
             return Rotation2D(Math.cos(angle_radians), Math.sin(angle_radians), false)

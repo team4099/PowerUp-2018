@@ -61,6 +61,13 @@ dependencies {
     // We need to add the Kotlin stdlib in order to use most Kotlin language features.
     compile "org.jetbrains.kotlin:kotlin-stdlib"
     compile "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$serialization_version"
+    // https://mvnrepository.com/artifact/gov.nist.math/jama
+    compile group: 'gov.nist.math', name: 'jama', version: '1.0.3'
+
+
+    compile fileTree(dir: 'libs', include: '**/*.jar')
+    nativeLib  fileTree(dir: 'libs', include: '**/*.so')
+
 
 }
 

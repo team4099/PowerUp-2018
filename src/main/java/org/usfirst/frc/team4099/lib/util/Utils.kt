@@ -22,6 +22,10 @@ object Utils {
             limit
     }
 
+    fun epsilonEquals(a: Double, b: Double, epsilon: Double): Boolean {
+        return (a-epsilon<=b)&&(a+epsilon>=b);
+    }
+
     fun diff(current: Double, prev: Double): Double {
         return Math.abs(current - prev)
     }
