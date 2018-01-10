@@ -1,10 +1,10 @@
 package org.usfirst.frc.team4099.robot.subsystems
 
 
-import com.ctre.phoenix.motorcontrol.ControlMode
+import com.ctre.phoenix.motorcontrol.*
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
-import com.ctre.phoenix.motorcontrol.FeedbackDevice
-import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice
+import com.ctre.phoenix.motorcontrol.can.*
+
 import com.kauailabs.navx.frc.AHRS
 import edu.wpi.first.wpilibj.SPI
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
@@ -12,6 +12,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import org.usfirst.frc.team4099.lib.drive.DriveSignal
 import org.usfirst.frc.team4099.robot.Constants
 import org.usfirst.frc.team4099.robot.loops.Loop
+import edu.wpi.first.wpilibj.DriverStation
+
+
+
+
 
 class Drive private constructor() : Subsystem {
 
@@ -22,6 +27,7 @@ class Drive private constructor() : Subsystem {
     private val rightSlave1SRX: TalonSRX = TalonSRX(Constants.Drive.RIGHT_SLAVE_1_ID)
     private val rightSlave2SRX: TalonSRX = TalonSRX(Constants.Drive.RIGHT_SLAVE_2_ID)
     private val ahrs: AHRS
+    private var brakeMode: Boolean=true
 
     enum class DriveControlState {
         OPEN_LOOP
@@ -33,33 +39,58 @@ class Drive private constructor() : Subsystem {
         leftSlave1SRX.set(ControlMode.Follower, Constants.Drive.LEFT_MASTER_ID.toDouble())
         leftSlave2SRX.set(ControlMode.Follower, Constants.Drive.LEFT_MASTER_ID.toDouble())
         leftMasterSRX.set(ControlMode.PercentOutput, 0.0)
-        leftMasterSRX.reverseSensor(true)
-        leftMasterSRX.reverseOutput(false)
-        leftMasterSRX.setFeedbackDevice(TalonSRX.FeedbackDevice.CtreMagEncoder_Relative)
-        CANTalon.FeedbackDeviceStatus leftSensorPresent = leftMasterSRX.isSensorPresent(CANTalon.FeedbackDevice.CtreMagEncoder_Relative)
-        if (leftSensorPresent != CANTalon.FeedbackDeviceStatus.FeedbackStatusPresent) {
+        leftMasterSRX.setSensorPhase(true)
+        leftMasterSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10)
+        leftMasterSRX.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 5, 10)
+        leftMasterSRX.config_kP(0, Constants.Gains.LEFT_KP, 10)
+        leftMasterSRX.config_kI(0, Constants.Gains.LEFT_KI, 10)
+        leftMasterSRX.config_kD(0, Constants.Gains.LEFT_KD, 10)
+        leftMasterSRX.config_kF(0, Constants.Gains.LEFT_KF, 10)
+        /*val leftSensorPresent = leftMasterSRX.isSensorPresent(FeedbackDevice.CTRE_MagEncoder_Relative)
+        if (leftSensorPresent !== TalonSRX.FeedbackStatusPresent) {
             DriverStation.reportError("Could not detect left encoder: " + leftSensorPresent, false)
-        }
+        }*/
+
 
         rightSlave1SRX.set(ControlMode.Follower, Constants.Drive.RIGHT_MASTER_ID.toDouble())
         rightSlave2SRX.set(ControlMode.Follower, Constants.Drive.RIGHT_MASTER_ID.toDouble())
         rightMasterSRX.set(ControlMode.PercentOutput, 0.0)
-        rightMasterSRX.reverseSensor(false)
-        rightMasterSRX.reverseOutput(true)
-        rightMasterSRX.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative)
-        CANTalon.FeedbackDeviceStatus rightSensorPresent = rightMasterSRX.isSensorPresent(CANTalon.FeedbackDevice.CtreMagEncoder_Relative)
+        rightMasterSRX.setSensorPhase(true)
+        rightMasterSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10)
+        rightMasterSRX.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 5, 10)
+        rightMasterSRX.config_kP(0, Constants.Gains.RIGHT_KP, 10)
+        rightMasterSRX.config_kI(0, Constants.Gains.RIGHT_KI, 10)
+        rightMasterSRX.config_kD(0, Constants.Gains.RIGHT_KD, 10)
+        rightMasterSRX.config_kF(0, Constants.Gains.RIGHT_KF, 10)
+
+        leftMasterSRX.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms,10);
+        leftMasterSRX.configVelocityMeasurementWindow(32, 10)
+        rightMasterSRX.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms,10);
+        rightMasterSRX.configVelocityMeasurementWindow(32,10)
+
+        setOpenLoop(DriveSignal.NEUTRAL)
 
 
-
-
-
-        if (rightSensorPresent != CANTalon.FeedbackDeviceStatus.FeedbackStatusPresent) {
-            DriverStation.reportError("Could not detect right encoder: " + rightSensorPresent, false)
-        }
 
         ahrs = AHRS(SPI.Port.kMXP)
 
         this.zeroSensors()
+    }
+
+    fun getBrakeMode(): Boolean{
+        return brakeMode
+    }
+
+    fun setBrakeMode(on: Boolean){
+        if (brakeMode != on) {
+            brakeMode = on;//need to distinguish
+            rightMasterSRX.setNeutralMode(NeutralMode.Brake)
+            rightSlave1SRX.setNeutralMode(NeutralMode.Brake)
+            rightSlave2SRX.setNeutralMode(NeutralMode.Brake)
+            leftMasterSRX.setNeutralMode(NeutralMode.Brake)
+            leftSlave1SRX.setNeutralMode(NeutralMode.Brake)
+            leftSlave2SRX.setNeutralMode(NeutralMode.Brake)
+        }
     }
 
     fun getAHRS(): AHRS? {
@@ -125,7 +156,7 @@ class Drive private constructor() : Subsystem {
         override fun onLoop() {
             synchronized(this@Drive) {
                 when (currentState) {
-                    Drive.DriveControlState.OPEN_LOOP -> {
+                    DriveControlState.OPEN_LOOP -> {
                     }
                     else -> {
                     }
