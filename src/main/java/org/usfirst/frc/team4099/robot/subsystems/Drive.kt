@@ -27,7 +27,7 @@ class Drive private constructor() : Subsystem {
     private val rightSlave1SRX: TalonSRX = TalonSRX(Constants.Drive.RIGHT_SLAVE_1_ID)
     private val rightSlave2SRX: TalonSRX = TalonSRX(Constants.Drive.RIGHT_SLAVE_2_ID)
     private val ahrs: AHRS
-    private var brakeMode: Boolean=true
+    private var brakeMode: NeutralMode=NeutralMode.Brake//sets whether the break mode should be coast (no resistence) or by force
 
     enum class DriveControlState {
         OPEN_LOOP
@@ -63,9 +63,9 @@ class Drive private constructor() : Subsystem {
         rightMasterSRX.config_kD(0, Constants.Gains.RIGHT_KD, 10)
         rightMasterSRX.config_kF(0, Constants.Gains.RIGHT_KF, 10)
 
-        leftMasterSRX.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms,10);
+        leftMasterSRX.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms,10)
         leftMasterSRX.configVelocityMeasurementWindow(32, 10)
-        rightMasterSRX.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms,10);
+        rightMasterSRX.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms,10)
         rightMasterSRX.configVelocityMeasurementWindow(32,10)
 
         setOpenLoop(DriveSignal.NEUTRAL)
@@ -77,19 +77,19 @@ class Drive private constructor() : Subsystem {
         this.zeroSensors()
     }
 
-    fun getBrakeMode(): Boolean{
+    fun getBrakeMode(): NeutralMode{
         return brakeMode
     }
 
-    fun setBrakeMode(on: Boolean){
-        if (brakeMode != on) {
-            brakeMode = on;//need to distinguish
-            rightMasterSRX.setNeutralMode(NeutralMode.Brake)
-            rightSlave1SRX.setNeutralMode(NeutralMode.Brake)
-            rightSlave2SRX.setNeutralMode(NeutralMode.Brake)
-            leftMasterSRX.setNeutralMode(NeutralMode.Brake)
-            leftSlave1SRX.setNeutralMode(NeutralMode.Brake)
-            leftSlave2SRX.setNeutralMode(NeutralMode.Brake)
+    fun setBrakeMode(type: NeutralMode){
+        if (brakeMode!=type) {
+            brakeMode = type
+            rightMasterSRX.setNeutralMode(type)
+            rightSlave1SRX.setNeutralMode(type)
+            rightSlave2SRX.setNeutralMode(type)
+            leftMasterSRX.setNeutralMode(type)
+            leftSlave1SRX.setNeutralMode(type)
+            leftSlave2SRX.setNeutralMode(type)
         }
     }
 
