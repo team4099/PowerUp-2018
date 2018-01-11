@@ -80,6 +80,7 @@ class Drive private constructor() : Subsystem {
     fun getBrakeMode(): NeutralMode{
         return brakeMode
     }
+
     fun setBrakeMode(type: NeutralMode){
         if (brakeMode!=type) {
             brakeMode = type
