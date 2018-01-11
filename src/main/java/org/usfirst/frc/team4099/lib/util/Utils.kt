@@ -13,6 +13,9 @@ object Utils {
      * @param limit     limited magnitude
      * @return          the limited value
      */
+    fun convertSRXUnitstoPulses(unit: Double): Double{
+        return unit/128.0
+    }
     fun limit(v: Double, limit: Double): Double {
         if (Math.abs(v) < limit)
             return v

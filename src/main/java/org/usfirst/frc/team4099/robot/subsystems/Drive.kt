@@ -3,7 +3,6 @@ package org.usfirst.frc.team4099.robot.subsystems
 
 import com.ctre.phoenix.motorcontrol.*
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
-import com.ctre.phoenix.motorcontrol.can.*
 
 import com.kauailabs.navx.frc.AHRS
 import edu.wpi.first.wpilibj.SPI
@@ -12,10 +11,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import org.usfirst.frc.team4099.lib.drive.DriveSignal
 import org.usfirst.frc.team4099.robot.Constants
 import org.usfirst.frc.team4099.robot.loops.Loop
-import edu.wpi.first.wpilibj.DriverStation
-
-
-
 
 
 class Drive private constructor() : Subsystem {
@@ -28,9 +23,13 @@ class Drive private constructor() : Subsystem {
     private val rightSlave2SRX: TalonSRX = TalonSRX(Constants.Drive.RIGHT_SLAVE_2_ID)
     private val ahrs: AHRS
     private var brakeMode: NeutralMode=NeutralMode.Brake//sets whether the break mode should be coast (no resistence) or by force
+    private var highGear: Boolean=true
 
     enum class DriveControlState {
-        OPEN_LOOP
+        OPEN_LOOP,
+        VELOCITY_SETPOINT,
+        PATH_FOLLOWING,
+        TURN_TO_HEADING //turn in place
     }
 
     private var currentState = DriveControlState.OPEN_LOOP
@@ -39,29 +38,36 @@ class Drive private constructor() : Subsystem {
         leftSlave1SRX.set(ControlMode.Follower, Constants.Drive.LEFT_MASTER_ID.toDouble())
         leftSlave2SRX.set(ControlMode.Follower, Constants.Drive.LEFT_MASTER_ID.toDouble())
         leftMasterSRX.set(ControlMode.PercentOutput, 0.0)
-        leftMasterSRX.setSensorPhase(true)
-        leftMasterSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10)
+        leftMasterSRX.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10)
+        leftMasterSRX.setSensorPhase(false)
         leftMasterSRX.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 5, 10)
-        leftMasterSRX.config_kP(0, Constants.Gains.LEFT_KP, 10)
-        leftMasterSRX.config_kI(0, Constants.Gains.LEFT_KI, 10)
-        leftMasterSRX.config_kD(0, Constants.Gains.LEFT_KD, 10)
-        leftMasterSRX.config_kF(0, Constants.Gains.LEFT_KF, 10)
-        /*val leftSensorPresent = leftMasterSRX.isSensorPresent(FeedbackDevice.CTRE_MagEncoder_Relative)
-        if (leftSensorPresent !== TalonSRX.FeedbackStatusPresent) {
-            DriverStation.reportError("Could not detect left encoder: " + leftSensorPresent, false)
-        }*/
+        leftMasterSRX.config_kP(0, Constants.Gains.LEFT_LOW_KP, 10)
+        leftMasterSRX.config_kI(0, Constants.Gains.LEFT_LOW_KI, 10)
+        leftMasterSRX.config_kD(0, Constants.Gains.LEFT_LOW_KD, 10)
+        leftMasterSRX.config_kF(0, Constants.Gains.LEFT_LOW_KF, 10)
+
+        leftMasterSRX.config_kP(1, Constants.Gains.LEFT_HIGH_KP, 10)
+        leftMasterSRX.config_kI(1, Constants.Gains.LEFT_HIGH_KI, 10)
+        leftMasterSRX.config_kD(1, Constants.Gains.LEFT_HIGH_KD, 10)
+        leftMasterSRX.config_kF(1, Constants.Gains.LEFT_HIGH_KF, 10)
+
 
 
         rightSlave1SRX.set(ControlMode.Follower, Constants.Drive.RIGHT_MASTER_ID.toDouble())
         rightSlave2SRX.set(ControlMode.Follower, Constants.Drive.RIGHT_MASTER_ID.toDouble())
         rightMasterSRX.set(ControlMode.PercentOutput, 0.0)
-        rightMasterSRX.setSensorPhase(true)
-        rightMasterSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10)
+        rightMasterSRX.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10)
+        rightMasterSRX.setSensorPhase(false)
         rightMasterSRX.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 5, 10)
-        rightMasterSRX.config_kP(0, Constants.Gains.RIGHT_KP, 10)
-        rightMasterSRX.config_kI(0, Constants.Gains.RIGHT_KI, 10)
-        rightMasterSRX.config_kD(0, Constants.Gains.RIGHT_KD, 10)
-        rightMasterSRX.config_kF(0, Constants.Gains.RIGHT_KF, 10)
+        rightMasterSRX.config_kP(0, Constants.Gains.RIGHT_LOW_KP, 10)
+        rightMasterSRX.config_kI(0, Constants.Gains.RIGHT_LOW_KI, 10)
+        rightMasterSRX.config_kD(0, Constants.Gains.RIGHT_LOW_KD, 10)
+        rightMasterSRX.config_kF(0, Constants.Gains.RIGHT_LOW_KF, 10)
+
+        rightMasterSRX.config_kP(1, Constants.Gains.RIGHT_HIGH_KP, 10)
+        rightMasterSRX.config_kI(1, Constants.Gains.RIGHT_HIGH_KI, 10)
+        rightMasterSRX.config_kD(1, Constants.Gains.RIGHT_HIGH_KD, 10)
+        rightMasterSRX.config_kF(1, Constants.Gains.RIGHT_HIGH_KF, 10)
 
         leftMasterSRX.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms,10)
         leftMasterSRX.configVelocityMeasurementWindow(32, 10)
@@ -75,6 +81,41 @@ class Drive private constructor() : Subsystem {
         ahrs = AHRS(SPI.Port.kMXP)
 
         this.zeroSensors()
+    }
+
+   /* fun setOpenLoop(signal: DriveSignal) {
+        if (currentState !== DriveControlState.OPEN_LOOP) {
+            leftMasterSRX.set(ControlMode.PercentOutput, 0.0)
+            rightMasterSRX.set(ControlMode.PercentOutput, 0.0)
+            leftMasterSRX.configNominalOutputForward(0.0, 10)
+            rightMasterSRX.configNominalOutputForward(0.0, 10)
+            currentState = DriveControlState.OPEN_LOOP
+            setBrakeMode(NeutralMode.Brake)
+        }
+        setLeftRightPower(signal.leftMotor, signal.rightMotor)
+    }*/
+
+    fun usesTalonVelocityControl(state: DriveControlState): Boolean {
+        if (state == DriveControlState.VELOCITY_SETPOINT || state == DriveControlState.PATH_FOLLOWING) {
+            return true
+        }
+        return false
+    }
+
+    fun usesTalonPositionControl(state: DriveControlState): Boolean {
+        if (state == DriveControlState.TURN_TO_HEADING) {
+            return true
+        }
+        return false
+    }
+
+
+    fun getHighGear():Boolean {
+        return highGear
+    }
+
+    fun setHighGear(choice: Boolean){
+        highGear=choice
     }
 
     fun getBrakeMode(): NeutralMode{
