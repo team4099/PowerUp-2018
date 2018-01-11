@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import com.kauailabs.navx.frc.AHRS
 import edu.wpi.first.wpilibj.SPI
 import edu.wpi.first.wpilibj.Solenoid
+import edu.wpi.first.wpilibj.DoubleSolenoid
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import org.usfirst.frc.team4099.lib.drive.DriveSignal
@@ -20,7 +21,7 @@ class Drive private constructor() : Subsystem {
     private val rightSlave1SRX: TalonSRX = TalonSRX(Constants.Drive.RIGHT_SLAVE_1_ID)
     private val rightSlave2SRX: TalonSRX = TalonSRX(Constants.Drive.RIGHT_SLAVE_2_ID)
     private val ahrs: AHRS
-    private val pneumaticShifter: Solenoid = Solenoid(0,0)
+    private val pneumaticShifter: Solenoid = Solenoid(Constants.Drive.SHIFTER_MODULE,Constants.Drive.SHIFTER_CHANNEL)
     private var highGear: Boolean = false
 
     enum class DriveControlState {
@@ -75,7 +76,7 @@ class Drive private constructor() : Subsystem {
         }
     }
 
-    fun IsHighGear() : Boolean {
+    fun isHighGear() : Boolean {
         return highGear;
     }
 
