@@ -43,4 +43,9 @@ class Constants {
 
     }
 
+    object Intake {
+        val LEFT_INTAKE_TALON_ID = 0
+        val RIGHT_INTAKE_TALON_ID = 1
+    }
+
 }
