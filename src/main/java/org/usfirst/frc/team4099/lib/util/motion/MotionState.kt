@@ -47,8 +47,56 @@ class MotionState {
 
     fun nextTimeAtPos(pos: Double): Double {
         if (epsilonEquals(pos, this.pos, kEpsilon)) {
-
+            return t_
         }
+
+        if (epsilonEquals(acc_,0.0, kEpsilon)) {
+            val d_pos: Double = pos - pos_
+            if(!epsilonEquals(vel_,0.0,kEpsilon) && Math.signum(d_pos) == Math.signum(vel_)) {
+                return d_pos/vel_ + t_
+            }
+            return Double.NaN
+        }
+
+        val disc: Double = vel_*vel_ - 2.0*acc_*(pos_-pos)
+        if (disc<0) {
+            return Double.NaN
+        }
+
+        val sqrt_disc: Double = Math.sqrt(disc)
+        val max_dt: Double = (-vel_+sqrt_disc)/acc_
+        val min_dt: Double = (-vel_-sqrt_disc)/acc_
+        if(min_dt>=0.0 && (max_dt < 0.0 || min_dt < max_dt)) {
+            return t_ + min_dt
+        }
+        if(max_dt >=0) {
+            return t_+max_dt
+        }
+        return Double.NaN
+    }
+
+    override fun toString(): String {
+        return "(t="+t_+", pos="+pos_+", vel="+vel_+", acc="+acc_+")"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return (other is MotionState) && equals(other as MotionState, kEpsilon)
+    }
+
+    fun equals(other: MotionState, epsilon: Double): Boolean {
+        return coincident(other, epsilon) && epsilonEquals(acc_, other.acc_, epsilon)
+    }
+
+    fun coincident(other: MotionState): Boolean {
+        return coincident(other, kEpsilon)
+    }
+
+    fun coincident(other: MotionState, epsilon: Double): Boolean {
+        return epsilonEquals(t_, other.t_, epsilon) && epsilonEquals(pos_, other.pos_, epsilon) && epsilonEquals(vel_, other.vel_, epsilon)
+    }
+
+    fun flipped(): MotionState {
+        return MotionState(t_, -pos_, -vel_, -acc_)
     }
 
     companion object {
