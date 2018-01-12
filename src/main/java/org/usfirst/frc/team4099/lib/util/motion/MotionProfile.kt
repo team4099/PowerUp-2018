@@ -9,18 +9,18 @@ import kotlin.collections.List
 import java.util.Optional
 
 class MotionProfile {
-    protected var mSegments_: List<MotionSegment>
+    protected var mSegments_: MutableList<MotionSegment>
 
     constructor() {
         mSegments_ = ArrayList<MotionSegment>()
     }
 
-    constructor(segments: List<MotionSegment>) {
+    constructor(segments: MutableList<MotionSegment>) {
         mSegments_ = segments
     }
 
     fun isValid(): Boolean {
-        var prev_seg: MotionSegment = null
+        var prev_seg: MotionSegment? = null
         for (s: MotionSegment in mSegments_) {
             if (!s.isValid()) {
                 return false
@@ -43,7 +43,7 @@ class MotionProfile {
             return Optional.of(startState())
         }
 
-        if (t > endTime() && t - kEpsiln >= endTime()) {
+        if (t > endTime() && t - kEpsilon >= endTime()) {
             return Optional.of(endState())
         }
 
@@ -64,7 +64,7 @@ class MotionProfile {
         }
         for (s: MotionSegment in mSegments_) {
             if (s.containsTime(t)) {
-                return s.start() extrapolate(t)
+                return s.start().extrapolate(t)
             }
         }
 
@@ -89,12 +89,15 @@ class MotionProfile {
     }
 
     fun trimBeforeTime(t: Double) {
-        var iterator: Iterator<MotionSegment> = mSegments_.iterator()
+        var iterator: MutableIterator<MotionSegment> = mSegments_.iterator()
         while (iterator.hasNext()){
             var s: MotionSegment = iterator.next()
             if (s.end().t() <=t) {
                 iterator.remove()
                 continue
+            }
+            if (s.start().t() <=t) {
+                s.setStart(s.start().extrapolate(t))
             }
         }
     }
@@ -109,8 +112,8 @@ class MotionProfile {
     }
 
     fun consolidate() {
-        var iterator: Iterator<MotionSegment> = mSegments_.iterator()
-        while (iterator.hasNext() && mSegments_.size() > 1) {
+        var iterator: MutableIterator<MotionSegment> = mSegments_.iterator()
+        while (iterator.hasNext() && mSegments_.size > 1) {
             var s: MotionSegment = iterator.next()
             if(s.start().coincident(s.end())){
                 iterator.remove()
@@ -123,7 +126,7 @@ class MotionProfile {
             System.err.println("Error: appending to empty profile")
             return
         }
-        var last_end_state: MotionState = mSegments_.get(mSegments_.size()-1).end()
+        var last_end_state: MotionState = mSegments_.get(mSegments_.size-1).end()
         var new_start_state: MotionState = MotionState(last_end_state.t(), last_end_state.pos(), last_end_state.vel(), acc)
         appendSegment(MotionSegment(new_start_state, new_start_state.extrapolate(new_start_state.t()+dt)))
     }
@@ -164,7 +167,7 @@ class MotionProfile {
         if (isEmpty()) {
             return MotionState.kInvalidState
         }
-        return mSegments_.get(mSegments_.size()-1).end()
+        return mSegments_.get(mSegments_.size-1).end()
     }
 
     fun endTime(): Double {

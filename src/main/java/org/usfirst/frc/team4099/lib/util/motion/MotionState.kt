@@ -80,7 +80,7 @@ class MotionState {
     }
 
     override fun equals(other: Any?): Boolean {
-        return (other is MotionState) && equals(other as MotionState, kEpsilon)
+        return (other is MotionState) && equals(other, kEpsilon)
     }
 
     fun equals(other: MotionState, epsilon: Double): Boolean {
