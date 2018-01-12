@@ -1,7 +1,7 @@
 package org.usfirst.frc.team4099.lib.util.motion
 
 import org.usfirst.frc.team4099.lib.util.Utils.epsilonEquals
-import org.usfirst.frc.team4099.lib.util.motion.motionUtil.kEpsilon
+import org.usfirst.frc.team4099.lib.util.motion.MotionUtil.kEpsilon
 
 class MotionSegment {
     protected var mStart_: MotionState = MotionState(0.0,0.0,0.0,0.0)
