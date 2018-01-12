@@ -3,6 +3,8 @@ package org.usfirst.frc.team4099.robot.subsystems
 
 import com.ctre.phoenix.motorcontrol.*
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
+import com.ctre.phoenix.motorcontrol.can.BaseMotorController
+import com.ctre.phoenix.motorcontrol.ControlMode
 
 import com.kauailabs.navx.frc.AHRS
 import edu.wpi.first.wpilibj.SPI
@@ -11,6 +13,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import org.usfirst.frc.team4099.lib.drive.DriveSignal
 import org.usfirst.frc.team4099.robot.Constants
 import org.usfirst.frc.team4099.robot.loops.Loop
+import org.usfirst.frc.team4099.robot.subsystems.Drive.DriveControlState
+import com.ctre.CANTalon
+
+
+
+
 
 
 class Drive private constructor() : Subsystem {
@@ -83,7 +91,7 @@ class Drive private constructor() : Subsystem {
         this.zeroSensors()
     }
 
-   /* fun setOpenLoop(signal: DriveSignal) {
+    fun setOpenLoop(signal: DriveSignal) {
         if (currentState !== DriveControlState.OPEN_LOOP) {
             leftMasterSRX.set(ControlMode.PercentOutput, 0.0)
             rightMasterSRX.set(ControlMode.PercentOutput, 0.0)
@@ -93,7 +101,18 @@ class Drive private constructor() : Subsystem {
             setBrakeMode(NeutralMode.Brake)
         }
         setLeftRightPower(signal.leftMotor, signal.rightMotor)
-    }*/
+    }
+
+
+
+
+    fun onStart(timestamp: Double){
+        synchronized (this) {
+            setOpenLoop(DriveSignal.NEUTRAL)
+            setBrakeMode(NeutralMode.Coast)
+            setVelocitySetpoint(0, 0)
+        }
+    }
 
     fun usesTalonVelocityControl(state: DriveControlState): Boolean {
         if (state == DriveControlState.VELOCITY_SETPOINT || state == DriveControlState.PATH_FOLLOWING) {
@@ -134,6 +153,16 @@ class Drive private constructor() : Subsystem {
         }
     }
 
+    override fun stop(){
+        synchronized(this){
+            setOpenLoop(DriveSignal.NEUTRAL)
+        }
+    }
+
+    fun resetEncoders(){
+
+    }
+
     fun getAHRS(): AHRS? {
         return if (ahrs.isConnected) ahrs else null
     }
@@ -166,6 +195,30 @@ class Drive private constructor() : Subsystem {
         }
     }
 
+    @Synchronized
+    fun setVelocitySetpoint(left_inches_per_sec: Double, right_inches_per_sec: Double) {
+        configureTalonsForVelocityControl()
+        currentState = DriveControlState.VELOCITY_SETPOINT
+        updateVelocitySetpoint(left_inches_per_sec, right_inches_per_sec)
+    }
+
+    private fun configureTalonsForVelocityControl() { //should further review cause im bad
+        if (!usesTalonVelocityControl(currentState)) {
+            // We entered a velocity control state.
+            leftMasterSRX.set(ControlMode.Velocity,0.0) //velocity  output value is in position change / 100ms
+            leftMasterSRX.configNominalOutputReverse(Constants.Velocity.driveHighGearNominalOutput, 10)
+            leftMasterSRX.selectProfileSlot(Constants.Velocity.highGearVelocityControlSlot, 0)
+            leftMasterSRX.configPeakOutputForward(Constants.Velocity.driveHighGearNominalOutput, 10)
+            rightMasterSRX.set(ControlMode.Velocity,0.0) //velocity  output value is in position change / 100ms
+            rightMasterSRX.configNominalOutputReverse(Constants.Velocity.driveHighGearNominalOutput, 10)
+            rightMasterSRX.selectProfileSlot(Constants.Velocity.highGearVelocityControlSlot, 0)
+            rightMasterSRX.configPeakOutputForward(Constants.Velocity.driveHighGearNominalOutput, 10)
+            setBrakeMode(NeutralMode.Brake)
+        }
+    }
+
+    private d
+
     /**
      * Powers the left and right talons during OPEN_LOOP
      * @param left
@@ -176,18 +229,7 @@ class Drive private constructor() : Subsystem {
         rightMasterSRX.set(ControlMode.PercentOutput, right)
     }
 
-    @Synchronized
-    fun setOpenLoop(signal: DriveSignal) {
-        if (currentState != DriveControlState.OPEN_LOOP) {
-            currentState = DriveControlState.OPEN_LOOP
-        }
 
-        setLeftRightPower(signal.leftMotor, signal.rightMotor)
-    }
-
-    @Synchronized override fun stop() {
-        setOpenLoop(DriveSignal.NEUTRAL)
-    }
 
     val loop: Loop = object : Loop {
         override fun onStart() {
