@@ -45,6 +45,13 @@ class Constants {
 
 
     }
+    object Arm {
+        val MASTER_SRX_ID = 2
+        val SLAVE_SRX_1_ID = 3
+        val SLAVE_SRX_2_ID = 4
+        val SLAVE_SRX_3_ID = 5
+
+    }
 
 
 
