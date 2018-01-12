@@ -5,5 +5,8 @@ package org.usfirst.frc.team4099.lib.util.motion
  */
 
 class MotionUtil {
-    var kEpsilon = 1e-6
+    companion object {
+        var kEpsilon = 1e-6
+    }
+
 }
