@@ -11,7 +11,7 @@ class Intake private constructor() : Subsystem {
     private val leftTalon: Talon = Talon(Constants.Intake.LEFT_INTAKE_TALON_ID)
 
     var intakeState = IntakeState.STOP
-    private var intakePower: Double = 0.toDouble()
+    private var intakePower: Double = 0.0
 
 
     enum class IntakeState {
@@ -34,8 +34,8 @@ class Intake private constructor() : Subsystem {
     }
 
     private fun setIntakePower(power: Double) {
-        rightTalon.set(kotlin.math.abs(power))
-        leftTalon.set(-kotlin.math.abs(power))
+        rightTalon.set(Math.abs(power))
+        leftTalon.set(-Math.abs(power))
     }
 
     val loop: Loop = object : Loop {
@@ -54,16 +54,16 @@ class Intake private constructor() : Subsystem {
             }
         }
 
-    override fun onStop() {
-        stop()
-    }
+        override fun onStop() {
+            stop()
+        }
 
-}
+    }
     companion object {
         val instance = Intake()
     }
 
     override fun zeroSensors() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
     }
 }
