@@ -7,22 +7,19 @@ import org.usfirst.frc.team4099.robot.loops.Loop
 
 class Intake private constructor() : Subsystem {
 
-    private val rightTalon: Talon = Talon(Constants.Intake.RIGHT_INTAKE_TALON_ID)
-    private val leftTalon: Talon = Talon(Constants.Intake.LEFT_INTAKE_TALON_ID)
+    private val rightTalon = Talon(Constants.Intake.RIGHT_INTAKE_TALON_ID)
+    private val leftTalon = Talon(Constants.Intake.LEFT_INTAKE_TALON_ID)
 
     var intakeState = IntakeState.STOP
-    private var intakePower: Double = 0.0
-
+    private var intakePower = 0.0
 
     enum class IntakeState {
         IN, STOP, OUT
     }
 
-
     override fun outputToSmartDashboard() {
         SmartDashboard.putNumber("intakePower", intakePower)
     }
-
 
     @Synchronized override fun stop() {
         setIntakeMode(IntakeState.STOP)
@@ -54,16 +51,13 @@ class Intake private constructor() : Subsystem {
             }
         }
 
-        override fun onStop() {
-            stop()
-        }
+        override fun onStop() = stop()
 
     }
+
     companion object {
         val instance = Intake()
     }
 
-    override fun zeroSensors() {
-
-    }
+    override fun zeroSensors() { }
 }
