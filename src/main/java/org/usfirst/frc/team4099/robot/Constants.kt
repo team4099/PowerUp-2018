@@ -41,13 +41,20 @@ class Constants {
 
         val CONNECTION_TIMEOUT_MILLIS = 1000
         val NUMBER_OF_TRIES = 5
-
-
     }
 
     object Intake {
         val LEFT_INTAKE_TALON_ID = 0
         val RIGHT_INTAKE_TALON_ID = 1
+    }
+
+    object Wrist {
+        val WRIST_TALON_ID = 6
+
+        val KP = 0.0115
+        val KI = 0.0000
+        val KD = 0.0000
+        val KF = 0.0000
     }
 
 }
