@@ -22,12 +22,8 @@ class Intake private constructor() : Subsystem {
     }
 
     @Synchronized override fun stop() {
-        setIntakeMode(IntakeState.STOP)
+        intakeState = IntakeState.STOP
         setIntakePower(0.0)
-    }
-
-    fun setIntakeMode(state: IntakeState) {
-        intakeState = state
     }
 
     private fun setIntakePower(power: Double) {
