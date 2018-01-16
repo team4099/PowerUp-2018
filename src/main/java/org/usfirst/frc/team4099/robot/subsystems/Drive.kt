@@ -32,6 +32,7 @@ class Drive private constructor() : Subsystem {
     private val ahrs: AHRS
     private var brakeMode: NeutralMode=NeutralMode.Brake//sets whether the break mode should be coast (no resistence) or by force
     private var highGear: Boolean=true
+    private var robotState : RobotState = RobotState().getInstance()
 
     enum class DriveControlState {
         OPEN_LOOP,
@@ -91,6 +92,11 @@ class Drive private constructor() : Subsystem {
         this.zeroSensors()
     }
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> 0add65c02b5151abbc76a58d6efca56b472213a2
     fun setOpenLoop(signal: DriveSignal) {
         if (currentState !== DriveControlState.OPEN_LOOP) {
             leftMasterSRX.set(ControlMode.PercentOutput, 0.0)
@@ -114,6 +120,7 @@ class Drive private constructor() : Subsystem {
         }
     }
 
+>>>>>>> 0add65c02b5151abbc76a58d6efca56b472213a2
     fun usesTalonVelocityControl(state: DriveControlState): Boolean {
         if (state == DriveControlState.VELOCITY_SETPOINT || state == DriveControlState.PATH_FOLLOWING) {
             return true
@@ -230,7 +237,30 @@ class Drive private constructor() : Subsystem {
         rightMasterSRX.set(ControlMode.PercentOutput, right)
     }
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+    @Synchronized
+    fun setOpenLoop(signal: DriveSignal) {
+        if (currentState !== DriveControlState.OPEN_LOOP) {
+            leftMasterSRX.set(ControlMode.PercentOutput, 0.0)
+            rightMasterSRX.set(ControlMode.PercentOutput, 0.0)
+            leftMasterSRX.configNominalOutputForward(0.0, 10)
+            rightMasterSRX.configNominalOutputForward(0.0, 10)
+            currentState = DriveControlState.OPEN_LOOP
+            setBrakeMode(NeutralMode.Brake)
+        }
+        setLeftRightPower(signal.leftMotor, signal.rightMotor)
+    }
 
+    @Synchronized override fun stop() {
+        setOpenLoop(DriveSignal.NEUTRAL)
+    }
+=======
+
+>>>>>>> 0add65c02b5151abbc76a58d6efca56b472213a2
+=======
+
+>>>>>>> 0add65c02b5151abbc76a58d6efca56b472213a2
 
     val loop: Loop = object : Loop {
         override fun onStart() {
@@ -241,8 +271,23 @@ class Drive private constructor() : Subsystem {
             synchronized(this@Drive) {
                 when (currentState) {
                     DriveControlState.OPEN_LOOP -> {
+                        return
+                    }
+                    DriveControlState.VELOCITY_SETPOINT ->{
+                        return
+                    }
+                    /*DriveControlState.PATH_FOLLOWING ->{
+                        if (mPathFollower != null) {
+                            updatePathFollower(timestamp);
+                            mCSVWriter.add(mPathFollower.getDebug());
+                        }
+                    }*/
+                    DriveControlState.TURN_TO_HEADING -> {
+                        updateTurnToHeading(timestamp);
+                        return;
                     }
                     else -> {
+                        System.out.println("Unexpected drive control state: " + currentState)
                     }
                 }
             }
@@ -252,6 +297,37 @@ class Drive private constructor() : Subsystem {
             setOpenLoop(DriveSignal.NEUTRAL)
         }
     }
+
+    private fun updateTurnToHeading(timestamp: Double) {
+        /*if (Superstructure.getInstance().isShooting()) {
+            // Do not update heading while shooting - just base lock. By not updating the setpoint, we will fight to
+            // keep position.
+            return
+        }*/
+        val field_to_robot = currentState.getLatestFieldToVehicle().getValue().getRotation()
+
+        // Figure out the rotation necessary to turn to face the goal.
+        val robot_to_target = field_to_robot.inverse().rotateBy(mTargetHeading)
+
+        // Check if we are on target
+        val kGoalPosTolerance = 0.75 // degrees
+        val kGoalVelTolerance = 5.0 // inches per second
+        if (Math.abs(robot_to_target.getDegrees()) < kGoalPosTolerance
+                && Math.abs(getLeftVelocityInchesPerSec()) < kGoalVelTolerance
+                && Math.abs(getRightVelocityInchesPerSec()) < kGoalVelTolerance) {
+            // Use the current setpoint and base lock.
+            mIsOnTarget = true
+            updatePositionSetpoint(getLeftDistanceInches(), getRightDistanceInches())
+            return
+        }
+
+        val wheel_delta = Kinematics
+                .inverseKinematics(Twist2d(0, 0, robot_to_target.getRadians()))
+        updatePositionSetpoint(wheel_delta.left + getLeftDistanceInches(),
+                wheel_delta.right + getRightDistanceInches())
+    }
+
+
 
     companion object {
         val instance = Drive()
