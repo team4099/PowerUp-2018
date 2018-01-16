@@ -70,7 +70,7 @@ class MotionProfileGoal {
             return false
         }
         val mpg: MotionProfileGoal = other as MotionProfileGoal
-        return (other.comp_behav() == comp_behav()) && (other.pos() == pos()) && (other.max_abs_vel() == max_abs_vel()) && (other.pos_toler() == pos_toler()) && (other.vel_toler() == vel_toler())
+        return (other.comp_behav_ == comp_behav_) && (other.pos_ == pos_) && (other.max_abs_vel_ == max_abs_vel_) && (other.pos_toler_ == pos_toler_) && (other.vel_toler_ == vel_toler_)
     }
 
     enum class CompletionBehavior {

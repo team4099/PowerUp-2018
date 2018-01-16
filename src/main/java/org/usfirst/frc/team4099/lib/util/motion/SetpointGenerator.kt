@@ -16,7 +16,7 @@ class SetpointGenerator() {
     }
 
     @Synchronized fun getSetpoint(constraints: MotionProfileConstraints, goal: MotionProfileGoal, prev_state: MotionState, t: Double): Setpoint {
-        var regenerate: Boolean = mConstraints == null || !mConstraints.equals(constraints) || mGoal == null || !mGoal.equals(goal) || mProfile == null
+        var regenerate: Boolean = mConstraints == null || mConstraints != constraints || mGoal == null || mGoal != goal || mProfile == null
         if(!regenerate && !mProfile!!.isEmpty()) {
             var expected_state: Optional<MotionState> = mProfile!!.stateByTime(prev_state.t())
             regenerate = !expected_state.isPresent() || !expected_state.get().equals(prev_state)
@@ -40,14 +40,14 @@ class SetpointGenerator() {
             }
 
             mProfile!!.trimBeforeTime(t)
-            rv = Setpoint(setpoint, mProfile!!.isEmpty() || mGoal.atGoalState(setpoint))
+            rv = Setpoint(setpoint, mProfile!!.isEmpty() || mGoal!!.atGoalState(setpoint))
         }
         if (rv == null){
             rv = Setpoint(prev_state, true)
         }
 
         if (rv.final_setpoint) {
-            rv.motion_state = MotionState(rv.motion_state.t(), mGoal.pos(), Math.signum(rv.motion_state.vel()) * Math.max(mGoal.max_abs_vel(), Math.abs(rv.motion_state.vel())), 0.0)
+            rv.motion_state = MotionState(rv.motion_state.t(), mGoal!!.pos(), Math.signum(rv.motion_state.vel()) * Math.max(mGoal!!.max_abs_vel(), Math.abs(rv.motion_state.vel())), 0.0)
         }
 
         return rv
