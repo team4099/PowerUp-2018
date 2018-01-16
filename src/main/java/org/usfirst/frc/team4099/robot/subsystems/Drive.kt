@@ -216,8 +216,9 @@ class Drive private constructor() : Subsystem {
             setBrakeMode(NeutralMode.Brake)
         }
     }
+     private fun configureTalonsforPositionControl(){
 
-    private d
+     }
 
     /**
      * Powers the left and right talons during OPEN_LOOP
