@@ -24,6 +24,8 @@ class Constants {
         val RIGHT_HIGH_KI = 0.0000
         val RIGHT_HIGH_KD = 0.0000
         val RIGHT_HIGH_KF = 0.0000
+
+        //subject to change
     }
 
     object Drive {
@@ -33,11 +35,18 @@ class Constants {
         val RIGHT_MASTER_ID = 4
         val RIGHT_SLAVE_1_ID = 5
         val RIGHT_SLAVE_2_ID = 0
+
+        val HIGH_GEAR_MAX_SETPOINT = 17.0 * 12.0 //17 fps
+    }
+
+    object Wheels {
+        val DRIVE_WHEEL_DIAMETER_INCHES=0
     }
 
     object Velocity {
         val highGearVelocityControlSlot=0
         val driveHighGearNominalOutput=1.0 //percentage
+        val driveLowGearNominalOutput=1.0
     }
 
     object Joysticks {

@@ -15,6 +15,9 @@ import org.usfirst.frc.team4099.robot.Constants
 import org.usfirst.frc.team4099.robot.loops.Loop
 import org.usfirst.frc.team4099.robot.subsystems.Drive.DriveControlState
 import com.ctre.CANTalon
+import sun.awt.windows.ThemeReader.getPosition
+
+
 
 
 
@@ -32,7 +35,6 @@ class Drive private constructor() : Subsystem {
     private val ahrs: AHRS
     private var brakeMode: NeutralMode=NeutralMode.Brake//sets whether the break mode should be coast (no resistence) or by force
     private var highGear: Boolean=true
-    private var robotState : RobotState = RobotState().getInstance()
 
     enum class DriveControlState {
         OPEN_LOOP,
@@ -92,11 +94,8 @@ class Drive private constructor() : Subsystem {
         this.zeroSensors()
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 0add65c02b5151abbc76a58d6efca56b472213a2
+
+    @Synchronized
     fun setOpenLoop(signal: DriveSignal) {
         if (currentState !== DriveControlState.OPEN_LOOP) {
             leftMasterSRX.set(ControlMode.PercentOutput, 0.0)
@@ -116,11 +115,10 @@ class Drive private constructor() : Subsystem {
         synchronized (this) {
             setOpenLoop(DriveSignal.NEUTRAL)
             setBrakeMode(NeutralMode.Coast)
-            setVelocitySetpoint(0, 0)
+            setVelocitySetpoint(0.0, 0.0) //could update in future
         }
     }
 
->>>>>>> 0add65c02b5151abbc76a58d6efca56b472213a2
     fun usesTalonVelocityControl(state: DriveControlState): Boolean {
         if (state == DriveControlState.VELOCITY_SETPOINT || state == DriveControlState.PATH_FOLLOWING) {
             return true
@@ -209,6 +207,41 @@ class Drive private constructor() : Subsystem {
         updateVelocitySetpoint(left_inches_per_sec, right_inches_per_sec)
     }
 
+    @Synchronized
+    private fun updateVelocitySetpoint(leftInchesPerSec: Double, rightInchesPerSec: Double){
+        if(usesTalonVelocityControl(currentState)){
+            val maxDesired: Double=Math.max(Math.abs(leftInchesPerSec), Math.abs(rightInchesPerSec))
+            var scale: Double;
+            if (maxDesired > Constants.Drive.HIGH_GEAR_MAX_SETPOINT){
+                scale=Constants.Drive.HIGH_GEAR_MAX_SETPOINT/ maxDesired
+            }
+            else{
+                scale=1.0
+            }
+            leftMasterSRX.set(ControlMode.Velocity,inchesPerSecondToRpm(leftInchesPerSec*scale))
+            rightMasterSRX.set(ControlMode.Velocity,inchesPerSecondToRpm(rightInchesPerSec*scale))
+        }
+        else {
+            print("Incorrect Velocity Control Mode")
+            leftMasterSRX.set(ControlMode.Velocity,0.0)
+            rightMasterSRX.set(ControlMode.Velocity,0.0)
+        }
+
+    }
+
+    @Synchronized
+    private fun updatePositionSetpoint(leftPositionInches: Double, rightPositionInches: Double){
+        if (usesTalonPositionControl(currentState)){
+            leftMasterSRX.set(ControlMode.MotionMagic,leftPositionInches)
+            leftMasterSRX.set(ControlMode.MotionMagic,leftPositionInches)
+        }
+        else {
+            print("Bad position control state")
+            leftMasterSRX.set(ControlMode.MotionMagic,0.0)
+            rightMasterSRX.set(ControlMode.MotionMagic,0.0)
+        }
+    }
+
     private fun configureTalonsForVelocityControl() { //should further review cause im bad
         if (!usesTalonVelocityControl(currentState)) {
             // We entered a velocity control state.
@@ -224,6 +257,18 @@ class Drive private constructor() : Subsystem {
         }
     }
      private fun configureTalonsforPositionControl(){
+         if (!usesTalonPositionControl(currentState)) {
+             // We entered a position control state.
+             leftMasterSRX.set(ControlMode.MotionMagic,0.0);
+             leftMasterSRX.configNominalOutputReverse(1.0, 10);
+             leftMasterSRX.selectProfileSlot(0, 0);
+             leftMasterSRX.configNominalOutputForward(Constants.Velocity.driveLowGearNominalOutput, 10);
+             rightMasterSRX.set(ControlMode.MotionMagic,0.0);
+             rightMasterSRX.configNominalOutputReverse(1.0, 10);
+             rightMasterSRX.selectProfileSlot(0, 0);
+             rightMasterSRX.configNominalOutputForward(Constants.Velocity.driveLowGearNominalOutput, 10);
+             setBrakeMode(NeutralMode.Brake);
+         }
 
      }
 
@@ -237,30 +282,7 @@ class Drive private constructor() : Subsystem {
         rightMasterSRX.set(ControlMode.PercentOutput, right)
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    @Synchronized
-    fun setOpenLoop(signal: DriveSignal) {
-        if (currentState !== DriveControlState.OPEN_LOOP) {
-            leftMasterSRX.set(ControlMode.PercentOutput, 0.0)
-            rightMasterSRX.set(ControlMode.PercentOutput, 0.0)
-            leftMasterSRX.configNominalOutputForward(0.0, 10)
-            rightMasterSRX.configNominalOutputForward(0.0, 10)
-            currentState = DriveControlState.OPEN_LOOP
-            setBrakeMode(NeutralMode.Brake)
-        }
-        setLeftRightPower(signal.leftMotor, signal.rightMotor)
-    }
 
-    @Synchronized override fun stop() {
-        setOpenLoop(DriveSignal.NEUTRAL)
-    }
-=======
-
->>>>>>> 0add65c02b5151abbc76a58d6efca56b472213a2
-=======
-
->>>>>>> 0add65c02b5151abbc76a58d6efca56b472213a2
 
     val loop: Loop = object : Loop {
         override fun onStart() {
@@ -283,7 +305,7 @@ class Drive private constructor() : Subsystem {
                         }
                     }*/
                     DriveControlState.TURN_TO_HEADING -> {
-                        updateTurnToHeading(timestamp);
+                        //updateTurnToHeading(timestamp);
                         return;
                     }
                     else -> {
@@ -298,7 +320,7 @@ class Drive private constructor() : Subsystem {
         }
     }
 
-    private fun updateTurnToHeading(timestamp: Double) {
+   /* private fun updateTurnToHeading(timestamp: Double) {
         /*if (Superstructure.getInstance().isShooting()) {
             // Do not update heading while shooting - just base lock. By not updating the setpoint, we will fight to
             // keep position.
@@ -325,8 +347,39 @@ class Drive private constructor() : Subsystem {
                 .inverseKinematics(Twist2d(0, 0, robot_to_target.getRadians()))
         updatePositionSetpoint(wheel_delta.left + getLeftDistanceInches(),
                 wheel_delta.right + getRightDistanceInches())
+    }*/
+
+    private fun rotationsToInches(rotations: Double): Double {
+        return rotations * (Constants.Wheels.DRIVE_WHEEL_DIAMETER_INCHES * Math.PI)
     }
 
+    private fun rpmToInchesPerSecond(rpm: Double): Double {
+        return rotationsToInches(rpm) / 60
+    }
+
+    private fun inchesToRotations(inches: Double): Double {
+        return inches / (Constants.Wheels.DRIVE_WHEEL_DIAMETER_INCHES * Math.PI)
+    }
+
+    private fun inchesPerSecondToRpm(inches_per_second: Double): Double {
+        return inchesToRotations(inches_per_second) * 60
+    }
+
+    fun getLeftDistanceInches(): Double {
+        return rotationsToInches(leftMasterSRX.getSelectedSensorPosition(0).toDouble())
+    }
+
+    fun getRightDistanceInches(): Double {
+        return rotationsToInches(rightMasterSRX.getSelectedSensorPosition(0).toDouble())
+    }
+
+    fun getLeftVelocityInchesPerSec(): Double {
+        return rpmToInchesPerSecond(leftMasterSRX.getSelectedSensorVelocity(0).toDouble())
+    }
+
+    fun getRightVelocityInchesPerSec(): Double {
+        return rpmToInchesPerSecond(rightMasterSRX.getSelectedSensorVelocity(0).toDouble())
+    }
 
 
     companion object {
