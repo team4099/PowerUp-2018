@@ -93,7 +93,10 @@ class Drive private constructor() : Subsystem {
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 0add65c02b5151abbc76a58d6efca56b472213a2
     fun setOpenLoop(signal: DriveSignal) {
         if (currentState !== DriveControlState.OPEN_LOOP) {
             leftMasterSRX.set(ControlMode.PercentOutput, 0.0)
@@ -234,6 +237,7 @@ class Drive private constructor() : Subsystem {
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     @Synchronized
     fun setOpenLoop(signal: DriveSignal) {
         if (currentState !== DriveControlState.OPEN_LOOP) {
@@ -250,6 +254,9 @@ class Drive private constructor() : Subsystem {
     @Synchronized override fun stop() {
         setOpenLoop(DriveSignal.NEUTRAL)
     }
+=======
+
+>>>>>>> 0add65c02b5151abbc76a58d6efca56b472213a2
 =======
 
 >>>>>>> 0add65c02b5151abbc76a58d6efca56b472213a2
