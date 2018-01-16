@@ -3,6 +3,8 @@ package org.usfirst.frc.team4099.robot.subsystems
 
 import com.ctre.phoenix.motorcontrol.*
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
+import com.ctre.phoenix.motorcontrol.can.BaseMotorController
+import com.ctre.phoenix.motorcontrol.ControlMode
 
 import com.kauailabs.navx.frc.AHRS
 import edu.wpi.first.wpilibj.SPI
@@ -11,6 +13,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import org.usfirst.frc.team4099.lib.drive.DriveSignal
 import org.usfirst.frc.team4099.robot.Constants
 import org.usfirst.frc.team4099.robot.loops.Loop
+import org.usfirst.frc.team4099.robot.subsystems.Drive.DriveControlState
+import com.ctre.CANTalon
+
+
+
+
 
 
 class Drive private constructor() : Subsystem {
@@ -24,6 +32,7 @@ class Drive private constructor() : Subsystem {
     private val ahrs: AHRS
     private var brakeMode: NeutralMode=NeutralMode.Brake//sets whether the break mode should be coast (no resistence) or by force
     private var highGear: Boolean=true
+    private var robotState : RobotState = RobotState().getInstance()
 
     enum class DriveControlState {
         OPEN_LOOP,
@@ -83,7 +92,9 @@ class Drive private constructor() : Subsystem {
         this.zeroSensors()
     }
 
-   /* fun setOpenLoop(signal: DriveSignal) {
+<<<<<<< HEAD
+=======
+    fun setOpenLoop(signal: DriveSignal) {
         if (currentState !== DriveControlState.OPEN_LOOP) {
             leftMasterSRX.set(ControlMode.PercentOutput, 0.0)
             rightMasterSRX.set(ControlMode.PercentOutput, 0.0)
@@ -93,8 +104,20 @@ class Drive private constructor() : Subsystem {
             setBrakeMode(NeutralMode.Brake)
         }
         setLeftRightPower(signal.leftMotor, signal.rightMotor)
-    }*/
+    }
 
+
+
+
+    fun onStart(timestamp: Double){
+        synchronized (this) {
+            setOpenLoop(DriveSignal.NEUTRAL)
+            setBrakeMode(NeutralMode.Coast)
+            setVelocitySetpoint(0, 0)
+        }
+    }
+
+>>>>>>> 0add65c02b5151abbc76a58d6efca56b472213a2
     fun usesTalonVelocityControl(state: DriveControlState): Boolean {
         if (state == DriveControlState.VELOCITY_SETPOINT || state == DriveControlState.PATH_FOLLOWING) {
             return true
@@ -134,6 +157,16 @@ class Drive private constructor() : Subsystem {
         }
     }
 
+    override fun stop(){
+        synchronized(this){
+            setOpenLoop(DriveSignal.NEUTRAL)
+        }
+    }
+
+    fun resetEncoders(){
+
+    }
+
     fun getAHRS(): AHRS? {
         return if (ahrs.isConnected) ahrs else null
     }
@@ -166,6 +199,30 @@ class Drive private constructor() : Subsystem {
         }
     }
 
+    @Synchronized
+    fun setVelocitySetpoint(left_inches_per_sec: Double, right_inches_per_sec: Double) {
+        configureTalonsForVelocityControl()
+        currentState = DriveControlState.VELOCITY_SETPOINT
+        updateVelocitySetpoint(left_inches_per_sec, right_inches_per_sec)
+    }
+
+    private fun configureTalonsForVelocityControl() { //should further review cause im bad
+        if (!usesTalonVelocityControl(currentState)) {
+            // We entered a velocity control state.
+            leftMasterSRX.set(ControlMode.Velocity,0.0) //velocity  output value is in position change / 100ms
+            leftMasterSRX.configNominalOutputReverse(Constants.Velocity.driveHighGearNominalOutput, 10)
+            leftMasterSRX.selectProfileSlot(Constants.Velocity.highGearVelocityControlSlot, 0)
+            leftMasterSRX.configPeakOutputForward(Constants.Velocity.driveHighGearNominalOutput, 10)
+            rightMasterSRX.set(ControlMode.Velocity,0.0) //velocity  output value is in position change / 100ms
+            rightMasterSRX.configNominalOutputReverse(Constants.Velocity.driveHighGearNominalOutput, 10)
+            rightMasterSRX.selectProfileSlot(Constants.Velocity.highGearVelocityControlSlot, 0)
+            rightMasterSRX.configPeakOutputForward(Constants.Velocity.driveHighGearNominalOutput, 10)
+            setBrakeMode(NeutralMode.Brake)
+        }
+    }
+
+    private d
+
     /**
      * Powers the left and right talons during OPEN_LOOP
      * @param left
@@ -176,18 +233,26 @@ class Drive private constructor() : Subsystem {
         rightMasterSRX.set(ControlMode.PercentOutput, right)
     }
 
+<<<<<<< HEAD
     @Synchronized
     fun setOpenLoop(signal: DriveSignal) {
-        if (currentState != DriveControlState.OPEN_LOOP) {
+        if (currentState !== DriveControlState.OPEN_LOOP) {
+            leftMasterSRX.set(ControlMode.PercentOutput, 0.0)
+            rightMasterSRX.set(ControlMode.PercentOutput, 0.0)
+            leftMasterSRX.configNominalOutputForward(0.0, 10)
+            rightMasterSRX.configNominalOutputForward(0.0, 10)
             currentState = DriveControlState.OPEN_LOOP
+            setBrakeMode(NeutralMode.Brake)
         }
-
         setLeftRightPower(signal.leftMotor, signal.rightMotor)
     }
 
     @Synchronized override fun stop() {
         setOpenLoop(DriveSignal.NEUTRAL)
     }
+=======
+
+>>>>>>> 0add65c02b5151abbc76a58d6efca56b472213a2
 
     val loop: Loop = object : Loop {
         override fun onStart() {
@@ -198,8 +263,23 @@ class Drive private constructor() : Subsystem {
             synchronized(this@Drive) {
                 when (currentState) {
                     DriveControlState.OPEN_LOOP -> {
+                        return
+                    }
+                    DriveControlState.VELOCITY_SETPOINT ->{
+                        return
+                    }
+                    /*DriveControlState.PATH_FOLLOWING ->{
+                        if (mPathFollower != null) {
+                            updatePathFollower(timestamp);
+                            mCSVWriter.add(mPathFollower.getDebug());
+                        }
+                    }*/
+                    DriveControlState.TURN_TO_HEADING -> {
+                        updateTurnToHeading(timestamp);
+                        return;
                     }
                     else -> {
+                        System.out.println("Unexpected drive control state: " + currentState)
                     }
                 }
             }
@@ -209,6 +289,37 @@ class Drive private constructor() : Subsystem {
             setOpenLoop(DriveSignal.NEUTRAL)
         }
     }
+
+    private fun updateTurnToHeading(timestamp: Double) {
+        /*if (Superstructure.getInstance().isShooting()) {
+            // Do not update heading while shooting - just base lock. By not updating the setpoint, we will fight to
+            // keep position.
+            return
+        }*/
+        val field_to_robot = currentState.getLatestFieldToVehicle().getValue().getRotation()
+
+        // Figure out the rotation necessary to turn to face the goal.
+        val robot_to_target = field_to_robot.inverse().rotateBy(mTargetHeading)
+
+        // Check if we are on target
+        val kGoalPosTolerance = 0.75 // degrees
+        val kGoalVelTolerance = 5.0 // inches per second
+        if (Math.abs(robot_to_target.getDegrees()) < kGoalPosTolerance
+                && Math.abs(getLeftVelocityInchesPerSec()) < kGoalVelTolerance
+                && Math.abs(getRightVelocityInchesPerSec()) < kGoalVelTolerance) {
+            // Use the current setpoint and base lock.
+            mIsOnTarget = true
+            updatePositionSetpoint(getLeftDistanceInches(), getRightDistanceInches())
+            return
+        }
+
+        val wheel_delta = Kinematics
+                .inverseKinematics(Twist2d(0, 0, robot_to_target.getRadians()))
+        updatePositionSetpoint(wheel_delta.left + getLeftDistanceInches(),
+                wheel_delta.right + getRightDistanceInches())
+    }
+
+
 
     companion object {
         val instance = Drive()

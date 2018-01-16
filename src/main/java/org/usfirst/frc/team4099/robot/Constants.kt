@@ -35,6 +35,11 @@ class Constants {
         val RIGHT_SLAVE_2_ID = 0
     }
 
+    object Velocity {
+        val highGearVelocityControlSlot=0
+        val driveHighGearNominalOutput=1.0 //percentage
+    }
+
     object Joysticks {
         val DRIVER_PORT = 0
         val SHOTGUN_PORT = 1
