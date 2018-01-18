@@ -36,7 +36,6 @@ class Constants {
         val RIGHT_SLAVE_1_ID = 5
         val RIGHT_SLAVE_2_ID = 0
 
-<<<<<<< HEAD
         val HIGH_GEAR_MAX_SETPOINT = 17.0  //17 fps
     }
 
@@ -53,10 +52,9 @@ class Constants {
         val DRIVE_HIGH_GEAR_REVERSE_OUTPUT = -1.0
         val DRIVE_LOW_GEAR_FORWARD_OUTPUT = 1.0
         val DRIVE_LOW_GEAR_REVERSE_OUTPUT = -1.0
-=======
+
         val SHIFTER_CHANNEL = 0
         val SHIFTER_MODULE = 0
->>>>>>> origin/master
     }
 
     object Joysticks {
