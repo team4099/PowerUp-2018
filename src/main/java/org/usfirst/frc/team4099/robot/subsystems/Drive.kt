@@ -152,8 +152,8 @@ class Drive private constructor() : Subsystem {
         }
     }
 
-<<<<<<< HEAD
-    fun resetEncoders(){
+    @Synchronized
+    fun resetEncoders() {
         leftMasterSRX.setSelectedSensorPosition(0, 0, 0)
         leftMasterSRX.sensorCollection.setPulseWidthPosition(0, 0)
         leftSlave1SRX.setSelectedSensorPosition(0, 0, 0)
@@ -162,12 +162,7 @@ class Drive private constructor() : Subsystem {
         rightMasterSRX.sensorCollection.setPulseWidthPosition(0, 0)
         rightSlave1SRX.setSelectedSensorPosition(0, 0, 0)
         rightSlave2SRX.setSelectedSensorPosition(0, 0, 0)
-=======
-    @Synchronized
-    fun resetEncoders() {
 
-
->>>>>>> 677111ed0e4d530819b30d7f964c07855922806c
     }
 
     fun getAHRS(): AHRS? {
