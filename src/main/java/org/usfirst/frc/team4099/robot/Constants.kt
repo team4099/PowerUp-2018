@@ -43,4 +43,8 @@ class Constants {
 
     }
 
+    object PathFollowing {
+        val PATH_FOLLOWING_MAX_ACCEL = 10.0
+    }
+
 }
