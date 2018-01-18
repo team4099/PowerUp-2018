@@ -1,7 +1,7 @@
 package org.usfirst.frc.team4099.lib.util.motion
 
 import org.usfirst.frc.team4099.lib.util.Utils.epsilonEquals
-import org.usfirst.frc.team4099.lib.util.motion.motionUtil.kEpsilon
+import org.usfirst.frc.team4099.lib.util.motion.MotionUtil.kEpsilon
 
 class MotionState {
     protected var t_: Double = 0.0
@@ -49,7 +49,7 @@ class MotionState {
     }
 
     fun nextTimeAtPos(pos: Double): Double {
-        if (epsilonEquals(pos, this.pos, kEpsilon)) {
+        if (epsilonEquals(pos, pos_, kEpsilon)) {
             return t_
         }
 
@@ -83,7 +83,7 @@ class MotionState {
     }
 
     override fun equals(other: Any?): Boolean {
-        return (other is MotionState) && equals(other as MotionState, kEpsilon)
+        return (other is MotionState) && equals(other, kEpsilon)
     }
 
     fun equals(other: MotionState, epsilon: Double): Boolean {

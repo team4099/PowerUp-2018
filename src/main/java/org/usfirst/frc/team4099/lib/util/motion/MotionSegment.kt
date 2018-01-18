@@ -1,11 +1,11 @@
 package org.usfirst.frc.team4099.lib.util.motion
 
 import org.usfirst.frc.team4099.lib.util.Utils.epsilonEquals
-import org.usfirst.frc.team4099.lib.util.motion.motionUtil.kEpsilon
+import org.usfirst.frc.team4099.lib.util.motion.MotionUtil.kEpsilon
 
 class MotionSegment {
     protected var mStart_: MotionState = MotionState(0.0,0.0,0.0,0.0)
-    protected var mEnd_: MotionState = MotionState()
+    protected var mEnd_: MotionState = MotionState(0.0,0.0,0.0,0.0)
 
     constructor(start: MotionState, end: MotionState) {
         mStart_ = start
@@ -13,7 +13,7 @@ class MotionSegment {
     }
 
     fun isValid(): Boolean {
-        if (!epsilonEquals(start().acc(), end.acc(), kEpsilon)) {
+        if (!epsilonEquals(start().acc(), end().acc(), kEpsilon)) {
             System.err.println("Segment acceleration not constant! Start acc: " + start().acc() + ", End acc: " + end().acc())
             return false
         }
@@ -23,7 +23,7 @@ class MotionSegment {
         }
 
         if (!start().extrapolate(end().t()).equals(end())) {
-            if (start.t() == end().t() && (start().acc() == Double.POSITIVE_INFINITY || start().acc() == Double.NEGATIVE_INFINITY)) {
+            if (start().t() == end().t() && (start().acc() == Double.POSITIVE_INFINITY || start().acc() == Double.NEGATIVE_INFINITY)) {
                 return true
             }
             System.err.println("Segment not consistent! Start: " + start() + ", End: " + end());
