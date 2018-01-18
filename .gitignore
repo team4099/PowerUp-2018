@@ -67,3 +67,6 @@ build/
 /sysProps.xml
 .gradle
 !gradle/wrapper/gradle-wrapper.jar
+
+# Keeps on changing the Project SDK, really annoying
+.idea/misc.xml

@@ -35,7 +35,6 @@ class Constants {
         val LOOPER_DT = 0.005 // 200 Hz
     }
 
-
     object Autonomous {
         val AUTO_OPTIONS_DASHBOARD_KEY = "auto_options"
         val SELECTED_AUTO_MODE_DASHBOARD_KEY = "selected_auto_mode"
@@ -53,6 +52,9 @@ class Constants {
 
     }
 
-
+    object Intake {
+        val LEFT_INTAKE_TALON_ID = 0
+        val RIGHT_INTAKE_TALON_ID = 1
+    }
 
 }
