@@ -156,7 +156,14 @@ class Drive private constructor() : Subsystem {
 
     @Synchronized
     fun resetEncoders() {
-
+        leftMasterSRX.setSelectedSensorPosition(0, 0, 0)
+        leftMasterSRX.sensorCollection.setPulseWidthPosition(0, 0)
+        leftSlave1SRX.setSelectedSensorPosition(0, 0, 0)
+        leftSlave2SRX.setSelectedSensorPosition(0, 0, 0)
+        rightMasterSRX.setSelectedSensorPosition(0, 0, 0)
+        rightMasterSRX.sensorCollection.setPulseWidthPosition(0, 0)
+        rightSlave1SRX.setSelectedSensorPosition(0, 0, 0)
+        rightSlave2SRX.setSelectedSensorPosition(0, 0, 0)
 
     }
 
@@ -179,7 +186,7 @@ class Drive private constructor() : Subsystem {
     }
 
     fun stopLiveWindowMode() {
-
+        //TODO
     }
 
     fun updateLiveWindowTables() {
@@ -190,6 +197,7 @@ class Drive private constructor() : Subsystem {
         if (ahrs.isConnected) {
             ahrs.reset()
         }
+        resetEncoders()
     }
 
     @Synchronized
