@@ -23,6 +23,7 @@ class Arm private constructor() : Subsystem {
     private var armPower = 0.0
 
     var armState = ArmState.EXCHANGE
+    var targetPos: Double = 0.0
 
     var useVelocityControl : Boolean = false
 
@@ -33,6 +34,9 @@ class Arm private constructor() : Subsystem {
     enum class ArmState {
         LOW, EXCHANGE, HIGH
     }
+
+
+
 
     init {
         masterSRX.set(ControlMode.MotionMagic, Constants.Arm.MASTER_SRX_ID.toDouble())
@@ -52,16 +56,16 @@ class Arm private constructor() : Subsystem {
         }
     }
 
+    fun velocityControlSwitch(velocityControl: Boolean) {
+        useVelocityControl = velocityControl
+    }
+
     private fun setArmPower(power: Double) {
         masterSRX.set(ControlMode.MotionMagic, Math.abs(power))
     }
 
     override fun outputToSmartDashboard() {
         SmartDashboard.putNumber("armPower", armPower)
-    }
-
-    private fun speedMapper(speed: Double) : Double {
-        return 2 / Constants.Arm.MAX_SPEED.toDouble() * speed - 1
     }
 
     @Synchronized override fun stop() {
@@ -82,7 +86,7 @@ class Arm private constructor() : Subsystem {
                             setArmPower(-1.0)
                             brake.set(DoubleSolenoid.Value.kForward)
                         }
-                        Arm.MovementState.STATIONARY -> {
+                        Arm.MovementState.STATIONARY -> {var targetPos: Double
                             setArmPower(0.0)
                             brake.set(DoubleSolenoid.Value.kReverse)
                         }
@@ -92,7 +96,6 @@ class Arm private constructor() : Subsystem {
                         }
                     }
                 } else {
-                    var targetPos: Double
                     when (armState) {
                         Arm.ArmState.LOW -> {
                             targetPos = -70*Math.PI/360
