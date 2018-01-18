@@ -50,6 +50,12 @@ class Constants {
         val SLAVE_SRX_2_ID = 4
         val SLAVE_SRX_3_ID = 5
 
+        val BRAKE_FORWARD_CHANNEL = 6
+        val BRAKE_REVERSE_CHANNEL = 7
+
+        val MIN_SPEED = -50
+        val MAX_SPEED = 50
+
     }
 
     object Intake {
