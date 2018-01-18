@@ -31,6 +31,9 @@ class MotionState {
     fun vel(): Double {
         return vel_
     }
+    fun vel2(): Double {
+        return vel_ * vel_
+    }
 
     fun acc(): Double {
         return acc_
