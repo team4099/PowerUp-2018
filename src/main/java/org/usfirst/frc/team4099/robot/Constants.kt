@@ -36,6 +36,7 @@ class Constants {
         val RIGHT_SLAVE_1_ID = 5
         val RIGHT_SLAVE_2_ID = 0
 
+<<<<<<< HEAD
         val HIGH_GEAR_MAX_SETPOINT = 17.0  //17 fps
     }
 
@@ -52,6 +53,10 @@ class Constants {
         val DRIVE_HIGH_GEAR_REVERSE_OUTPUT = -1.0
         val DRIVE_LOW_GEAR_FORWARD_OUTPUT = 1.0
         val DRIVE_LOW_GEAR_REVERSE_OUTPUT = -1.0
+=======
+        val SHIFTER_CHANNEL = 0
+        val SHIFTER_MODULE = 0
+>>>>>>> origin/master
     }
 
     object Joysticks {
@@ -63,7 +68,6 @@ class Constants {
         val LOOPER_DT = 0.005 // 200 Hz
     }
 
-
     object Autonomous {
         val AUTO_OPTIONS_DASHBOARD_KEY = "auto_options"
         val SELECTED_AUTO_MODE_DASHBOARD_KEY = "selected_auto_mode"
@@ -72,6 +76,11 @@ class Constants {
         val NUMBER_OF_TRIES = 5
 
 
+    }
+
+    object Intake {
+        val LEFT_INTAKE_TALON_ID = 0
+        val RIGHT_INTAKE_TALON_ID = 1
     }
 
 }

@@ -7,6 +7,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode
 
 import com.kauailabs.navx.frc.AHRS
 import edu.wpi.first.wpilibj.SPI
+import edu.wpi.first.wpilibj.Solenoid
+import edu.wpi.first.wpilibj.DoubleSolenoid
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import org.usfirst.frc.team4099.lib.drive.DriveSignal
@@ -23,8 +25,11 @@ class Drive private constructor() : Subsystem {
     private val rightSlave1SRX: TalonSRX = TalonSRX(Constants.Drive.RIGHT_SLAVE_1_ID)
     private val rightSlave2SRX: TalonSRX = TalonSRX(Constants.Drive.RIGHT_SLAVE_2_ID)
     private val ahrs: AHRS
+
     private var brakeMode: NeutralMode = NeutralMode.Brake//sets whether the break mode should be coast (no resistence) or by force
-    private var highGear: Boolean = true
+
+    private val pneumaticShifter: Solenoid = Solenoid(Constants.Drive.SHIFTER_MODULE,Constants.Drive.SHIFTER_CHANNEL)
+    private var highGear: Boolean = false
 
     enum class DriveControlState {
         OPEN_LOOP,
@@ -126,9 +131,6 @@ class Drive private constructor() : Subsystem {
         return highGear
     }
 
-    fun setHighGear(choice: Boolean) {
-        highGear = choice
-    }
 
     fun getBrakeMode(): NeutralMode {
         return brakeMode
@@ -265,7 +267,18 @@ class Drive private constructor() : Subsystem {
             rightMasterSRX.configPeakOutputReverse(Constants.Velocity.DRIVE_LOW_GEAR_REVERSE_OUTPUT, 0)
             setBrakeMode(NeutralMode.Brake)
         }
+    }
 
+
+    fun isHighGear() : Boolean {
+        return highGear;
+    }
+
+    fun setHighGear(wantsHighGear: Boolean) {
+        if (wantsHighGear != highGear) {
+            highGear = wantsHighGear
+            pneumaticShifter.set(!wantsHighGear)
+        }
     }
 
     /**
@@ -273,7 +286,8 @@ class Drive private constructor() : Subsystem {
      * @param left
      * @param right
      */
-    @Synchronized private fun setLeftRightPower(left: Double, right: Double) {
+    @Synchronized
+    fun setLeftRightPower(left: Double, right: Double) {
         leftMasterSRX.set(ControlMode.PercentOutput, -left)
         rightMasterSRX.set(ControlMode.PercentOutput, right)
     }
@@ -382,3 +396,4 @@ class Drive private constructor() : Subsystem {
     }
 
 }
+
