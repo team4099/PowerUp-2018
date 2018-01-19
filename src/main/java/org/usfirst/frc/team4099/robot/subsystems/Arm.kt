@@ -63,18 +63,33 @@ class Arm private constructor() : Subsystem {
         }
     }
 
+    /**
+     * Sets the control mode to Velocity Control or Movement Control
+     *
+     * @param velocityControl a Boolean for setting to Velocity Control
+     */
     fun velocityControlSwitch(velocityControl: Boolean) {
         useVelocityControl = velocityControl
     }
 
     /**
+<<<<<<< HEAD
      * Changes power to the arm
      * @param[power] double power
+=======
+     * Changes the power to the Arm
+     *
+     * @param power A double for the power going to the arm
+>>>>>>> a38ca8e94cc356d6aad10ea10931c1e2a57a6cf7
      */
     private fun setArmPower(power: Double) {
         masterSRX.set(ControlMode.MotionMagic, Math.abs(power))
     }
 
+    /**
+     * Outputs arm subsystem
+     *
+     */
     override fun outputToSmartDashboard() {
         SmartDashboard.putNumber("armPower", armPower)
     }
@@ -84,11 +99,19 @@ class Arm private constructor() : Subsystem {
         setArmPower(0.0)
     }
 
+    /**
+     * Handles power to arm during each loop cycle
+     *
+     * @constructor Creates loop that controls power to arm during each loop cycle
+     */
     val loop: Loop = object : Loop {
         override fun onStart() {
             setArmPower(0.0)
         }
 
+        /**
+         * Handles events during each loop cycle, depends on arm control mode
+         */
         override fun onLoop() {
             synchronized(this@Arm) {
                 if ( !useVelocityControl) {
