@@ -13,6 +13,9 @@ class Intake private constructor() : Subsystem {
     var intakeState = IntakeState.STOP
     private var intakePower = 0.0
 
+    /** states for Intake: IN (pulling in), STOP, OUT(Pushing Out)
+     *
+     */
     enum class IntakeState {
         IN, STOP, OUT
     }
@@ -31,6 +34,9 @@ class Intake private constructor() : Subsystem {
         leftTalon.set(-Math.abs(power))
     }
 
+    /** Sets power to -1 when pulling in, 0 at stop, and 1 when pushing out
+     *
+     */
     val loop: Loop = object : Loop {
         override fun onStart() {
             setIntakePower(0.0)
