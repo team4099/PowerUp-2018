@@ -12,6 +12,13 @@ class Twist2D {
         dtheta_ = dtheta;
     }
 
+    companion object {
+        protected val kIdentity: Twist2D = Twist2D(0.0,0.0,0.0)
+        final fun identity():Twist2D{
+            return kIdentity
+        }
+    }
+
     fun dx(): Double {
         return dx_;
     }
