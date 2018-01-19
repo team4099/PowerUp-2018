@@ -47,7 +47,10 @@ class Intake private constructor() : Subsystem {
         leftTalon.set(-Math.abs(power))
     }
 
-
+    /**
+     * Handles power to intake during each loop cycle
+     * @constructor Creates loop that controls power to intake during each loop cycle
+     */
     val loop: Loop = object : Loop {
         override fun onStart() {
             setIntakePower(0.0)
