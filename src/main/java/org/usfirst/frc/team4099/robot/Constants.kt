@@ -45,6 +45,7 @@ class Constants {
 
     object PathFollowing {
         val PATH_FOLLOWING_MAX_ACCEL = 10.0
+        val SEGMENT_COMPLETION_TOLERANCE = 1.0
     }
 
 }
