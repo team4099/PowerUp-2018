@@ -8,7 +8,14 @@ import com.ctre.phoenix.motorcontrol.ControlMode
 import com.ctre.phoenix.motorcontrol.FeedbackDevice
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
 
-
+/**
+ * @author Team 4099
+ *
+ * This class is the constructor for the Arm subsystem
+ *
+ * @constructor Creates the Arm subsystem
+ *
+ */
 class Arm private constructor() : Subsystem {
 
     private val masterSRX = TalonSRX(Constants.Arm.MASTER_SRX_ID)
