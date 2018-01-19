@@ -67,6 +67,10 @@ class Arm private constructor() : Subsystem {
         useVelocityControl = velocityControl
     }
 
+    /**
+     * Changes power to the arm
+     * @param[power] double power
+     */
     private fun setArmPower(power: Double) {
         masterSRX.set(ControlMode.MotionMagic, Math.abs(power))
     }
