@@ -21,25 +21,25 @@ class PathFollower{
         private val kReallyBigNumber: Double = 1E6
 
         class DebugOutput{
-            var t: Double
-            var pose_x: Double
-            var pose_y: Double
-            var pose_theta: Double
-            var linear_displacement: Double
-            var linear_velocity: Double
-            var profile_displacement: Double
-            var profile_velocity: Double
-            var velocity_command_dx: Double
-            var velocity_command_dy: Double
-            var velocity_command_dtheta: Double
-            var steering_command_dx: Double
-            var steering_command_dy: Double
-            var steering_command_dtheta: Double
-            var cross_track_error: Double
-            var along_track_error: Double
-            var lookahead_point_x: Double
-            var lookahead_point_y: Double
-            var lookahead_point_velocity: Double
+            var t: Double = 0.0
+            var pose_x: Double = 0.0
+            var pose_y: Double =0.0
+            var pose_theta: Double = 0.0
+            var linear_displacement: Double =0.0
+            var linear_velocity: Double = 0.0
+            var profile_displacement: Double = 0.0
+            var profile_velocity: Double = 0.0
+            var velocity_command_dx: Double = 0.0
+            var velocity_command_dy: Double = 0.0
+            var velocity_command_dtheta: Double = 0.0
+            var steering_command_dx: Double = 0.0
+            var steering_command_dy: Double = 0.0
+            var steering_command_dtheta: Double = 0.0
+            var cross_track_error: Double = 0.0
+            var along_track_error: Double = 0.0
+            var lookahead_point_x: Double = 0.0
+            var lookahead_point_y: Double = 0.0
+            var lookahead_point_velocity: Double = 0.0
         }
         class Parameters{
             val lookahead: Lookahead
@@ -104,17 +104,17 @@ class PathFollower{
         mStopSteeringDistance = parameters.stop_steering_distance
     }
     @Synchronized fun update(t: Double, pose: RigidTransform2D, displacement: Double, velocity: Double): Twist2D{
-        if (!mSteeringController.isfinished()){
-            val steering_command: AdaptivePurePursuitController.Command = mSteeringController.update(pose)
+        if (!mSteeringController.isFinished()){
+            val steering_command: AdaptivePurePursuitController.Companion.Command = mSteeringController.update(pose)
             mDebugOutput.lookahead_point_x = steering_command.lookahead_point.x()
             mDebugOutput.lookahead_point_y = steering_command.lookahead_point.y()
             mDebugOutput.lookahead_point_velocity = steering_command.end_velocity
-            mDebugOutput.steering_command_dx = steering_command.delta.dx
-            mDebugOutput.steering_command_dy = steering_command.delta.dy
-            mDebugOutput.steering_command_dtheta = steering_command.delta.dtheta
+            mDebugOutput.steering_command_dx = steering_command.delta.dx()
+            mDebugOutput.steering_command_dy = steering_command.delta.dy()
+            mDebugOutput.steering_command_dtheta = steering_command.delta.dtheta()
             mCrossTrackError = steering_command.cross_track_error
             mLastSteeringDelta = steering_command.delta
-            mVelocityController.setGoalAndConstraints(MotionProfileGoal(displacement+steering_command.delta.dx,
+            mVelocityController.setGoalAndConstraints(MotionProfileGoal(displacement+steering_command.delta.dx(),
                         Math.abs(steering_command.end_velocity),CompletionBehavior.VIOLATE_MAX_ABS_VEL,
                         mGoalPosTolerance, mGoalVelTolerance),
                     MotionProfileConstraints(Math.min(mMaxProfileVel,steering_command.max_velocity), mMaxProfileAcc))
@@ -127,10 +127,10 @@ class PathFollower{
         mAlongTrackError = mVelocityController.getPosError()
         val curvature: Double = mLastSteeringDelta.dtheta() / mLastSteeringDelta.dx()
         var dtheta: Double = mLastSteeringDelta.dtheta()
-        if(!Double.isNan(curvature) && Math.abs(curvature)< kReallyBigNumber){
+        if(!curvature.isNaN() && Math.abs(curvature)< kReallyBigNumber){
             // Regenerate angular velocity command from adjusted curvature
             val abs_velocity_setpoint: Double = Math.abs(mVelocityController.getSetpoint().vel())
-            dtheta = mLastSteeringDelta.dx * curvature * (1.0 + mInertiaGain * abs_velocity_setpoint)
+            dtheta = mLastSteeringDelta.dx() * curvature * (1.0 + mInertiaGain * abs_velocity_setpoint)
         }
         val scale: Double = velocity_command / mLastSteeringDelta.dx()
         val rv: Twist2D = Twist2D(mLastSteeringDelta.dx()*scale, 0.0, dtheta * scale)
