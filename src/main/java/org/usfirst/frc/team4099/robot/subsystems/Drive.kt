@@ -25,7 +25,7 @@ class Drive private constructor() : Subsystem {
     private val rightSlave2SRX: TalonSRX = TalonSRX(Constants.Drive.RIGHT_SLAVE_2_ID)
     private val ahrs: AHRS
 
-    private var brakeMode: NeutralMode = NeutralMode.Brake//sets whether the break mode should be coast (no resistence) or by force
+    private var brakeMode: NeutralMode = NeutralMode.Coast //sets whether the break mode should be coast (no resistence) or by force
 
     private val pneumaticShifter: Solenoid = Solenoid(Constants.Drive.SHIFTER_MODULE,Constants.Drive.SHIFTER_CHANNEL)
     private var highGear: Boolean = false
@@ -40,13 +40,13 @@ class Drive private constructor() : Subsystem {
     private var currentState = DriveControlState.OPEN_LOOP
 
     init {
-        leftSlave1SRX.set(ControlMode.Follower, Constants.Drive.LEFT_MASTER_ID.toDouble())
+        leftSlave1SRX.set(ControlMode.Follower, Constants.Drive.LEFT_MASTER_ID.toDouble()) //makes slaves
         leftSlave2SRX.set(ControlMode.Follower, Constants.Drive.LEFT_MASTER_ID.toDouble())
-        leftMasterSRX.set(ControlMode.PercentOutput, 0.0)
-        leftMasterSRX.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0)
-        leftMasterSRX.setSensorPhase(false)
+        leftMasterSRX.set(ControlMode.PercentOutput, 0.0) //changes Control Mode
+        leftMasterSRX.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0) //configs sensor to a quad encoder
+        leftMasterSRX.setSensorPhase(false) //to align positive sensor velocity with positive motor output
         leftMasterSRX.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 5, 0)
-        leftMasterSRX.config_kP(0, Constants.Gains.LEFT_LOW_KP, 0)
+        leftMasterSRX.config_kP(0, Constants.Gains.LEFT_LOW_KP, 0) //sets PIDF values
         leftMasterSRX.config_kI(0, Constants.Gains.LEFT_LOW_KI, 0)
         leftMasterSRX.config_kD(0, Constants.Gains.LEFT_LOW_KD, 0)
         leftMasterSRX.config_kF(0, Constants.Gains.LEFT_LOW_KF, 0)
@@ -58,13 +58,13 @@ class Drive private constructor() : Subsystem {
 
 
 
-        rightSlave1SRX.set(ControlMode.Follower, Constants.Drive.RIGHT_MASTER_ID.toDouble())
+        rightSlave1SRX.set(ControlMode.Follower, Constants.Drive.RIGHT_MASTER_ID.toDouble()) //makes slaves
         rightSlave2SRX.set(ControlMode.Follower, Constants.Drive.RIGHT_MASTER_ID.toDouble())
-        rightMasterSRX.set(ControlMode.PercentOutput, 0.0)
-        rightMasterSRX.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0)
-        rightMasterSRX.setSensorPhase(false)
+        rightMasterSRX.set(ControlMode.PercentOutput, 0.0) //changes Control Mode
+        rightMasterSRX.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0) //configs sensor to a quad encoder
+        rightMasterSRX.setSensorPhase(false) //to align positive sensor velocity with positive motor output
         rightMasterSRX.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 5, 0)
-        rightMasterSRX.config_kP(0, Constants.Gains.RIGHT_LOW_KP, 0)
+        rightMasterSRX.config_kP(0, Constants.Gains.RIGHT_LOW_KP, 0) //sets PIdF values
         rightMasterSRX.config_kI(0, Constants.Gains.RIGHT_LOW_KI, 0)
         rightMasterSRX.config_kD(0, Constants.Gains.RIGHT_LOW_KD, 0)
         rightMasterSRX.config_kF(0, Constants.Gains.RIGHT_LOW_KF, 0)
