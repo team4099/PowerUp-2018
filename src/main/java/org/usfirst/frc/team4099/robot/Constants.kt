@@ -48,10 +48,10 @@ class Constants {
         val LOW_GEAR_VELOCITY_CONTROL_SLOT = 0
         val DRIVE_HIGH_GEAR_NOMINAL_OUTPUT = 0.0 //percentage
         val DRIVE_LOW_GEAR_NOMINAL_OUTPUT = 0.0 //percentage
-        val DRIVE_HIGH_GEAR_FORWARD_OUTPUT = 1.0 //percentage
-        val DRIVE_HIGH_GEAR_REVERSE_OUTPUT = -1.0
-        val DRIVE_LOW_GEAR_FORWARD_OUTPUT = 1.0
-        val DRIVE_LOW_GEAR_REVERSE_OUTPUT = -1.0
+        val DRIVE_HIGH_GEAR_MAX_FORWARD_OUTPUT = 1.0 //percentage
+        val DRIVE_HIGH_GEAR_MAX_REVERSE_OUTPUT = -1.0
+        val DRIVE_LOW_GEAR_MAX_FORWARD_OUTPUT = 1.0
+        val DRIVE_LOW_GEAR_MAX_REVERSE_OUTPUT = -1.0
 
         val SHIFTER_CHANNEL = 0
         val SHIFTER_MODULE = 0

@@ -8,7 +8,6 @@ import com.ctre.phoenix.motorcontrol.ControlMode
 import com.kauailabs.navx.frc.AHRS
 import edu.wpi.first.wpilibj.SPI
 import edu.wpi.first.wpilibj.Solenoid
-import edu.wpi.first.wpilibj.DoubleSolenoid
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import org.usfirst.frc.team4099.lib.drive.DriveSignal
@@ -246,14 +245,14 @@ class Drive private constructor() : Subsystem {
             leftMasterSRX.configNominalOutputForward(Constants.Velocity.DRIVE_HIGH_GEAR_NOMINAL_OUTPUT, 0)
             leftMasterSRX.configNominalOutputReverse(Constants.Velocity.DRIVE_HIGH_GEAR_NOMINAL_OUTPUT, 0)
             leftMasterSRX.selectProfileSlot(Constants.Velocity.HIGH_GEAR_VELOCITY_CONTROL_SLOT, 0)
-            leftMasterSRX.configPeakOutputForward(Constants.Velocity.DRIVE_HIGH_GEAR_FORWARD_OUTPUT, 0)
-            leftMasterSRX.configPeakOutputReverse(Constants.Velocity.DRIVE_HIGH_GEAR_REVERSE_OUTPUT, 0)
+            leftMasterSRX.configPeakOutputForward(Constants.Velocity.DRIVE_HIGH_GEAR_MAX_FORWARD_OUTPUT, 0)
+            leftMasterSRX.configPeakOutputReverse(Constants.Velocity.DRIVE_HIGH_GEAR_MAX_REVERSE_OUTPUT, 0)
             rightMasterSRX.set(ControlMode.Velocity, 0.0) //velocity  output value is in position change / 100ms
             rightMasterSRX.configNominalOutputForward(Constants.Velocity.DRIVE_HIGH_GEAR_NOMINAL_OUTPUT, 0)
             rightMasterSRX.configNominalOutputReverse(Constants.Velocity.DRIVE_HIGH_GEAR_NOMINAL_OUTPUT, 0)
             rightMasterSRX.selectProfileSlot(Constants.Velocity.HIGH_GEAR_VELOCITY_CONTROL_SLOT, 0)
-            rightMasterSRX.configPeakOutputForward(Constants.Velocity.DRIVE_HIGH_GEAR_FORWARD_OUTPUT, 0)
-            rightMasterSRX.configPeakOutputReverse(Constants.Velocity.DRIVE_HIGH_GEAR_REVERSE_OUTPUT, 0)
+            rightMasterSRX.configPeakOutputForward(Constants.Velocity.DRIVE_HIGH_GEAR_MAX_FORWARD_OUTPUT, 0)
+            rightMasterSRX.configPeakOutputReverse(Constants.Velocity.DRIVE_HIGH_GEAR_MAX_REVERSE_OUTPUT, 0)
             setBrakeMode(NeutralMode.Brake)
         }
     }
@@ -265,14 +264,14 @@ class Drive private constructor() : Subsystem {
             leftMasterSRX.configNominalOutputForward(Constants.Velocity.DRIVE_LOW_GEAR_NOMINAL_OUTPUT, 0)
             leftMasterSRX.configNominalOutputReverse(Constants.Velocity.DRIVE_LOW_GEAR_NOMINAL_OUTPUT, 0)
             leftMasterSRX.selectProfileSlot(Constants.Velocity.LOW_GEAR_VELOCITY_CONTROL_SLOT, 0)
-            leftMasterSRX.configPeakOutputForward(Constants.Velocity.DRIVE_LOW_GEAR_FORWARD_OUTPUT, 0)
-            leftMasterSRX.configPeakOutputReverse(Constants.Velocity.DRIVE_LOW_GEAR_REVERSE_OUTPUT, 0)
+            leftMasterSRX.configPeakOutputForward(Constants.Velocity.DRIVE_LOW_GEAR_MAX_FORWARD_OUTPUT, 0)
+            leftMasterSRX.configPeakOutputReverse(Constants.Velocity.DRIVE_LOW_GEAR_MAX_REVERSE_OUTPUT, 0)
             rightMasterSRX.set(ControlMode.MotionMagic, 0.0)
             rightMasterSRX.configNominalOutputForward(Constants.Velocity.DRIVE_LOW_GEAR_NOMINAL_OUTPUT, 0)
             rightMasterSRX.configNominalOutputReverse(Constants.Velocity.DRIVE_LOW_GEAR_NOMINAL_OUTPUT, 0)
             rightMasterSRX.selectProfileSlot(Constants.Velocity.LOW_GEAR_VELOCITY_CONTROL_SLOT, 0)
-            rightMasterSRX.configPeakOutputForward(Constants.Velocity.DRIVE_LOW_GEAR_FORWARD_OUTPUT, 0)
-            rightMasterSRX.configPeakOutputReverse(Constants.Velocity.DRIVE_LOW_GEAR_REVERSE_OUTPUT, 0)
+            rightMasterSRX.configPeakOutputForward(Constants.Velocity.DRIVE_LOW_GEAR_MAX_FORWARD_OUTPUT, 0)
+            rightMasterSRX.configPeakOutputReverse(Constants.Velocity.DRIVE_LOW_GEAR_MAX_REVERSE_OUTPUT, 0)
             setBrakeMode(NeutralMode.Brake)
         }
     }
