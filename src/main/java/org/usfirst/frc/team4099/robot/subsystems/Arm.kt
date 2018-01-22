@@ -41,7 +41,7 @@ class Arm private constructor() : Subsystem {
     }
 
     enum class ArmState(val targetPos: Double) {
-        LOW(-7* PI / 6), EXCHANGE(0.0), HIGH(7 * PI / 6), VELOCITY_CONTROL(Double.NaN)
+        LOW(-7* Math.PI / 6), EXCHANGE(0.0), HIGH(7 * PI / 6), VELOCITY_CONTROL(Double.NaN)
     }
 
 
