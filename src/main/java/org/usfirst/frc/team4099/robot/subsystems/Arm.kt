@@ -120,6 +120,7 @@ class Arm private constructor() : Subsystem {
                         armAngle = ArmState.HIGH.targetPos
                     }
                     ArmState.VELOCITY_CONTROL -> {
+                        masterSRX.set(ControlMode.Velocity, 0.0)
                         when (movementState) {
                             Arm.MovementState.UP -> {
                                 setArmPower(1.0)
