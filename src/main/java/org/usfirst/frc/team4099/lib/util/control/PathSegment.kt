@@ -34,6 +34,32 @@ class PathSegment {
         createMotionProfiler(sState, endS)
     }
 
+    constructor(x1: Double, y1: Double, x2: Double, y2: Double, maxS: Double, sState: MotionState, endS: Double, m: String) {
+        start = Translation2D(x1, y1)
+        end = Translation2D(x2, y2)
+
+        dStart = Translation2D(start, end)
+
+        maxSpeed = maxS
+        extrapolateLookahead = false
+        isLine = true
+        marker = m
+        createMotionProfiler(sState, endS)
+    }
+
+    constructor(x1: Double, y1: Double, x2: Double, y2: Double, cx: Double, cy: Double, maxS: Double, sState: MotionState, endS: Double) {
+        start = Translation2D(x1, y1)
+        end = Translation2D(x2, y2)
+        center = Translation2D(cx, cy)
+        dStart = Translation2D(center, start)
+        dEnd = Translation2D(center, end)
+
+        maxSpeed = maxS
+        extrapolateLookahead = false
+        isLine = false
+        createMotionProfiler(sState, endS)
+    }
+
     constructor(x1: Double, y1: Double, x2: Double, y2: Double, cx: Double, cy: Double, maxS: Double, sState: MotionState, endS: Double, mark: String) {
         start = Translation2D(x1, y1)
         end = Translation2D(x2, y2)
