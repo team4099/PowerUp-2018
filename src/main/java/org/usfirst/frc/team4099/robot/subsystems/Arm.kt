@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid
 import com.ctre.phoenix.motorcontrol.ControlMode
 import com.ctre.phoenix.motorcontrol.FeedbackDevice
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
+import kotlin.math.PI
 
 /**
  * @author Team 4099
@@ -28,62 +29,51 @@ class Arm private constructor() : Subsystem {
 
     var movementState = MovementState.STATIONARY
     private var armPower = 0.0
+    private var armAngle = 0.0
 
     var armState = ArmState.EXCHANGE
-    var targetPos: Double = 0.0
+
 
     var useVelocityControl : Boolean = false
 
     enum class MovementState {
-        UP, STATIONARY, DOWN
+        UP, STATIONARY, DOWN, MOVING_TO_EXCHANGE, MOVING_TO_TOP, MOVING_TO_BOTTOM
     }
 
-    enum class ArmState {
-        LOW, EXCHANGE, HIGH
+    enum class ArmState(val targetPos: Double) {
+        LOW(-7* PI / 6), EXCHANGE(0.0), HIGH(7 * PI / 6), VELOCITY_CONTROL(Double.NaN)
     }
 
 
 
 
     init {
-        masterSRX.set(ControlMode.MotionMagic, Constants.Arm.MASTER_SRX_ID.toDouble())
+        masterSRX.set(ControlMode.MotionMagic, 0.0)
         slaveSRX1.set(ControlMode.Follower, Constants.Arm.MASTER_SRX_ID.toDouble())
         slaveSRX2.set(ControlMode.Follower, Constants.Arm.MASTER_SRX_ID.toDouble())
         slaveSRX3.set(ControlMode.Follower, Constants.Arm.MASTER_SRX_ID.toDouble())
-        if (useVelocityControl) {
-            masterSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10)
-            masterSRX.setSensorPhase(false)
-            masterSRX.configNominalOutputForward(+0.0, 0)
-            masterSRX.configPeakOutputForward(+1.0, 0)
-            masterSRX.selectProfileSlot(0, 0)
-            masterSRX.config_kF(0, 0.0, 0)
-            masterSRX.config_kP(0, 0.0, 0)
-            masterSRX.config_kI(0, 0.0, 0)
-            masterSRX.config_kD(0, 0.0, 0)
-        }
+        masterSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10)
+        masterSRX.setSensorPhase(false)
+        masterSRX.configNominalOutputForward(+0.0, 0)
+        masterSRX.configPeakOutputForward(+1.0, 0)
+        masterSRX.selectProfileSlot(0, 0)
+        masterSRX.config_kF(0, 0.0, 0)
+        masterSRX.config_kP(0, 0.0, 0)
+        masterSRX.config_kI(0, 0.0, 0)
+        masterSRX.config_kD(0, 0.0, 0)
+
     }
 
-    /**
-     * Sets the control mode to Velocity Control or Movement Control
-     *
-     * @param velocityControl a Boolean for setting to Velocity Control
-     */
-    fun velocityControlSwitch(velocityControl: Boolean) {
-        useVelocityControl = velocityControl
-    }
 
     /**
-<<<<<<< HEAD
      * Changes power to the arm
-     * @param[power] double power
-=======
-     * Changes the power to the Arm
      *
      * @param power A double for the power going to the arm
->>>>>>> a38ca8e94cc356d6aad10ea10931c1e2a57a6cf7
      */
     private fun setArmPower(power: Double) {
+        armState = ArmState.VELOCITY_CONTROL
         masterSRX.set(ControlMode.MotionMagic, Math.abs(power))
+        armPower = power
     }
 
     /**
@@ -105,7 +95,9 @@ class Arm private constructor() : Subsystem {
      * @constructor Creates loop that controls power to arm during each loop cycle
      */
     val loop: Loop = object : Loop {
+
         override fun onStart() {
+            movementState = MovementState.STATIONARY
             setArmPower(0.0)
         }
 
@@ -114,41 +106,46 @@ class Arm private constructor() : Subsystem {
          */
         override fun onLoop() {
             synchronized(this@Arm) {
-                if ( !useVelocityControl) {
-                    when (movementState) {
-                        Arm.MovementState.DOWN -> {
-                            setArmPower(-1.0)
-                            brake.set(DoubleSolenoid.Value.kForward)
-                        }
-                        Arm.MovementState.STATIONARY -> {var targetPos: Double
-                            setArmPower(0.0)
-                            brake.set(DoubleSolenoid.Value.kReverse)
-                        }
-                        Arm.MovementState.UP -> {
-                            setArmPower(1.0)
-                            brake.set(DoubleSolenoid.Value.kForward)
+                when (armState) {
+                    Arm.ArmState.LOW -> {
+                        masterSRX.set(ControlMode.MotionMagic, ArmConversion.radiansToPulses(ArmState.LOW.targetPos).toDouble())
+                        armAngle = ArmState.LOW.targetPos
+                    }
+                    Arm.ArmState.EXCHANGE -> {
+                        masterSRX.set(ControlMode.MotionMagic, ArmConversion.radiansToPulses(ArmState.EXCHANGE.targetPos).toDouble())
+                        armAngle = ArmState.EXCHANGE.targetPos
+                    }
+                    Arm.ArmState.HIGH -> {
+                        masterSRX.set(ControlMode.MotionMagic, ArmConversion.radiansToPulses(ArmState.HIGH.targetPos).toDouble())
+                        armAngle = ArmState.HIGH.targetPos
+                    }
+                    ArmState.VELOCITY_CONTROL -> {
+                        when (movementState) {
+                            Arm.MovementState.UP -> {
+                                setArmPower(1.0)
+                            }
+                            Arm.MovementState.STATIONARY -> {
+                                setArmPower(0.0)
+                            }
+                            Arm.MovementState.MOVING_TO_BOTTOM -> {
+                                setArmPower(-1.0)
+                            }
+                            Arm.MovementState.MOVING_TO_EXCHANGE -> {
+                                if (armAngle == ArmState.LOW.targetPos) {
+                                    setArmPower(1.0)
+                                } else if (armAngle == ArmState.HIGH.targetPos) {
+                                    setArmPower(-1.0)
+                                }
+                            }
+                            Arm.MovementState.MOVING_TO_TOP -> {
+                                setArmPower(1.0)
+                            }
                         }
                     }
-                } else {
-                    when (armState) {
-                        Arm.ArmState.LOW -> {
-                            targetPos = -70*Math.PI/360
-                            masterSRX.set(ControlMode.MotionMagic, ArmConversion.radiansToPulses(targetPos).toDouble())
-                        }
-                        Arm.ArmState.EXCHANGE -> {
-                            targetPos = Math.PI/6
-                            masterSRX.set(ControlMode.MotionMagic, ArmConversion.radiansToPulses(targetPos).toDouble())
-                        }
-                        Arm.ArmState.HIGH -> {
-                            targetPos = 70*Math.PI/360
-                            masterSRX.set(ControlMode.MotionMagic, ArmConversion.radiansToPulses(targetPos).toDouble())
-                        }
-                    }
-
-
                 }
             }
         }
+
 
         override fun onStop() = stop()
 
