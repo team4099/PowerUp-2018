@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid
 import com.ctre.phoenix.motorcontrol.ControlMode
 import com.ctre.phoenix.motorcontrol.FeedbackDevice
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
-import kotlin.math.PI
+
 
 /**
  * @author Team 4099
@@ -30,6 +30,8 @@ class Arm private constructor() : Subsystem {
     var movementState = MovementState.STATIONARY
     private var armPower = 0.0
     private var armAngle = 0.0
+    private var armBaseAngle = 0.0
+
 
     var armState = ArmState.EXCHANGE
 
@@ -41,7 +43,7 @@ class Arm private constructor() : Subsystem {
     }
 
     enum class ArmState(val targetPos: Double) {
-        LOW(-7* Math.PI / 6), EXCHANGE(0.0), HIGH(7 * PI / 6), VELOCITY_CONTROL(Double.NaN)
+        LOW(-7* Math.PI / 6), EXCHANGE(0.0), HIGH(7 * Math.PI / 6), VELOCITY_CONTROL(Double.NaN)
     }
 
 
@@ -61,6 +63,7 @@ class Arm private constructor() : Subsystem {
         masterSRX.config_kP(0, 0.0, 0)
         masterSRX.config_kI(0, 0.0, 0)
         masterSRX.config_kD(0, 0.0, 0)
+        armBaseAngle = ArmConversion.pulsesToRadians(masterSRX.sensorCollection.pulseWidthPosition)
 
     }
 
@@ -124,22 +127,30 @@ class Arm private constructor() : Subsystem {
                         when (movementState) {
                             Arm.MovementState.UP -> {
                                 setArmPower(1.0)
+                                armAngle += ArmConversion.pulsesToRadians(masterSRX.sensorCollection.pulseWidthPosition) - armBaseAngle
+                            }
+                            Arm.MovementState.DOWN -> {
+
                             }
                             Arm.MovementState.STATIONARY -> {
                                 setArmPower(0.0)
+                                armAngle += ArmConversion.pulsesToRadians(masterSRX.sensorCollection.pulseWidthPosition) - armBaseAngle
                             }
                             Arm.MovementState.MOVING_TO_BOTTOM -> {
                                 setArmPower(-1.0)
+                                armAngle += ArmConversion.pulsesToRadians(masterSRX.sensorCollection.pulseWidthPosition) - armBaseAngle
                             }
                             Arm.MovementState.MOVING_TO_EXCHANGE -> {
-                                if (armAngle == ArmState.LOW.targetPos) {
+                                if (armAngle < armBaseAngle) {
                                     setArmPower(1.0)
-                                } else if (armAngle == ArmState.HIGH.targetPos) {
+                                } else if (armAngle > armBaseAngle) {
                                     setArmPower(-1.0)
                                 }
+                                armAngle += ArmConversion.pulsesToRadians(masterSRX.sensorCollection.pulseWidthPosition) - armBaseAngle
                             }
                             Arm.MovementState.MOVING_TO_TOP -> {
                                 setArmPower(1.0)
+                                armAngle += ArmConversion.pulsesToRadians(masterSRX.sensorCollection.pulseWidthPosition) - armBaseAngle
                             }
                         }
                     }
@@ -156,6 +167,9 @@ class Arm private constructor() : Subsystem {
         val instance = Arm()
     }
 
-    override fun zeroSensors() { }
+    override fun zeroSensors() {
+        armBaseAngle = ArmConversion.pulsesToRadians(masterSRX.sensorCollection.pulseWidthPosition)
+        armAngle = 0.0
+    }
 
 }
