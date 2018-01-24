@@ -6,6 +6,15 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import org.usfirst.frc.team4099.robot.loops.Loop
 
+/**
+ * @author Team 4099
+ *
+ * This class is the constructor for the Wrist subsystem
+ *
+ * @constructor Creates the Wrist subsystem
+ *
+ */
+
 class Wrist private constructor(): Subsystem {
     private val wristSRX = TalonSRX(Constants.Wrist.WRIST_TALON_ID)
     private val arm = Arm.instance
@@ -25,28 +34,29 @@ class Wrist private constructor(): Subsystem {
         wristSRX.set(ControlMode.MotionMagic, 0.0)
     }
 
-
+    /**
+     * Outputs the angle of the wrist
+     */
     override fun outputToSmartDashboard() {
-        SmartDashboard.putNumber("wristPower", wristPower)
+        SmartDashboard.putNumber("wristAngle", wristAngle)
     }
 
     @Synchronized override fun stop() {
         setWristMode(WristState.HORIZONTAL)
-        setWristPower(0.0)
     }
 
+    /**
+     * Sets the state of the Arm
+     *
+     * @param state is the wrist state
+     */
     private fun setWristMode(state: WristState) {
         wristState = state
     }
 
-    private fun setWristPower(power: Double) {
-        wristSRX.set(ControlMode.MotionMagic, power)
-    }
 
     val loop: Loop = object : Loop {
-        override fun onStart() {
-            setWristPower(0.0)
-        }
+        override fun onStart() {}
 
         override fun onLoop() {
             if (wristState == WristState.HORIZONTAL) {

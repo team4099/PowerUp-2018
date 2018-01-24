@@ -1,7 +1,6 @@
 package org.usfirst.frc.team4099.robot.subsystems
 
-
-object WristConversion: EncoderConversion {
+object ArmConversion: EncoderConversion {
     val pulsesToRadians = 1.0
 
     override fun radiansToPulses(radians: Double): Int {

@@ -42,6 +42,19 @@ class Constants {
         val CONNECTION_TIMEOUT_MILLIS = 1000
         val NUMBER_OF_TRIES = 5
     }
+    object Arm {
+        val MASTER_SRX_ID = 2
+        val SLAVE_SRX_1_ID = 3
+        val SLAVE_SRX_2_ID = 4
+        val SLAVE_SRX_3_ID = 5
+
+        val BRAKE_FORWARD_CHANNEL = 6
+        val BRAKE_REVERSE_CHANNEL = 7
+
+        val MIN_SPEED = -50
+        val MAX_SPEED = 50
+
+    }
 
     object Intake {
         val LEFT_INTAKE_TALON_ID = 0
