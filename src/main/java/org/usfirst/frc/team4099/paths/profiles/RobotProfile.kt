@@ -10,11 +10,14 @@ interface RobotProfile{
     //red
     public fun getRedSwitchXCorrection(): Double
     public fun getRedSwitchYCorrection(): Double
-    //TODO should there be another course to measure correction off of?
+    public fun getRedRightPortalXOffset(): Double
+    public fun getRedRightPortalYOffset(): Double
 
 
     // blue
     public fun getBlueSwitchXCorrection(): Double
     public fun getBlueSwitchYCorrection(): Double
+    public fun getBlueRightPortalXOffset(): Double
+    public fun getBlueRightPortalYOffset(): Double
 
 }

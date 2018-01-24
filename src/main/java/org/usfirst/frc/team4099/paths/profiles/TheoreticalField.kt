@@ -6,54 +6,54 @@ package org.usfirst.frc.team4099.paths.profiles
 
 class TheoreticalField : FieldProfile{
     override fun getRedRightPortalToExchange(): Double {
-        return 13.237
+        return 166.845
     }
 
     override fun getRedLeftPortalToExchange(): Double {
-        return 7.237
+        return 86.845
     }
 
     override fun getRedBaseLineToAutoLine(): Double {
-        return 10.0
+        return 120.0
     }
 
     override fun getRedBaseLineToSwitch(): Double {
-        return 11.667
+        return 140.0
     }
 
     override fun getRedBaseLineToBackOfSwitch(): Double {
-        return 16.333
+        return 196.0
     }
 
     override fun getRedBaseLineToCenterOfPlatform(): Double {
-        return 27.0
+        return 324.0
     }
 
 
     //blue
 
     override fun getBlueRightPortalToExchange(): Double {
-        return 13.237
+        return 166.845
     }
 
     override fun getBlueLeftPortalToExchange(): Double {
-        return 7.237
+        return 86.845
     }
 
     override fun getBlueBaseLineToAutoLine(): Double {
-        return 10.0
+        return 120.0
     }
 
     override fun getBlueBaseLineToSwitch(): Double {
-        return 11.667
+        return 140.0
     }
 
     override fun getBlueBaseLineToBackOfSwitch(): Double {
-        return 16.333
+        return 196.0
     }
 
     override fun getBlueBaseLineToCenterOfPlatform(): Double {
-        return 27.0
+        return 324.0
     }
 
 }
