@@ -25,16 +25,16 @@ class InterpolatingTreeMap<K, V> @JvmOverloads constructor(maxSize: Int = 0) : T
     }
 
     fun getInterpolated(key: K): V? {
-        val gotval: V? = get(key)
-        return when {
-            gotval == null -> {
+        val gotVal: V? = get(key)
+        return when (gotVal) {
+            null -> {
                 val topBound: K = ceilingKey(key)
                 val botBound: K = floorKey(key)
                 val topElem: V? = get(topBound)
                 val botElem: V? = get(botBound)
                 botElem!!.interpolate(topElem!!, botBound.inverseInterpolate(topBound, key))
             }
-            else -> gotval
+            else -> gotVal
         }
     }
 }
