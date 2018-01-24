@@ -23,6 +23,11 @@ class Constants {
         val RIGHT_SLAVE_2_ID = 0
     }
 
+    object Wheels {
+        val TRACK_SCRUB_FACTOR = 0.924 //todo
+        val TRACK_WIDTH_INCHES = 26.655 //todo
+    }
+
     object Joysticks {
         val DRIVER_PORT = 0
         val SHOTGUN_PORT = 1
@@ -44,8 +49,8 @@ class Constants {
     }
 
     object PathFollowing {
-        val PATH_FOLLOWING_MAX_ACCEL = 10.0
-        val SEGMENT_COMPLETION_TOLERANCE = 1.0
+        val PATH_FOLLOWING_MAX_ACCEL = 120.0 //todo
+        val SEGMENT_COMPLETION_TOLERANCE = 0.1 //todo
     }
 
 }
