@@ -21,6 +21,9 @@ class Constants {
         val RIGHT_MASTER_ID = 4
         val RIGHT_SLAVE_1_ID = 5
         val RIGHT_SLAVE_2_ID = 0
+
+        val SHIFTER_CHANNEL = 0
+        val SHIFTER_MODULE = 0
     }
 
     object Wheels {
@@ -37,7 +40,6 @@ class Constants {
         val LOOPER_DT = 0.005 // 200 Hz
     }
 
-
     object Autonomous {
         val AUTO_OPTIONS_DASHBOARD_KEY = "auto_options"
         val SELECTED_AUTO_MODE_DASHBOARD_KEY = "selected_auto_mode"
@@ -51,6 +53,11 @@ class Constants {
     object PathFollowing {
         val PATH_FOLLOWING_MAX_ACCEL = 120.0 //todo
         val SEGMENT_COMPLETION_TOLERANCE = 0.1 //todo
+    }
+
+    object Intake {
+        val LEFT_INTAKE_TALON_ID = 0
+        val RIGHT_INTAKE_TALON_ID = 1
     }
 
 }
