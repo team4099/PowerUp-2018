@@ -32,6 +32,8 @@ class Arm private constructor() : Subsystem {
     private var armAngle = 0.0
     private var armBaseAngle = 0.0
 
+    private var stationaryTime = 0
+
 
     var armState = ArmState.EXCHANGE
 
@@ -73,10 +75,15 @@ class Arm private constructor() : Subsystem {
      *
      * @param power A double for the power going to the arm
      */
-    private fun setArmPower(power: Double) {
+    fun setArmVelocity(power: Double) {
         armState = ArmState.VELOCITY_CONTROL
-        masterSRX.set(ControlMode.MotionMagic, Math.abs(power))
+        masterSRX.set(ControlMode.Velocity, Math.abs(power))
         armPower = power
+    }
+
+    private fun setArmPosition(position: Double) {
+        armAngle = position
+        masterSRX.set(ControlMode.MotionMagic, ArmConversion.radiansToPulses(position).toDouble())
     }
 
     /**
@@ -89,7 +96,8 @@ class Arm private constructor() : Subsystem {
 
     @Synchronized override fun stop() {
         movementState = MovementState.STATIONARY
-        setArmPower(0.0)
+        setArmVelocity(0.0)
+        brake.set(DoubleSolenoid.Value.kReverse)
     }
 
     /**
@@ -101,7 +109,8 @@ class Arm private constructor() : Subsystem {
 
         override fun onStart() {
             movementState = MovementState.STATIONARY
-            setArmPower(0.0)
+            setArmVelocity(0.0)
+            brake.set(DoubleSolenoid.Value.kForward)
         }
 
         /**
@@ -111,53 +120,38 @@ class Arm private constructor() : Subsystem {
             synchronized(this@Arm) {
                 when (armState) {
                     Arm.ArmState.LOW -> {
-                        masterSRX.set(ControlMode.MotionMagic, ArmConversion.radiansToPulses(ArmState.LOW.targetPos).toDouble())
-                        armAngle = ArmState.LOW.targetPos
+                        setArmPosition(ArmState.LOW.targetPos)
+                        armAngle += ArmConversion.pulsesToRadians(masterSRX.sensorCollection.pulseWidthPosition) - armBaseAngle
                     }
                     Arm.ArmState.EXCHANGE -> {
-                        masterSRX.set(ControlMode.MotionMagic, ArmConversion.radiansToPulses(ArmState.EXCHANGE.targetPos).toDouble())
-                        armAngle = ArmState.EXCHANGE.targetPos
+                        setArmPosition(ArmState.EXCHANGE.targetPos)
+                        armAngle += ArmConversion.pulsesToRadians(masterSRX.sensorCollection.pulseWidthPosition) - armBaseAngle
                     }
                     Arm.ArmState.HIGH -> {
-                        masterSRX.set(ControlMode.MotionMagic, ArmConversion.radiansToPulses(ArmState.HIGH.targetPos).toDouble())
-                        armAngle = ArmState.HIGH.targetPos
+                        setArmPosition(ArmState.HIGH.targetPos)
+                        armAngle += ArmConversion.pulsesToRadians(masterSRX.sensorCollection.pulseWidthPosition) - armBaseAngle
                     }
-                    ArmState.VELOCITY_CONTROL -> {
-                        masterSRX.set(ControlMode.Velocity, 0.0)
-                        when (movementState) {
-                            Arm.MovementState.UP -> {
-                                setArmPower(1.0)
-                                armAngle += ArmConversion.pulsesToRadians(masterSRX.sensorCollection.pulseWidthPosition) - armBaseAngle
-                            }
-                            Arm.MovementState.DOWN -> {
-
-                            }
-                            Arm.MovementState.STATIONARY -> {
-                                setArmPower(0.0)
-                                armAngle += ArmConversion.pulsesToRadians(masterSRX.sensorCollection.pulseWidthPosition) - armBaseAngle
-                            }
-                            Arm.MovementState.MOVING_TO_BOTTOM -> {
-                                setArmPower(-1.0)
-                                armAngle += ArmConversion.pulsesToRadians(masterSRX.sensorCollection.pulseWidthPosition) - armBaseAngle
-                            }
-                            Arm.MovementState.MOVING_TO_EXCHANGE -> {
-                                if (armAngle < armBaseAngle) {
-                                    setArmPower(1.0)
-                                } else if (armAngle > armBaseAngle) {
-                                    setArmPower(-1.0)
-                                }
-                                armAngle += ArmConversion.pulsesToRadians(masterSRX.sensorCollection.pulseWidthPosition) - armBaseAngle
-                            }
-                            Arm.MovementState.MOVING_TO_TOP -> {
-                                setArmPower(1.0)
-                                armAngle += ArmConversion.pulsesToRadians(masterSRX.sensorCollection.pulseWidthPosition) - armBaseAngle
-                            }
-                        }
+                    //masterSRX.sensorCollection.quadratureVelocity
+                    Arm.ArmState.VELOCITY_CONTROL -> { }
+                }
+                if ((armState == Arm.ArmState.LOW && masterSRX.sensorCollection.quadratureVelocity > 0) || (armState == Arm.ArmState.HIGH && masterSRX.sensorCollection.quadratureVelocity < 0)) {
+                    movementState = Arm.MovementState.MOVING_TO_EXCHANGE
+                } else if (armState == Arm.ArmState.EXCHANGE && masterSRX.sensorCollection.quadratureVelocity > 0) {
+                    movementState = Arm.MovementState.MOVING_TO_TOP
+                } else if (armState == Arm.ArmState.EXCHANGE && masterSRX.sensorCollection.quadratureVelocity < 0) {
+                    movementState = Arm.MovementState.MOVING_TO_BOTTOM
+                } else if (masterSRX.sensorCollection.quadratureVelocity > 0) {
+                    movementState = Arm.MovementState.UP
+                } else if (masterSRX.sensorCollection.quadratureVelocity == 0) {
+                    stationaryTime ++
+                    if (stationaryTime >= 100) {
+                        movementState = Arm.MovementState.STATIONARY
                     }
+                } else {
+                    movementState = Arm.MovementState.DOWN
                 }
             }
         }
-
 
         override fun onStop() = stop()
 
