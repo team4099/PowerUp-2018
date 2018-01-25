@@ -37,10 +37,9 @@ class Constants {
         val RIGHT_SLAVE_2_ID = 0
 
         val HIGH_GEAR_MAX_SETPOINT = 17.0  //17 fps
-    }
 
-    object Wheels {
-        val DRIVE_WHEEL_DIAMETER_INCHES = 0
+        val SHIFTER_CHANNEL = 0
+        val SHIFTER_MODULE = 0
     }
 
     object Velocity {
@@ -52,14 +51,12 @@ class Constants {
         val DRIVE_HIGH_GEAR_MAX_REVERSE_OUTPUT = -1.0
         val DRIVE_LOW_GEAR_MAX_FORWARD_OUTPUT = 1.0
         val DRIVE_LOW_GEAR_MAX_REVERSE_OUTPUT = -1.0
-
-        val SHIFTER_CHANNEL = 0
-        val SHIFTER_MODULE = 0
     }
 
     object Wheels {
         val TRACK_SCRUB_FACTOR = 0.924 //todo
         val TRACK_WIDTH_INCHES = 26.655 //todo
+        val DRIVE_WHEEL_DIAMETER_INCHES = 0 //todo
     }
 
     object Joysticks {
