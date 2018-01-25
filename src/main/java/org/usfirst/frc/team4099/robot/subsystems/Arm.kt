@@ -121,15 +121,12 @@ class Arm private constructor() : Subsystem {
                 when (armState) {
                     Arm.ArmState.LOW -> {
                         setArmPosition(ArmState.LOW.targetPos)
-                        armAngle += ArmConversion.pulsesToRadians(masterSRX.sensorCollection.pulseWidthPosition) - armBaseAngle
                     }
                     Arm.ArmState.EXCHANGE -> {
                         setArmPosition(ArmState.EXCHANGE.targetPos)
-                        armAngle += ArmConversion.pulsesToRadians(masterSRX.sensorCollection.pulseWidthPosition) - armBaseAngle
                     }
                     Arm.ArmState.HIGH -> {
                         setArmPosition(ArmState.HIGH.targetPos)
-                        armAngle += ArmConversion.pulsesToRadians(masterSRX.sensorCollection.pulseWidthPosition) - armBaseAngle
                     }
                     //masterSRX.sensorCollection.quadratureVelocity
                     Arm.ArmState.VELOCITY_CONTROL -> { }
@@ -149,6 +146,10 @@ class Arm private constructor() : Subsystem {
                     }
                 } else {
                     movementState = Arm.MovementState.DOWN
+                }
+                armAngle = ArmConversion.pulsesToRadians(masterSRX.sensorCollection.pulseWidthPosition) - armBaseAngle
+                if (movementState == Arm.MovementState.STATIONARY) {
+                    brake.set(DoubleSolenoid.Value.kReverse)
                 }
             }
         }
