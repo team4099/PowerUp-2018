@@ -30,6 +30,7 @@ class Wrist private constructor(): Subsystem {
         STOWED_UP(7*Math.PI / 6),
         SHOOT_UP(Math.PI/3),
         CLIMBING(Math.PI/2)
+        //TODO Calibrate values
     }
 
     init {
