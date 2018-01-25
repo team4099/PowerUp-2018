@@ -3,6 +3,7 @@ import org.usfirst.frc.team4099.robot.Constants
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import org.usfirst.frc.team4099.robot.loops.Loop
+import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.DoubleSolenoid
 import com.ctre.phoenix.motorcontrol.ControlMode
 import com.ctre.phoenix.motorcontrol.FeedbackDevice
@@ -32,7 +33,8 @@ class Arm private constructor() : Subsystem {
     private var armAngle = 0.0
     private var armBaseAngle = 0.0
 
-    private var stationaryTime = 0
+    private var brakeTime = 0.0
+    private var stationaryTime = 0.0
 
 
     var armState = ArmState.EXCHANGE
@@ -66,6 +68,7 @@ class Arm private constructor() : Subsystem {
         masterSRX.config_kI(0, 0.0, 0)
         masterSRX.config_kD(0, 0.0, 0)
         armBaseAngle = ArmConversion.pulsesToRadians(masterSRX.sensorCollection.pulseWidthPosition)
+        brakeTime = Timer.getFPGATimestamp()
 
     }
 
@@ -118,6 +121,17 @@ class Arm private constructor() : Subsystem {
          */
         override fun onLoop() {
             synchronized(this@Arm) {
+                //check if stateisnt stationary and brake on: set timer be current time and disengage brakes
+                //if current time - init time < 0.5 : skip loop
+                if (movementState != Arm.MovementState.STATIONARY && brake.get() == DoubleSolenoid.Value.kReverse) {
+                    brakeTime = Timer.getFPGATimestamp()
+                    brake.set(DoubleSolenoid.Value.kForward)
+                }
+                if (Timer.getFPGATimestamp() - brakeTime < 0.5) {
+                    return
+                }
+                //if current time - init time > 0.5 : skip loop: set to stationary
+
                 when (armState) {
                     Arm.ArmState.LOW -> {
                         setArmPosition(ArmState.LOW.targetPos)
@@ -140,8 +154,15 @@ class Arm private constructor() : Subsystem {
                 } else if (masterSRX.sensorCollection.quadratureVelocity > 0) {
                     movementState = Arm.MovementState.UP
                 } else if (masterSRX.sensorCollection.quadratureVelocity == 0) {
-                    stationaryTime ++
-                    if (stationaryTime >= 100) {
+                    if (movementState != Arm.MovementState.STATIONARY && brake.get() == DoubleSolenoid.Value.kReverse) {
+                        brakeTime = Timer.getFPGATimestamp()
+                        stationaryTime++
+                        brake.set(DoubleSolenoid.Value.kForward)
+                    }
+                    if (Timer.getFPGATimestamp() - brakeTime > 0.5) {
+                        return
+                    }
+                    if (stationaryTime >= 10) {
                         movementState = Arm.MovementState.STATIONARY
                     }
                 } else {
