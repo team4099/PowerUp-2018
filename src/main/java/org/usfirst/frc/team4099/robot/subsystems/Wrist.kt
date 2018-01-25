@@ -27,7 +27,9 @@ class Wrist private constructor(): Subsystem {
     enum class WristState(wristAngle: Double) {
         STOWED_DOWN(-7*Math.PI/6),
         HORIZONTAL(Double.NaN),
-        STOWED_UP(7*Math.PI)
+        STOWED_UP(7*Math.PI / 6),
+        SHOOT_UP(Math.PI/3),
+        CLIMBING(Math.PI/2)
     }
 
     init {
