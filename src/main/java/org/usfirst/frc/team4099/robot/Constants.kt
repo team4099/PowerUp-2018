@@ -37,6 +37,8 @@ class Constants {
         val RIGHT_SLAVE_2_ID = 0
 
         val HIGH_GEAR_MAX_SETPOINT = 17.0  //17 fps
+        val SHIFTER_CHANNEL = 0
+        val SHIFTER_MODULE = 0
     }
 
     object Wheels {
@@ -53,8 +55,6 @@ class Constants {
         val DRIVE_LOW_GEAR_MAX_FORWARD_OUTPUT = 1.0
         val DRIVE_LOW_GEAR_MAX_REVERSE_OUTPUT = -1.0
 
-        val SHIFTER_CHANNEL = 0
-        val SHIFTER_MODULE = 0
     }
 
     object Joysticks {
