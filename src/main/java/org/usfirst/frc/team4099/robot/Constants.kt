@@ -81,4 +81,8 @@ class Constants {
         val RIGHT_INTAKE_TALON_ID = 1
     }
 
+    object Climber{
+        val CLIMBER_TALON_ID=2
+    }
+
 }
