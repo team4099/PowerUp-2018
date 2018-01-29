@@ -78,9 +78,23 @@ class Constants {
 
     }
 
-    object PathFollowing {
-        val PATH_FOLLOWING_MAX_ACCEL = 120.0 //todo
-        val SEGMENT_COMPLETION_TOLERANCE = 0.1 //todo
+    object PathFollowing { //todo all of these constants
+        val PATH_FOLLOWING_MAX_ACCEL = 120.0
+        val SEGMENT_COMPLETION_TOLERANCE = 0.1
+        val PATH_STOP_STEERING_DIST: Double = 9.0
+        val PATH_FOLLOWING_GOAL_VEL_TOL: Double = 12.0
+        val PATH_FOLLOWING_GOAL_POS_TOL: Double = 0.75
+        val PATH_FOLLOWING_MAX_VEL: Double = 120.0
+        val PF_Kffa: Double = 0.05
+        val PF_Kffv: Double = 1.0
+        val PF_Kv: Double = 0.02
+        val PF_Ki: Double = 0.03
+        val PF_Kp: Double = 5.0
+        val INERTIA_STEERING_GAIN: Double = 0.0
+        val MAX_LOOK_AHEAD_SPEED: Double = 120.0
+        val MIN_LOOK_AHEAD_SPEED: Double = 9.0
+        val MAX_LOOK_AHEAD: Double = 24.0
+        val MIN_LOOK_AHEAD: Double = 12.0
     }
 
     object Intake {

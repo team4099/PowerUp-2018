@@ -14,6 +14,25 @@ import org.usfirst.frc.team4099.lib.drive.DriveSignal
 import org.usfirst.frc.team4099.robot.Constants
 import org.usfirst.frc.team4099.robot.loops.Loop
 
+import org.usfirst.frc.team4099.robot.Kinematics
+import org.usfirst.frc.team4099.robot.RobotState
+import org.usfirst.frc.team4099.robot.loops.Looper
+import org.usfirst.frc.team4099.lib.util.ReflectingCSVWriter
+import org.usfirst.frc.team4099.lib.util.Utils
+import org.usfirst.frc.team4099.lib.util.control.Path
+import org.usfirst.frc.team4099.lib.util.control.PathFollower.Companion.Parameters
+import org.usfirst.frc.team4099.lib.util.control.PathFollower
+import org.usfirst.frc.team4099.lib.util.math.RigidTransform2D
+import org.usfirst.frc.team4099.lib.util.math.Rotation2D
+import org.usfirst.frc.team4099.lib.util.math.Twist2D
+import org.usfirst.frc.team4099.lib.util.drivers.NavX
+import java.util.Arrays
+import java.util.Optional
+import edu.wpi.first.wpilibj.DriverStation
+import edu.wpi.first.wpilibj.Timer
+import org.usfirst.frc.team4099.lib.util.control.Lookahead
+import org.usfirst.frc.team4099.robot.Robot
+import java.security.Policy
 
 class Drive private constructor() : Subsystem {
 
@@ -29,6 +48,19 @@ class Drive private constructor() : Subsystem {
 
     private val pneumaticShifter: Solenoid = Solenoid(Constants.Drive.SHIFTER_MODULE,Constants.Drive.SHIFTER_CHANNEL)
     private var highGear: Boolean = false
+    private var onTarget: Boolean = false
+    private var isApproaching: Boolean = false
+
+    private var driveControlState: DriveControlState = DriveControlState.VELOCITY_SETPOINT
+    private val navXBoard: NavX
+
+    private var robotState = RobotState.getInstance()
+    private var pathFollower: PathFollower? = null
+
+    private var targetHeading: Rotation2D = Rotation2D()
+    private var currentPath: Path? = null
+
+    private val csvWriter: ReflectingCSVWriter<PathFollower.Companion.DebugOutput>//see end of constructor to fix error
 
     enum class DriveControlState {
         OPEN_LOOP,
@@ -81,13 +113,24 @@ class Drive private constructor() : Subsystem {
 
         setOpenLoop(DriveSignal.NEUTRAL)
 
-
-
         ahrs = AHRS(SPI.Port.kMXP)
 
         this.zeroSensors()
+
+        //reloadGains()
+        highGear = false
+        setHighGear(true)
+        setOpenLoop(DriveSignal.NEUTRAL)
+        navXBoard = NavX(SPI.Port.kMXP)
+        brakeMode = NeutralMode.Brake
+        setBrakeMode(NeutralMode.Coast)
+        csvWriter = ReflectingCSVWriter<PathFollower.Companion.DebugOutput>(
+                "file.csv", PathFollower.Companion.DebugOutput::class.java) //todo: add debug file
     }
 
+    fun registerEnabledLoops(inloop: Looper) {
+        inloop.register(loop)
+    }
 
     @Synchronized
     fun setOpenLoop(signal: DriveSignal) {
@@ -97,19 +140,12 @@ class Drive private constructor() : Subsystem {
             leftMasterSRX.configNominalOutputForward(0.0, 0)
             rightMasterSRX.configNominalOutputForward(0.0, 0)
             currentState = DriveControlState.OPEN_LOOP
-            setBrakeMode(NeutralMode.Brake)
+            setBrakeMode(NeutralMode.Coast)
         }
         setLeftRightPower(signal.leftMotor, signal.rightMotor)
     }
 
 
-    fun onStart(timestamp: Double) {
-        synchronized(this) {
-            setOpenLoop(DriveSignal.NEUTRAL)
-            setBrakeMode(NeutralMode.Coast)
-            setVelocitySetpoint(0.0, 0.0) //could update in future
-        }
-    }
 
     fun usesTalonVelocityControl(state: DriveControlState): Boolean {
         if (state == DriveControlState.VELOCITY_SETPOINT || state == DriveControlState.PATH_FOLLOWING) {
@@ -174,14 +210,14 @@ class Drive private constructor() : Subsystem {
         if (this.getAHRS() != null) {
             SmartDashboard.putNumber("gyro", this.getAHRS()!!.yaw.toDouble())
         } else {
-            SmartDashboard.putNumber("gyro", -31337.0)
+            SmartDashboard.putNumber("gyro", -31337.0) //todo: add more data if you want
         }
         SmartDashboard.putNumber("leftTalon", leftMasterSRX.motorOutputVoltage)
         SmartDashboard.putNumber("rightTalon", rightMasterSRX.motorOutputVoltage)
     }
 
     fun startLiveWindowMode() {
-        LiveWindow.addSensor("Drive", "Gyro", ahrs);
+        LiveWindow.addSensor("Drive", "Gyro", ahrs)
     }
 
     fun stopLiveWindowMode() {
@@ -197,6 +233,7 @@ class Drive private constructor() : Subsystem {
             ahrs.reset()
         }
         resetEncoders()
+        navXBoard.zeroYaw()
     }
 
     @Synchronized
@@ -278,7 +315,7 @@ class Drive private constructor() : Subsystem {
 
 
     fun isHighGear() : Boolean {
-        return highGear;
+        return highGear
     }
 
     fun setHighGear(wantsHighGear: Boolean) {
@@ -301,11 +338,14 @@ class Drive private constructor() : Subsystem {
 
 
     val loop: Loop = object : Loop {
-        override fun onStart() {
+        override fun onStart(timestamp: Double) {
             setOpenLoop(DriveSignal.NEUTRAL)
+            setBrakeMode(NeutralMode.Coast)
+            setVelocitySetpoint(0.0,0.0)
+            navXBoard.reset()
         }
 
-        override fun onLoop() {
+        override fun onLoop(timestamp: Double) {
             synchronized(this@Drive) {
                 when (currentState) {
                     DriveControlState.OPEN_LOOP -> {
@@ -314,15 +354,15 @@ class Drive private constructor() : Subsystem {
                     DriveControlState.VELOCITY_SETPOINT -> {
                         return
                     }
-                /*DriveControlState.PATH_FOLLOWING ->{
-                    if (mPathFollower != null) {
-                        updatePathFollower(timestamp);
-                        mCSVWriter.add(mPathFollower.getDebug());
+                DriveControlState.PATH_FOLLOWING ->{
+                    if (pathFollower != null) {
+                        updatePathFollower(timestamp)
+                        csvWriter.add(pathFollower!!.getDebug())
                     }
-                }*/
+                }
                     DriveControlState.TURN_TO_HEADING -> {
-                        //updateTurnToHeading(timestamp);
-                        return;
+                        updateTurnToHeading(timestamp)
+                        return
                     }
                     else -> {
                         System.out.println("Unexpected drive control state: " + currentState)
@@ -331,8 +371,9 @@ class Drive private constructor() : Subsystem {
             }
         }
 
-        override fun onStop() {
-            setOpenLoop(DriveSignal.NEUTRAL)
+        override fun onStop(timestamp: Double) {
+            stop()
+            csvWriter.flush()
         }
     }
 
@@ -397,9 +438,126 @@ class Drive private constructor() : Subsystem {
         return rpmToInchesPerSecond(rightMasterSRX.getSelectedSensorVelocity(0).toDouble())
     }
 
+    @Synchronized fun getGyroAngle(): Rotation2D {
+        return navXBoard.getYaw()
+    }
+
+    @Synchronized fun getNavXBoard(): NavX {
+        return navXBoard
+    }
+
+    @Synchronized fun getGyroVelocityDegPerSec(): Double {
+        return navXBoard.getYawRateDegPerSec()
+    }
+
+    fun updateTurnToHeading(timestamp: Double) {
+        val fieldToRobot: Rotation2D = robotState.getLatestFieldToVehicle().value.getRotation()
+        val robotToTarget: Rotation2D = fieldToRobot.inverse().rotateBy(targetHeading)
+
+        val GOAL_POS_TOLER = 0.75
+        val GOAL_VEL_TOLER = 5.0
+        if (Math.abs(robotToTarget.degrees) < GOAL_POS_TOLER && Math.abs(getLeftVelocityInchesPerSec()) < GOAL_VEL_TOLER && Math.abs(getRightVelocityInchesPerSec()) < GOAL_VEL_TOLER) {
+            onTarget = true
+            updatePositionSetpoint(getLeftDistanceInches(), getRightDistanceInches())
+            return
+        }
+
+        val wheelDelta: Kinematics.DriveVelocity = Kinematics.inverseKinematics(Twist2D(0.0,0.0,robotToTarget.radians))
+        updatePositionSetpoint(wheelDelta.left + getLeftDistanceInches(), wheelDelta.right + getRightDistanceInches())
+    }
+
+    fun updatePathFollower(timestamp: Double) {
+        val robotPose: RigidTransform2D = robotState.getLatestFieldToVehicle().value
+        var command: Twist2D = pathFollower!!.update(timestamp, robotPose, RobotState.getInstance().distDriven, RobotState.getInstance().predictedVehicleVel.dx())
+        if (!pathFollower!!.isFinished()) {
+            var setpoint: Kinematics.DriveVelocity = Kinematics.inverseKinematics(command)
+            updateVelocitySetpoint(setpoint.left, setpoint.right)
+        } else {
+            updateVelocitySetpoint(0.0,0.0)
+        }
+    }
+
+    @Synchronized fun isOnTarget(): Boolean {
+        return onTarget
+    }
+
+    @Synchronized fun setWantTurnToHeading(heading: Rotation2D) {
+        if (driveControlState != DriveControlState.TURN_TO_HEADING) {
+            configureTalonsforPositionControl()
+            driveControlState = DriveControlState.TURN_TO_HEADING
+            updatePositionSetpoint(getLeftDistanceInches(), getRightDistanceInches())
+        }
+        if (Math.abs(heading.inverse().rotateBy(targetHeading).degrees) > 1E-3) {
+            targetHeading = heading
+            onTarget = false
+        }
+        highGear = false
+    }
+
+    @Synchronized fun setWantDrivePath(path: Path, reversed: Boolean) {
+        if (currentPath != path || driveControlState != DriveControlState.PATH_FOLLOWING) {
+            configureTalonsForVelocityControl()
+            RobotState.getInstance().resetDistDriven()
+            pathFollower = PathFollower(path, reversed, PathFollower.Companion.Parameters(Lookahead(Constants.PathFollowing.MIN_LOOK_AHEAD, Constants.PathFollowing.MAX_LOOK_AHEAD, Constants.PathFollowing.MIN_LOOK_AHEAD_SPEED, Constants.PathFollowing.MAX_LOOK_AHEAD_SPEED), Constants.PathFollowing.INERTIA_STEERING_GAIN, Constants.PathFollowing.PF_Kp, Constants.PathFollowing.PF_Ki, Constants.PathFollowing.PF_Kv, Constants.PathFollowing.PF_Kffv, Constants.PathFollowing.PF_Kffa, Constants.PathFollowing.PATH_FOLLOWING_MAX_VEL, Constants.PathFollowing.PATH_FOLLOWING_MAX_ACCEL, Constants.PathFollowing.PATH_FOLLOWING_GOAL_POS_TOL, Constants.PathFollowing.PATH_FOLLOWING_GOAL_VEL_TOL, Constants.PathFollowing.PATH_STOP_STEERING_DIST))
+            driveControlState = DriveControlState.PATH_FOLLOWING
+            currentPath = path
+        } else {
+            setVelocitySetpoint(0.0,0.0)
+        }
+    }
+
+    @Synchronized fun isDoneWithPath(): Boolean {
+        return if(driveControlState == DriveControlState.PATH_FOLLOWING && pathFollower != null) {
+            pathFollower!!.isFinished()
+        } else {
+            System.out.println("Not Path Following Mode")
+            true
+        }
+    }
+
+    fun isApproaching(): Boolean {
+        return isApproaching
+    }
+
+    @Synchronized fun isDoneWithTurn(): Boolean {
+        return if (driveControlState == DriveControlState.TURN_TO_HEADING) {
+            onTarget
+        } else {
+            System.out.println("Not turn to heading mode")
+            false
+        }
+    }
+
+    @Synchronized fun hasPassedMarker(marker: String): Boolean {
+        return if (driveControlState == DriveControlState.PATH_FOLLOWING && pathFollower != null) {
+            pathFollower!!.hasPassedMarker(marker)
+        } else {
+            System.out.println("Robot is not in path following mode")
+            false
+        }
+    }
+
+    @Synchronized fun getAccelX(): Double {
+        return navXBoard.getRawAccelX().toDouble()
+    }
+
+    //fun checkSystem(): Boolean {}
+
+
 
     companion object {
         val instance = Drive()
+
+        private val lowGearPositionControlSlot = 0
+        private val highGearVelocityControlSlot = 1
+
+        protected fun usesTalonVelocityControl(state: DriveControlState): Boolean {
+            return state == DriveControlState.VELOCITY_SETPOINT || state == DriveControlState.PATH_FOLLOWING
+        }
+
+        protected fun usesTalonPositionControl(state: DriveControlState): Boolean {
+            return false
+        }
     }
 
 }

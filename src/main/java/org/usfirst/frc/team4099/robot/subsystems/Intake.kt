@@ -32,11 +32,11 @@ class Intake private constructor() : Subsystem {
     }
 
     val loop: Loop = object : Loop {
-        override fun onStart() {
+        override fun onStart(timestamp: Double) {
             setIntakePower(0.0)
         }
 
-        override fun onLoop() {
+        override fun onLoop(timestamp: Double) {
             synchronized(this@Intake) {
                 when (intakeState) {
                     Intake.IntakeState.IN -> setIntakePower(-1.0)
@@ -47,7 +47,7 @@ class Intake private constructor() : Subsystem {
             }
         }
 
-        override fun onStop() = stop()
+        override fun onStop(timestamp: Double) = stop()
 
     }
 
