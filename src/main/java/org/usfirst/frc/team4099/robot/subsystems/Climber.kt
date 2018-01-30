@@ -1,14 +1,17 @@
 package org.usfirst.frc.team4099.robot.subsystems
 
-import edu.wpi.first.wpilibj.Talon
+import com.ctre.phoenix.motorcontrol.ControlMode
+import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import org.usfirst.frc.team4099.lib.util.CrashTracker
 import org.usfirst.frc.team4099.robot.Constants
 import org.usfirst.frc.team4099.robot.loops.Loop
 
 class Climber private constructor() : Subsystem {
-    private val climberTalon: Talon = Talon(Constants.Climber.CLIMBER_TALON_ID)
-    private val climberPower: Double = 0.toDouble()
+    private val climberTalon = TalonSRX(Constants.Climber.CLIMBER_TALON_ID)
+    private val climberPower = 0.0
+
+
 
     var climberState = ClimberState.NOT_CLIMBING
         private set
@@ -33,7 +36,7 @@ class Climber private constructor() : Subsystem {
     }
 
     private fun setClimberPower(power: Double) {
-        climberTalon.set(-Math.abs(power))
+        climberTalon.set(ControlMode.Velocity, -Math.abs(power))
     }
 
     val loop: Loop = object : Loop {

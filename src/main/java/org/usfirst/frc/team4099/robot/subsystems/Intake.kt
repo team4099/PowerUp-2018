@@ -1,14 +1,15 @@
 package org.usfirst.frc.team4099.robot.subsystems
+import com.ctre.phoenix.motorcontrol.ControlMode
 import org.usfirst.frc.team4099.robot.Constants
 
-import edu.wpi.first.wpilibj.Talon
+import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import org.usfirst.frc.team4099.robot.loops.Loop
 
 class Intake private constructor() : Subsystem {
 
-    private val rightTalon = Talon(Constants.Intake.RIGHT_INTAKE_TALON_ID)
-    private val leftTalon = Talon(Constants.Intake.LEFT_INTAKE_TALON_ID)
+    private val rightTalon = TalonSRX(Constants.Intake.RIGHT_INTAKE_TALON_ID)
+    private val leftTalon = TalonSRX(Constants.Intake.LEFT_INTAKE_TALON_ID)
 
     var intakeState = IntakeState.STOP
     private var intakePower = 0.0
@@ -27,8 +28,8 @@ class Intake private constructor() : Subsystem {
     }
 
     private fun setIntakePower(power: Double) {
-        rightTalon.set(Math.abs(power))
-        leftTalon.set(-Math.abs(power))
+        rightTalon.set(ControlMode.Velocity, Math.abs(power))
+        leftTalon.set(ControlMode.Velocity,-Math.abs(power))
     }
 
     val loop: Loop = object : Loop {
