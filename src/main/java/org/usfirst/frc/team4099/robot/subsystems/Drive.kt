@@ -4,12 +4,14 @@ package org.usfirst.frc.team4099.robot.subsystems
 import com.ctre.phoenix.motorcontrol.*
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import com.ctre.phoenix.motorcontrol.ControlMode
+import com.ctre.phoenix.motorcontrol.can.VictorSPX
 
 import com.kauailabs.navx.frc.AHRS
 import edu.wpi.first.wpilibj.SPI
 import edu.wpi.first.wpilibj.Solenoid
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import edu.wpi.first.wpilibj.DoubleSolenoid
 import org.usfirst.frc.team4099.lib.drive.DriveSignal
 import org.usfirst.frc.team4099.robot.Constants
 import org.usfirst.frc.team4099.robot.loops.Loop
@@ -19,15 +21,15 @@ class Drive private constructor() : Subsystem {
 
     private val leftMasterSRX: TalonSRX = TalonSRX(Constants.Drive.LEFT_MASTER_ID)
     private val leftSlave1SRX: TalonSRX = TalonSRX(Constants.Drive.LEFT_SLAVE_1_ID)
-    private val leftSlave2SRX: TalonSRX = TalonSRX(Constants.Drive.LEFT_SLAVE_2_ID)
+    private val leftSlave2SRX: VictorSPX = VictorSPX(Constants.Drive.LEFT_SLAVE_2_ID)
     private val rightMasterSRX: TalonSRX = TalonSRX(Constants.Drive.RIGHT_MASTER_ID)
     private val rightSlave1SRX: TalonSRX = TalonSRX(Constants.Drive.RIGHT_SLAVE_1_ID)
-    private val rightSlave2SRX: TalonSRX = TalonSRX(Constants.Drive.RIGHT_SLAVE_2_ID)
+    private val rightSlave2SRX: VictorSPX = VictorSPX(Constants.Drive.RIGHT_SLAVE_2_ID)
     private val ahrs: AHRS
 
     private var brakeMode: NeutralMode = NeutralMode.Coast //sets whether the break mode should be coast (no resistence) or by force
 
-    private val pneumaticShifter: Solenoid = Solenoid(Constants.Drive.SHIFTER_MODULE,Constants.Drive.SHIFTER_CHANNEL)
+    private val pneumaticShifter: DoubleSolenoid = DoubleSolenoid(Constants.Drive.SHIFTER_FORWARD_ID,Constants.Drive.SHIFTER_REVERSE_ID)
     private var highGear: Boolean = false
 
     enum class DriveControlState {
@@ -123,11 +125,6 @@ class Drive private constructor() : Subsystem {
             return true
         }
         return false
-    }
-
-
-    fun getHighGear(): Boolean {
-        return highGear
     }
 
 
@@ -284,7 +281,11 @@ class Drive private constructor() : Subsystem {
     fun setHighGear(wantsHighGear: Boolean) {
         if (wantsHighGear != highGear) {
             highGear = wantsHighGear
-            pneumaticShifter.set(!wantsHighGear)
+            if (wantsHighGear) {
+                pneumaticShifter.set(DoubleSolenoid.Value.kForward)
+            } else {
+                pneumaticShifter.set(DoubleSolenoid.Value.kReverse)
+            }
         }
     }
 
@@ -295,8 +296,10 @@ class Drive private constructor() : Subsystem {
      */
     @Synchronized
     fun setLeftRightPower(left: Double, right: Double) {
+        println("power: $left, $right")
         leftMasterSRX.set(ControlMode.PercentOutput, -left)
         rightMasterSRX.set(ControlMode.PercentOutput, right)
+        println(leftMasterSRX.motorOutputPercent)
     }
 
 

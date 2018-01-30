@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/PowerUp-2018.iml" filepath="$PROJECT_DIR$/PowerUp-2018.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/PowerUp-2018.iml" filepath="$PROJECT_DIR$/.idea/modules/PowerUp-2018.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/PowerUp-2018_main.iml" filepath="$PROJECT_DIR$/.idea/modules/PowerUp-2018_main.iml" group="PowerUp-2018" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/PowerUp-2018_test.iml" filepath="$PROJECT_DIR$/.idea/modules/PowerUp-2018_test.iml" group="PowerUp-2018" />
     </modules>
