@@ -13,6 +13,7 @@ object Utils {
      * @param limit     limited magnitude
      * @return          the limited value
      */
+
     fun limit(v: Double, limit: Double): Double {
         if (Math.abs(v) < limit)
             return v

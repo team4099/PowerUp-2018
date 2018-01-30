@@ -67,6 +67,12 @@ build/
 /sysProps.xml
 .gradle
 !gradle/wrapper/gradle-wrapper.jar
+PowerUp-2018_test.iml
+PowerUp-2018_main.iml
+PowerUp-2018.iml
+PowerUp-2018.ipr
+.idea/codeStyleSettings.xml
+.idea/codeStyles/codeStyleConfig.xml
 
 # Keeps on changing the Project SDK, really annoying
 .idea/misc.xml

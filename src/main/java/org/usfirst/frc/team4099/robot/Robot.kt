@@ -8,6 +8,7 @@ import org.usfirst.frc.team4099.AutonomousSelector
 import org.usfirst.frc.team4099.auto.AutoModeExecuter
 import org.usfirst.frc.team4099.lib.drive.DriveSignal
 import org.usfirst.frc.team4099.lib.util.CrashTracker
+import org.usfirst.frc.team4099.lib.util.LatchedBoolean
 import org.usfirst.frc.team4099.robot.drive.CheesyDriveHelper
 import org.usfirst.frc.team4099.robot.drive.TankDriveHelper
 import org.usfirst.frc.team4099.robot.loops.BrownoutDefender
@@ -30,6 +31,7 @@ class Robot : IterativeRobot() {
 
     private val logging = true
     private var isTurning = true
+    private var isHighGear = LatchedBoolean()
 
     init {
         CrashTracker.logRobotConstruction()
@@ -95,6 +97,7 @@ class Robot : IterativeRobot() {
     }
 
     override fun teleopInit() {
+        println("hello, in teleop")
         try {
             CrashTracker.logTeleopInit()
             isTurning = true
@@ -137,7 +140,7 @@ class Robot : IterativeRobot() {
             val isQuickTurn = controls.quickTurn
 
 
-
+            println("teleop periodic")
             SmartDashboard.putBoolean("isQuickTurn", isQuickTurn)
             SmartDashboard.putNumber("voltage", VoltageEstimator.instance.averageVoltage)
 

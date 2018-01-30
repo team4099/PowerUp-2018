@@ -25,8 +25,8 @@
       </configuration>
     </facet>
   </component>
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
-    <output-test url="file://$MODULE_DIR$/../../out/test/classes" />
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8" inherit-compiler-output="false">
+    <output-test url="file://$MODULE_DIR$/../../build/classes/java/test" />
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../src/test">
       <sourceFolder url="file://$MODULE_DIR$/../../src/test/java" isTestSource="true" />
@@ -39,22 +39,22 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="file://$MODULE_DIR$/../../build/classes/java/main" />
+          <root url="file://$MODULE_DIR$/../../build/classes/kotlin/main" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="Gradle: edu.wpi.first.wpilibj:wpilibj-java:2018.1.1" level="project" />
-    <orderEntry type="library" name="Gradle: edu.wpi.first.ntcore:ntcore-java:4.0.0" level="project" />
-    <orderEntry type="library" name="Gradle: edu.wpi.first.wpiutil:wpiutil-java:3.0.0" level="project" />
-    <orderEntry type="library" name="Gradle: org.opencv:opencv-java:3.2.0" level="project" />
-    <orderEntry type="library" name="Gradle: edu.wpi.first.cscore:cscore-java:1.1.0" level="project" />
-    <orderEntry type="library" name="Gradle: openrio.mirror.third.ctre:CTRE-phoenix-java:5.1.2.1" level="project" />
-    <orderEntry type="library" name="Gradle: openrio.mirror.third.kauailabs:navx-java:3.0.342" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.4" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:1.2.10" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains:annotations:13.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: edu.wpi.first.wpilibj:wpilibj-java:2018.1.1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: edu.wpi.first.ntcore:ntcore-java:4.0.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: edu.wpi.first.wpiutil:wpiutil-java:3.0.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.opencv:opencv-java:3.2.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: edu.wpi.first.cscore:cscore-java:1.1.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: openrio.mirror.third.ctre:CTRE-phoenix-java:5.1.2.1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: openrio.mirror.third.kauailabs:navx-java:3.0.342" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.4" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:1.2.10" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.jetbrains:annotations:13.0" level="project" />
   </component>
   <component name="TestModuleProperties" production-module="PowerUp-2018_main" />
 </module>
