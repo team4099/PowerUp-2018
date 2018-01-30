@@ -8,15 +8,15 @@ package org.usfirst.frc.team4099.robot.loops
  */
 class BrownoutDefender private constructor() : Loop {
 
-    override fun onStart() {
+    override fun onStart(timestamp: Double) {
 
     }
 
-    override fun onLoop() {
+    override fun onLoop(timestamp: Double) {
 
     }
 
-    override fun onStop() {
+    override fun onStop(timestamp: Double) {
 
     }
 

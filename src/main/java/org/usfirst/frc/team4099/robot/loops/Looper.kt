@@ -26,7 +26,7 @@ class Looper(private val name: String) {
                 if (running) {
                     val now = Timer.getFPGATimestamp()
                     for (loop in loops) {
-                        loop.onLoop()
+                        loop.onLoop(now)
                     }
                     dt = now - timestamp
                     timestamp = now
@@ -54,7 +54,7 @@ class Looper(private val name: String) {
             synchronized(taskRunningLock) {
                 timestamp = Timer.getFPGATimestamp()
                 for (loop in loops) {
-                    loop.onStart()
+                    loop.onStart(timestamp)
                 }
 
                 running = true
@@ -71,10 +71,10 @@ class Looper(private val name: String) {
 
             synchronized(taskRunningLock) {
                 running = false
-
+                timestamp = Timer.getFPGATimestamp()
                 for (loop in loops) {
                     println("Stopping " + loop) // give the loops a name
-                    loop.onStop()
+                    loop.onStop(timestamp)
                 }
             }
         }

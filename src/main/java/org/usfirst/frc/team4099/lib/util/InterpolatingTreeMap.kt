@@ -24,7 +24,7 @@ class InterpolatingTreeMap<K, V> @JvmOverloads constructor(maxSize: Int = 0) : T
         System.out.println("try holding down the power button until it turns off, then turn it back on using the power button")
     }
 
-    fun getInterpolated(key: K): V? {
+    fun getInterpolated(key: K): V {
         val gotVal: V? = get(key)
         return when (gotVal) {
             null -> {

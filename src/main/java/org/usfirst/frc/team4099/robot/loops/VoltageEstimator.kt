@@ -13,16 +13,16 @@ class VoltageEstimator : Loop {
         private set
     private val weight = 15.0
 
-    override fun onStart() {
+    override fun onStart(timestamp: Double) {
         println("Robot disabled: computing avg voltage")
     }
 
-    @Synchronized override fun onLoop() {
+    @Synchronized override fun onLoop(timestamp: Double) {
         val cur_voltage = DriverStation.getInstance().batteryVoltage
         averageVoltage = (cur_voltage + weight * averageVoltage) / (1.0 + weight)
     }
 
-    override fun onStop() {
+    override fun onStop(timestamp: Double) {
         println("Robot enabled: last avg voltage: " + averageVoltage)
     }
 
