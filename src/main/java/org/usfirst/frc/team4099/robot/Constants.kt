@@ -83,6 +83,8 @@ class Constants {
 
     object Climber{
         val CLIMBER_TALON_ID=2
+        val FORWARD_CHANNEL=6
+        val BACKWARD_CHANNEL=7
     }
 
 }
