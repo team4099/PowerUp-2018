@@ -11,34 +11,36 @@ import kotlin.collections.List
 
 class PathBuilder {
 
-    fun buildPathFromWaypoints(w: List<Waypoint>): Path {
-        val p: Path = Path()
-        if (w.size < 2) {
-            throw Error("Path must contain at least 2 waypoints")
-        }
-        var i: Int = 0
-        if (w.size > 2) {
-            do {
-                Arc(getPoint(w,i), getPoint(w, i+1), getPoint(w, i+2)).addToPath(p)
-                i++
-            } while (i < w.size - 2)
-        }
-        Line(w[w.size - 2], w[w.size - 1]).addToPath(p, 0.0)
-        p.extrapolateLast()
-        p.verifySpeeds()
-        return p
-    }
-
-    private fun getPoint(w: List<Waypoint>, i: Int): Waypoint {
-        if (i > w.size) {
-            return w[w.size - 1]
-        }
-        return w[i]
-    }
-
     companion object {
+
         private val kEpsilon: Double = 1E-9
         private val kReallyBigNumber: Double = 1E9
+
+        fun buildPathFromWaypoints(w: List<Waypoint>): Path {
+            val p: Path = Path()
+            if (w.size < 2) {
+                throw Error("Path must contain at least 2 waypoints")
+            }
+            var i: Int = 0
+            if (w.size > 2) {
+                do {
+                    Arc(getPoint(w,i), getPoint(w, i+1), getPoint(w, i+2)).addToPath(p)
+                    i++
+                } while (i < w.size - 2)
+            }
+
+            Line(w[w.size - 2], w[w.size - 1]).addToPath(p, 0.0)
+            p.extrapolateLast()
+            p.verifySpeeds()
+            return p
+        }
+
+        private fun getPoint(w: List<Waypoint>, i: Int): Waypoint {
+            if (i > w.size) {
+                return w[w.size - 1]
+            }
+            return w[i]
+        }
 
         private fun intersect(l1: Line, l2: Line): Translation2D {
             val lineA = RigidTransform2D(l1.end, Rotation2D(l1.slope, true).normal())
