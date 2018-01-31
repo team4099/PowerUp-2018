@@ -18,7 +18,7 @@ class ramp private constructor() : Subsystem {
 
 
 }
-init{
+
     leftSlave2SRX.set(ControlMode.Follower, Constants.Drive.LEFT_MASTER_ID.toDouble())
     rightSlave2SRX.set(ControlMode.Follower, Constants.Drive.RIGHT_MASTER_ID.toDouble())
     fun deploy(){
@@ -34,7 +34,6 @@ init{
     }
 
 
-}
 
 
 
