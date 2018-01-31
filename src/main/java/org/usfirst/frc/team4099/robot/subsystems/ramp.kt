@@ -22,6 +22,10 @@ class ramp private constructor() : Subsystem {
     leftSlave2SRX.set(ControlMode.Follower, Constants.Drive.LEFT_MASTER_ID.toDouble())
     rightSlave2SRX.set(ControlMode.Follower, Constants.Drive.RIGHT_MASTER_ID.toDouble())
     fun deploy(){
+        rightMaster2SRX.set(ControlMode.PercentOutput, right)
+        leftMaster2SRX.set(ControlMode.PercentOutput, right)
+
+
 
 
     }
