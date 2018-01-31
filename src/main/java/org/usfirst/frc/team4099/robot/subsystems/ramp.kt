@@ -12,14 +12,27 @@ class ramp private constructor() : Subsystem {
     private val pneumaticcylinder2: Solenoid = Solenoid(Constants.Drive.CYLINDER_MODULE,Constants.Drive.CYLINDER_CHANNEL)
     private val pneumaticcylinder3: Solenoid = Solenoid(Constants.Drive.CYLINDER_MODULE,Constants.Drive.CYLINDER_CHANNEL)
     private val pneumaticcylinder4: Solenoid = Solenoid(Constants.Drive.CYLINDER_MODULE,Constants.Drive.CYLINDER_CHANNEL)
+    private val leftSlave2SRX: TalonSRX = TalonSRX(Constants.Drive.LEFT_SLAVE_2_ID)
+    private val rightSlave2SRX: TalonSRX = TalonSRX(Constants.Drive.RIGHT_SLAVE_2_ID)
+
 
 
 }
 init{
-    pneumaticcylinder1.set(DoubleSolenoid.Value.kForward)
-    pneumaticcylinder2.set(DoubleSolenoid.Value.kForward)
-    pneumaticcylinder3.set(DoubleSolenoid.Value.kForward)
-    pneumaticcylinder4.set(DoubleSolenoid.Value.kForward)
+    leftSlave2SRX.set(ControlMode.Follower, Constants.Drive.LEFT_MASTER_ID.toDouble())
+    rightSlave2SRX.set(ControlMode.Follower, Constants.Drive.RIGHT_MASTER_ID.toDouble())
+    fun deploy(){
+
+
+    }
+    fun actuate(){
+        pneumaticShifter1.set(DoubleSolenoid.Value.kForward)
+        pneumaticShifter2.set(DoubleSolenoid.Value.kForward)
+        pneumaticShifter3.set(DoubleSolenoid.Value.kForward)
+        pneumaticShifter4.set(DoubleSolenoid.Value.kForward)
+
+    }
+
 
 }
 
