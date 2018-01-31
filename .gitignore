@@ -70,3 +70,4 @@ build/
 
 # Keeps on changing the Project SDK, really annoying
 .idea/misc.xml
+*.xml___jb_tmp___
