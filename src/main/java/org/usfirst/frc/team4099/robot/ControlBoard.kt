@@ -3,7 +3,6 @@ package org.usfirst.frc.team4099.robot
 import org.usfirst.frc.team4099.lib.joystick.DualShock4Gamepad
 import org.usfirst.frc.team4099.lib.joystick.Gamepad
 import org.usfirst.frc.team4099.lib.joystick.JoystickUtils
-import org.usfirst.frc.team4099.lib.joystick.XboxOneGamepad
 
 class ControlBoard private constructor() {
     private val driver: Gamepad = DualShock4Gamepad(Constants.Joysticks.DRIVER_PORT)
@@ -15,9 +14,11 @@ class ControlBoard private constructor() {
     val turn: Double
         get() = driver.leftXAxis
 
-    val toggleHighGear: Boolean
-        get() = driver.aButton
+    val switchToHighGear: Boolean
+        get() = driver.rightShoulderButton
 
+    val switchToLowGear: Boolean
+        get() = driver.leftShoulderButton
     /**
      * Should the bot arcadeDrive in quick turn mode?
      * @return  true/false, depending on if the joystick is depressed

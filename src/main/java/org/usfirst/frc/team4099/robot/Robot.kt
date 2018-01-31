@@ -97,7 +97,6 @@ class Robot : IterativeRobot() {
     }
 
     override fun teleopInit() {
-        println("hello, in teleop")
         try {
             CrashTracker.logTeleopInit()
             isTurning = true
@@ -138,12 +137,17 @@ class Robot : IterativeRobot() {
             val throttle = controls.throttle
             val turn = controls.turn
             val isQuickTurn = controls.quickTurn
+            val shiftToHighGear = controls.switchToHighGear
+            val shiftToLowGear = controls.switchToLowGear
 
-
-            println("teleop periodic")
             SmartDashboard.putBoolean("isQuickTurn", isQuickTurn)
             SmartDashboard.putNumber("voltage", VoltageEstimator.instance.averageVoltage)
 
+            if(drive.highGear && shiftToLowGear) {
+                drive.highGear = false
+            } else if(!drive.highGear && shiftToHighGear) {
+                drive.highGear = true
+            }
             drive.setOpenLoop(cheesyDriveHelper.curvatureDrive(throttle, turn, isQuickTurn))
 
             outputAllToSmartDashboard()
