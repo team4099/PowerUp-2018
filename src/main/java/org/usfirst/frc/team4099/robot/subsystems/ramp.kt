@@ -15,5 +15,13 @@ class ramp private constructor() : Subsystem {
 
 
 }
+init{
+    pneumaticShifter1.set(DoubleSolenoid.Value.kForward)
+    pneumaticShifter2.set(DoubleSolenoid.Value.kForward)
+    pneumaticShifter3.set(DoubleSolenoid.Value.kForward)
+    pneumaticShifter4.set(DoubleSolenoid.Value.kForward)
+
+}
+
 
 

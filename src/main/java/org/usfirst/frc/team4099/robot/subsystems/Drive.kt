@@ -26,7 +26,7 @@ class Drive private constructor() : Subsystem {
 
     enum class DriveControlState {
         OPEN_LOOP
-    }
+    }:
 
     private var currentState = DriveControlState.OPEN_LOOP
 
