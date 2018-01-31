@@ -43,7 +43,7 @@ class Arm private constructor() : Subsystem {
     var useVelocityControl : Boolean = false
 
     enum class MovementState {
-        UP, STATIONARY, DOWN,  HOLD
+        UP, STATIONARY, DOWN,  HOLD, MOVING_TO_EXCHANGE, MOVING_TO_TOP, MOVING_TO_BOTTOM
     }
 
     enum class ArmState(val targetPos: Double) {
@@ -126,8 +126,24 @@ class Arm private constructor() : Subsystem {
                 // 0.5 seconds after actuating the brake, set to stationary
                 // once the user tries to move, un-actuate the brake
                 if (masterSRX.sensorCollection.quadratureVelocity == 0) {
-                    movementState = Arm.MovementState.HOLD
-                    armState = Arm.ArmState.STILL
+                    if (movementState != Arm.MovementState.STATIONARY && brake.get() == DoubleSolenoid.Value.kReverse) {
+                        if (armState != Arm.ArmState.STILL) {
+                            brake.set(DoubleSolenoid.Value.kForward)
+                        }
+                    } else {
+                        movementState = Arm.MovementState.HOLD
+                        holdTime = Timer.getFPGATimestamp()
+                    }
+                    if (Timer.getFPGATimestamp() - holdTime >= 0.5) {
+                        movementState = Arm.MovementState.STATIONARY
+                    }
+                    armAngle = ArmConversion.pulsesToRadians(masterSRX.sensorCollection.pulseWidthPosition) - armBaseAngle
+                    if (movementState == Arm.MovementState.STATIONARY) {
+                        brake.set(DoubleSolenoid.Value.kReverse)
+                        masterSRX.set(ControlMode.Velocity, 0.0)
+
+                    }
+
                 }
                 if (movementState == Arm.MovementState.HOLD && Timer.getFPGATimestamp() - holdTime >= 0.5) {
                     brake.set(DoubleSolenoid.Value.kReverse)
@@ -150,12 +166,15 @@ class Arm private constructor() : Subsystem {
                     when (armState) {
                         Arm.ArmState.LOW -> {
                             setArmPosition(ArmState.LOW.targetPos)
+                            movementState = Arm.MovementState.MOVING_TO_BOTTOM
                         }
                         Arm.ArmState.EXCHANGE -> {
                             setArmPosition(ArmState.EXCHANGE.targetPos)
+                            movementState = Arm.MovementState.MOVING_TO_EXCHANGE
                         }
                         Arm.ArmState.HIGH -> {
                             setArmPosition(ArmState.HIGH.targetPos)
+                            movementState = Arm.MovementState.MOVING_TO_TOP
                         }
                             //masterSRX.sensorCollection.quadratureVelocity
                         Arm.ArmState.VELOCITY_CONTROL -> { }
@@ -167,27 +186,6 @@ class Arm private constructor() : Subsystem {
 
                 if (masterSRX.sensorCollection.quadratureVelocity > 0) {
                     movementState = Arm.MovementState.UP
-                } else if (masterSRX.sensorCollection.quadratureVelocity == 0) {
-                    //movementState = Arm.MovementState.HOLD
-                    if (movementState != Arm.MovementState.STATIONARY && brake.get() == DoubleSolenoid.Value.kReverse) {
-                        if (armState != Arm.ArmState.STILL) {
-                            brake.set(DoubleSolenoid.Value.kForward)
-                        }
-                    } else {
-                        movementState = Arm.MovementState.HOLD
-                        holdTime = Timer.getFPGATimestamp()
-                    }
-                    if (Timer.getFPGATimestamp() - holdTime == 0.5) {
-                        movementState = Arm.MovementState.STATIONARY
-                    } else {
-                        movementState = Arm.MovementState.DOWN
-                    }
-                    armAngle = ArmConversion.pulsesToRadians(masterSRX.sensorCollection.pulseWidthPosition) - armBaseAngle
-                    if (movementState == Arm.MovementState.STATIONARY) {
-                        brake.set(DoubleSolenoid.Value.kReverse)
-                        masterSRX.set(ControlMode.Velocity, 0.0)
-
-                    }
                 }
             }
         }
