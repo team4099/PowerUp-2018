@@ -41,13 +41,14 @@ class Drive private constructor() : Subsystem {
 
     var highGear: Boolean = false
         set(wantsHighGear) {
-            if (wantsHighGear != highGear) {
+            if (wantsHighGear != field) {
                 if (wantsHighGear) {
                     pneumaticShifter.set(DoubleSolenoid.Value.kForward)
                 } else {
                     pneumaticShifter.set(DoubleSolenoid.Value.kReverse)
                 }
             }
+            field = wantsHighGear
         }
 
     enum class DriveControlState {
