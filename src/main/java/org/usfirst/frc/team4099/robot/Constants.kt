@@ -84,4 +84,9 @@ class Constants {
         val RIGHT_INTAKE_TALON_ID = 1
     }
 
+    object Elevator {
+        val ELEVATOR_MASTER_TALON_ID = 7
+        val ELEVATOR_SLAVE_TALON_ID = 8
+    }
+
 }
