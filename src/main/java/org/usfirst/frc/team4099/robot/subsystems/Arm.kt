@@ -40,7 +40,6 @@ class Arm private constructor() : Subsystem {
     var armState = ArmState.EXCHANGE
 
 
-    var useVelocityControl : Boolean = false
 
     enum class MovementState {
         UP, STATIONARY, DOWN,  HOLD, MOVING_TO_EXCHANGE, MOVING_TO_TOP, MOVING_TO_BOTTOM
@@ -125,7 +124,7 @@ class Arm private constructor() : Subsystem {
                 // after 0.5 seconds of hold, actuate the brake and prevent movement
                 // 0.5 seconds after actuating the brake, set to stationary
                 // once the user tries to move, un-actuate the brake
-                if (Timer.getFPGATimestamp() - brakeTime < 0.5) {
+               /* if (Timer.getFPGATimestamp() - brakeTime < 0.5) {
                     return
                 }
                 if (masterSRX.sensorCollection.quadratureVelocity == 0) {
@@ -150,7 +149,7 @@ class Arm private constructor() : Subsystem {
                 if (movementState == Arm.MovementState.HOLD) {
                     masterSRX.set(ControlMode.MotionMagic, ArmConversion.pulsesToRadians(masterSRX.sensorCollection.pulseWidthPosition))
                 } else {
-                    brake.set(DoubleSolenoid.Value.kForward)-
+                    brake.set(DoubleSolenoid.Value.kForward)
                     when (armState) {
                         Arm.ArmState.LOW -> {
                             setArmPosition(ArmState.LOW.targetPos)
@@ -175,6 +174,36 @@ class Arm private constructor() : Subsystem {
                 if (masterSRX.sensorCollection.quadratureVelocity > 0) {
                     movementState = Arm.MovementState.UP
                 }*/
+                if (armState != Arm.ArmState.STILL){
+                    if (masterSRX.sensorCollection.quadratureVelocity == 0){
+                        armState = Arm.ArmState.STILL
+                        movementState = Arm.MovementState.HOLD
+                        holdTime = Timer.getFPGATimestamp()
+                    }
+                }
+                else if (movementState == Arm.MovementState.HOLD){
+                    if (masterSRX.sensorCollection.quadratureVelocity != 0){ //if the arm moves
+                        armState=Arm.ArmState.VELOCITY_CONTROL
+                        if (masterSRX.sensorCollection.quadratureVelocity > 0){
+                            movementState=Arm.MovementState.UP
+                        }
+                        else {
+                            movementState=Arm.MovementState.DOWN
+                        }
+                    }
+                    else if (Timer.getFPGATimestamp() - holdTime >= 0.5){ //brake is put
+                        movementState = Arm.MovementState.STATIONARY
+                        brake.set(DoubleSolenoid.Value.kReverse)
+                        masterSRX.set(ControlMode.Velocity, 0.0)
+                    }
+                }
+                else if (movementState == Arm.MovementState.STATIONARY){
+                    if (armState != Arm.ArmState.STILL) {//might not work b/c it may not be able to move when brake is put
+                        movementState = Arm.MovementState.UP
+                        brake.set(DoubleSolenoid.Value.kForward)
+                    }
+                }
+
             }
         }
 
