@@ -1,6 +1,5 @@
 package org.usfirst.frc.team4099.robot
 
-import edu.wpi.first.wpilibj.CameraServer
 import edu.wpi.first.wpilibj.IterativeRobot
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -143,15 +142,19 @@ class Robot : IterativeRobot() {
             SmartDashboard.putBoolean("isQuickTurn", isQuickTurn)
             SmartDashboard.putNumber("voltage", VoltageEstimator.instance.averageVoltage)
 
-            if (drive.highGear && shiftToLowGear) {
-                drive.highGear = false
-                println("Shifting to low gear")
-            } else if (!drive.highGear && shiftToHighGear) {
-                drive.highGear = true
-                println("Shifting to high gear")
+            if (controls.test) {
+                println("testing")
+                drive.setVelocitySetpoint(300 * throttle, 300 * throttle)
+            } else {
+                if (drive.highGear && shiftToLowGear) {
+                    drive.highGear = false
+                    println("Shifting to low gear")
+                } else if (!drive.highGear && shiftToHighGear) {
+                    drive.highGear = true
+                    println("Shifting to high gear")
+                }
+                drive.setOpenLoop(cheesyDriveHelper.curvatureDrive(throttle, turn, isQuickTurn))
             }
-            drive.setOpenLoop(cheesyDriveHelper.curvatureDrive(throttle, turn, isQuickTurn))
-
             outputAllToSmartDashboard()
             updateDashboardFeedback() // things such as is aligned?, etc
 

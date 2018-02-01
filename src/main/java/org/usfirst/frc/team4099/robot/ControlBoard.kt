@@ -9,7 +9,7 @@ class ControlBoard private constructor() {
     private val operator: Gamepad = DualShock4Gamepad(Constants.Joysticks.SHOTGUN_PORT)
 
     val throttle: Double
-        get() = -driver.rightTriggerAxis + driver.leftTriggerAxis
+        get() = driver.rightTriggerAxis - driver.leftTriggerAxis
 
     val turn: Double
         get() = driver.leftXAxis
@@ -26,6 +26,8 @@ class ControlBoard private constructor() {
     val quickTurn: Boolean
         get() = Math.abs(JoystickUtils.deadbandNoShape(throttle, 0.02)) < 0.01
 
+    val test: Boolean
+        get() = driver.bButton
 
     companion object {
         val instance = ControlBoard()
