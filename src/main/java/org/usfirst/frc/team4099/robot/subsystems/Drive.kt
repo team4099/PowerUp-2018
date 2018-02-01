@@ -215,7 +215,7 @@ class Drive private constructor() : Subsystem {
     private fun updateVelocitySetpoint(leftInchesPerSec: Double, rightInchesPerSec: Double) {
         if (usesTalonVelocityControl(currentState)) {
             val maxDesired: Double = Math.max(Math.abs(leftInchesPerSec), Math.abs(rightInchesPerSec))
-            var scale: Double
+            val scale: Double
             if (maxDesired > Constants.Drive.HIGH_GEAR_MAX_SETPOINT) {
                 scale = Constants.Drive.HIGH_GEAR_MAX_SETPOINT / maxDesired
             } else {
@@ -292,6 +292,8 @@ class Drive private constructor() : Subsystem {
 //        println("power: $left, $right")
         leftMasterSRX.set(ControlMode.PercentOutput, left)
         rightMasterSRX.set(ControlMode.PercentOutput, -right)
+        println("left out: $left, left speed: ${leftMasterSRX.getSelectedSensorVelocity(0)}")
+        println("right out: $right, right speed: ${rightMasterSRX.getSelectedSensorVelocity(0)}")
 //        println("actual power: ${leftMasterSRX.motorOutputPercent}, ${rightMasterSRX.motorOutputPercent}")
     }
 
