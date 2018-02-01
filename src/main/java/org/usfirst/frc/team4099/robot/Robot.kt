@@ -43,7 +43,7 @@ class Robot : IterativeRobot() {
             CrashTracker.logRobotInit()
 
             //TODO: add the robot state estimator here
-            CameraServer.getInstance().startAutomaticCapture()
+//            CameraServer.getInstance().startAutomaticCapture()
             enabledLooper.register(drive.loop)
 
             enabledLooper.register(BrownoutDefender.instance)
@@ -143,10 +143,12 @@ class Robot : IterativeRobot() {
             SmartDashboard.putBoolean("isQuickTurn", isQuickTurn)
             SmartDashboard.putNumber("voltage", VoltageEstimator.instance.averageVoltage)
 
-            if(drive.highGear && shiftToLowGear) {
+            if (drive.highGear && shiftToLowGear) {
                 drive.highGear = false
-            } else if(!drive.highGear && shiftToHighGear) {
+                println("Shifting to low gear")
+            } else if (!drive.highGear && shiftToHighGear) {
                 drive.highGear = true
+                println("Shifting to high gear")
             }
             drive.setOpenLoop(cheesyDriveHelper.curvatureDrive(throttle, turn, isQuickTurn))
 

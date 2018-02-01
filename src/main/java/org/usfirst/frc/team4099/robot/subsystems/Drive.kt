@@ -41,13 +41,14 @@ class Drive private constructor() : Subsystem {
 
     var highGear: Boolean = false
         set(wantsHighGear) {
-            if (wantsHighGear != highGear) {
+            if (wantsHighGear != field) {
                 if (wantsHighGear) {
                     pneumaticShifter.set(DoubleSolenoid.Value.kForward)
                 } else {
                     pneumaticShifter.set(DoubleSolenoid.Value.kReverse)
                 }
             }
+            field = wantsHighGear
         }
 
     enum class DriveControlState {
@@ -235,7 +236,7 @@ class Drive private constructor() : Subsystem {
     private fun updatePositionSetpoint(leftPositionInches: Double, rightPositionInches: Double) {
         if (usesTalonPositionControl(currentState)) {
             leftMasterSRX.set(ControlMode.MotionMagic, leftPositionInches)
-            leftMasterSRX.set(ControlMode.MotionMagic, leftPositionInches)
+            rightMasterSRX.set(ControlMode.MotionMagic, rightPositionInches)
         } else {
             println("Bad position control state")
             leftMasterSRX.set(ControlMode.MotionMagic, 0.0)
@@ -320,7 +321,7 @@ class Drive private constructor() : Subsystem {
                 }*/
                     DriveControlState.TURN_TO_HEADING -> {
                         //updateTurnToHeading(timestamp);
-                        return;
+                        return
                     }
                     else -> {
                         System.out.println("Unexpected drive control state: " + currentState)
