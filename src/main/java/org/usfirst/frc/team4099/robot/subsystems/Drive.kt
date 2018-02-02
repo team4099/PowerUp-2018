@@ -295,7 +295,7 @@ class Drive private constructor() : Subsystem {
      */
     @Synchronized
     private fun setLeftRightPower(left: Double, right: Double) {
-je//        println("power: $left, $right")
+//        println("power: $left, $right")
         leftMasterSRX.set(ControlMode.PercentOutput, left)
         rightMasterSRX.set(ControlMode.PercentOutput, right)
         println("left out: $left, left speed: ${leftMasterSRX.getSelectedSensorVelocity(0)}")

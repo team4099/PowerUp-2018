@@ -9,6 +9,11 @@ class Superstructure private constructor(): Subsystem {
     private val drive = Drive.instance
     private val intake = Intake.instance
     //private val wrist = Wrist.instance
+    enum class SystemState{
+        IDLE, AUTO, TELEOP //not sure
+    }
+
+    var systemState = SystemState.IDLE
 
 
     override fun outputToSmartDashboard() {
@@ -27,7 +32,24 @@ class Superstructure private constructor(): Subsystem {
             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
         override fun onLoop() {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            synchronized(this@Superstructure){
+                when(arm.armState){
+                    Arm.ArmState.LOW ->{
+                        wrist.wristState = Wrist.WristState.STOWED_UP
+                    }
+                    Arm.ArmState.EXCHANGE ->{
+                        wrist.wristState = Wrist.WristState.HORIZONTAL
+                    }
+                    Arm.ArmState.HIGH ->{
+                        wrist.wristState = Wrist.WristState.STOWED_DOWN
+                    }
+                }
+                when(systemState){
+                    SystemState.IDLE -> {}
+                    SystemState.AUTO -> {}
+                    SystemState.TELEOP -> {}
+                }
+            }
         }
         override fun onStop() {
             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
