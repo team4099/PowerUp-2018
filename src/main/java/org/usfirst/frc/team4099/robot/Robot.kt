@@ -15,6 +15,13 @@ import org.usfirst.frc.team4099.robot.loops.Looper
 import org.usfirst.frc.team4099.robot.loops.VoltageEstimator
 import org.usfirst.frc.team4099.robot.subsystems.Drive
 
+internal class Robot : IterativeRobot() {
+
+    fun robotInit() {
+        CameraServer.getInstance().startAutomaticCapture()
+    }
+}
+
 class Robot : IterativeRobot() {
 
     private val drive = Drive.instance
@@ -22,15 +29,12 @@ class Robot : IterativeRobot() {
     private val cheesyDriveHelper = CheesyDriveHelper.instance
     private val tankDriveHelper = TankDriveHelper.instance
 
-    private val controls = ControlBoard.instance
+    private val controls = odi.instance
     private val disabledLooper = Looper("disabledLooper")
     private val enabledLooper = Looper("enabledLooper")
-
     private var autoModeExecuter: AutoModeExecuter? = null
-
     private val logging = true
     private var isTurning = true
-
     init {
         CrashTracker.logRobotConstruction()
     }
@@ -51,8 +55,14 @@ class Robot : IterativeRobot() {
 
         } catch (t: Throwable) {
             CrashTracker.logThrowableCrash("robotInit", t)
-            throw t
+
         }
+        CameraServer::GetInstance()->StartAutomaticCapture();
+
+
+
+
+
     }
 
     override fun disabledInit() {
