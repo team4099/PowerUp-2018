@@ -42,7 +42,7 @@ class Arm private constructor() : Subsystem {
 
 
     enum class MovementState {
-        UP, STATIONARY, DOWN,  HOLD, MOVING_TO_EXCHANGE, MOVING_TO_TOP, MOVING_TO_BOTTOM
+        UP, STATIONARY, DOWN,  HOLD
     }
 
     enum class ArmState(val targetPos: Double) {
@@ -180,26 +180,33 @@ class Arm private constructor() : Subsystem {
                         movementState = Arm.MovementState.HOLD
                         holdTime = Timer.getFPGATimestamp()
                     }
+                    else if (masterSRX.sensorCollection.quadratureVelocity > 0){
+                        movementState = Arm.MovementState.UP
+                    }
+                    else {
+                        movementState = Arm.MovementState.DOWN
+                    }
                 }
                 else if (movementState == Arm.MovementState.HOLD){
                     if (masterSRX.sensorCollection.quadratureVelocity != 0){ //if the arm moves
                         armState=Arm.ArmState.VELOCITY_CONTROL
                         if (masterSRX.sensorCollection.quadratureVelocity > 0){
-                            movementState=Arm.MovementState.UP
+                            movementState = Arm.MovementState.UP
                         }
                         else {
-                            movementState=Arm.MovementState.DOWN
+                            movementState = Arm.MovementState.DOWN
                         }
                     }
                     else if (Timer.getFPGATimestamp() - holdTime >= 0.5){ //brake is put
                         movementState = Arm.MovementState.STATIONARY
                         brake.set(DoubleSolenoid.Value.kReverse)
                         masterSRX.set(ControlMode.Velocity, 0.0)
+                        brakeTime = Timer.getFPGATimestamp()
                     }
                 }
                 else if (movementState == Arm.MovementState.STATIONARY){
-                    if (armState != Arm.ArmState.STILL) {//might not work b/c it may not be able to move when brake is put
-                        movementState = Arm.MovementState.UP
+                    if (armState != Arm.ArmState.STILL && brakeTime - Timer.getFPGATimestamp() > 0.5) {//might not work b/c it may not be able to move when brake is put
+                        movementState = Arm.MovementState.UP //may have to change
                         brake.set(DoubleSolenoid.Value.kForward)
                     }
                 }
