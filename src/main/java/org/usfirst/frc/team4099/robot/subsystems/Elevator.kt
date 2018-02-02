@@ -16,6 +16,7 @@ class Elevator private constructor(): Subsystem{
     var elevatorState = ElevatorState.LOW
     private var movementState = MovementState.HOLD
     private var elevatorPosition = 0.0
+    private var limitSwitch = DigitalInput(0)
 
     enum class ElevatorState (val targetPos : Double) {
         LOW(0.0), MEDIUM(0.5), HIGH(1.0), STILL(Double.NaN), VELOCITY_CONTROL(Double.NaN)
@@ -28,7 +29,6 @@ class Elevator private constructor(): Subsystem{
     init {
         masterSRX.set(ControlMode.Velocity, 0.0)
         slaveSRX.set(ControlMode.Follower, 0.0)
-
     }
 
     fun setElevatorVelocity(power: Double) {
@@ -67,12 +67,17 @@ class Elevator private constructor(): Subsystem{
                     when(elevatorState){
                         ElevatorState.VELOCITY_CONTROL -> {
                             masterSRX.set(ControlMode.Velocity, 0.0)
-                            when(movementState) {
-                                MovementState.UP -> setElevatorVelocity(1.0)
-                                MovementState.DOWN -> setElevatorVelocity(-1.0)
-                                MovementState.HOLD -> {
-                                    masterSRX.set(ControlMode.MotionMagic, ElevatorConversion.pulsesToRadians(masterSRX.sensorCollection.pulseWidthPosition))
+                            if(limitSwitch.get() == true) {
+                                when (movementState) {
+                                    MovementState.UP -> setElevatorVelocity(1.0)
+                                    MovementState.DOWN -> setElevatorVelocity(-1.0)
+                                    MovementState.HOLD -> {
+                                        masterSRX.set(ControlMode.MotionMagic, ElevatorConversion.pulsesToRadians(masterSRX.sensorCollection.pulseWidthPosition))
+                                    }
                                 }
+                            } else {
+                                movementState = MovementState.HOLD
+                                masterSRX.set(ControlMode.MotionMagic, ElevatorConversion.pulsesToRadians(masterSRX.sensorCollection.pulseWidthPosition))
                             }
                         }
                         ElevatorState.HIGH -> {
