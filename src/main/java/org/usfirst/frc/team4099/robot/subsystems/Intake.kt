@@ -1,8 +1,8 @@
 package org.usfirst.frc.team4099.robot.subsystems
-import org.usfirst.frc.team4099.robot.Constants
 
 import edu.wpi.first.wpilibj.Talon
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import org.usfirst.frc.team4099.robot.Constants
 import org.usfirst.frc.team4099.robot.loops.Loop
 
 
@@ -44,7 +44,7 @@ class Intake private constructor() : Subsystem {
      */
     private fun setIntakePower(power: Double) {
         rightTalon.set(Math.abs(power))
-        leftTalon.set(-Math.abs(power))
+        leftTalon.set(Math.abs(power))
     }
 
     /**
@@ -62,9 +62,9 @@ class Intake private constructor() : Subsystem {
         override fun onLoop() {
             synchronized(this@Intake) {
                 when (intakeState) {
-                    Intake.IntakeState.IN -> setIntakePower(-1.0)
+                    Intake.IntakeState.IN -> setIntakePower(-0.7)
                     Intake.IntakeState.STOP -> setIntakePower(0.0)
-                    Intake.IntakeState.OUT -> setIntakePower(1.0)
+                    Intake.IntakeState.OUT -> setIntakePower(0.7)
 
                 }
             }

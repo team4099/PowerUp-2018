@@ -1,6 +1,5 @@
 package org.usfirst.frc.team4099.robot
 
-import edu.wpi.first.wpilibj.CameraServer
 import edu.wpi.first.wpilibj.IterativeRobot
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -8,12 +7,14 @@ import org.usfirst.frc.team4099.AutonomousSelector
 import org.usfirst.frc.team4099.auto.AutoModeExecuter
 import org.usfirst.frc.team4099.lib.drive.DriveSignal
 import org.usfirst.frc.team4099.lib.util.CrashTracker
+import org.usfirst.frc.team4099.lib.util.LatchedBoolean
 import org.usfirst.frc.team4099.robot.drive.CheesyDriveHelper
 import org.usfirst.frc.team4099.robot.drive.TankDriveHelper
 import org.usfirst.frc.team4099.robot.loops.BrownoutDefender
 import org.usfirst.frc.team4099.robot.loops.Looper
 import org.usfirst.frc.team4099.robot.loops.VoltageEstimator
 import org.usfirst.frc.team4099.robot.subsystems.Drive
+import org.usfirst.frc.team4099.robot.subsystems.Intake
 
 class Robot : IterativeRobot() {
 
@@ -21,6 +22,7 @@ class Robot : IterativeRobot() {
 
     private val cheesyDriveHelper = CheesyDriveHelper.instance
     private val tankDriveHelper = TankDriveHelper.instance
+    private val intake = Intake.instance
 
     private val controls = ControlBoard.instance
     private val disabledLooper = Looper("disabledLooper")
@@ -30,6 +32,7 @@ class Robot : IterativeRobot() {
 
     private val logging = true
     private var isTurning = true
+    private var isHighGear = LatchedBoolean()
 
     init {
         CrashTracker.logRobotConstruction()
@@ -41,8 +44,9 @@ class Robot : IterativeRobot() {
             CrashTracker.logRobotInit()
 
             //TODO: add the robot state estimator here
-            CameraServer.getInstance().startAutomaticCapture()
+//            CameraServer.getInstance().startAutomaticCapture()
             enabledLooper.register(drive.loop)
+            enabledLooper.register(intake.loop)
 
             enabledLooper.register(BrownoutDefender.instance)
 
@@ -135,13 +139,28 @@ class Robot : IterativeRobot() {
             val throttle = controls.throttle
             val turn = controls.turn
             val isQuickTurn = controls.quickTurn
-
-
+            val shiftToHighGear = controls.switchToHighGear
+            val shiftToLowGear = controls.switchToLowGear
+            val reverseIntake = controls.reverseIntake
 
             SmartDashboard.putBoolean("isQuickTurn", isQuickTurn)
             SmartDashboard.putNumber("voltage", VoltageEstimator.instance.averageVoltage)
 
-            drive.setOpenLoop(cheesyDriveHelper.curvatureDrive(throttle, turn, isQuickTurn))
+            if (controls.test) {
+                println("testing")
+                drive.setVelocitySetpoint(300 * throttle, 300 * throttle)
+            } else {
+                if (drive.highGear && shiftToLowGear) {
+                    drive.highGear = false
+                    println("Shifting to low gear")
+                } else if (!drive.highGear && shiftToHighGear) {
+                    drive.highGear = true
+                    println("Shifting to high gear")
+                }
+                drive.setOpenLoop(cheesyDriveHelper.curvatureDrive(throttle, turn, isQuickTurn))
+            }
+
+            intake.intakeState = if (reverseIntake) Intake.IntakeState.OUT else Intake.IntakeState.IN
 
             outputAllToSmartDashboard()
             updateDashboardFeedback() // things such as is aligned?, etc

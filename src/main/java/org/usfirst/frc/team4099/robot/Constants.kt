@@ -3,42 +3,47 @@ package org.usfirst.frc.team4099.robot
 class Constants {
 
     object Gains {
-        val LEFT_LOW_KP = 0.0115
+        val LEFT_LOW_KP = 0.0000
         val LEFT_LOW_KI = 0.0000
         val LEFT_LOW_KD = 0.0000
-        val LEFT_LOW_KF = 0.0000
+        val LEFT_LOW_KF = 1023.0 / 2220.0
 
         //subject to change
-        val LEFT_HIGH_KP = 0.0115
+        val LEFT_HIGH_KP = .1 * 1023 / 70
         val LEFT_HIGH_KI = 0.0000
         val LEFT_HIGH_KD = 0.0000
-        val LEFT_HIGH_KF = 0.0000
+        val LEFT_HIGH_KF = 1023.0 / 4420.0
 
-        val RIGHT_LOW_KP = 0.0115
+        val RIGHT_LOW_KP = 0.0000
         val RIGHT_LOW_KI = 0.0000
         val RIGHT_LOW_KD = 0.0000
-        val RIGHT_LOW_KF = 0.0000
+        val RIGHT_LOW_KF = 1023.0 / 2220.0
 
         //subject to change
-        val RIGHT_HIGH_KP = 0.0115
+        val RIGHT_HIGH_KP = .1 * 1023 / 70
         val RIGHT_HIGH_KI = 0.0000
         val RIGHT_HIGH_KD = 0.0000
-        val RIGHT_HIGH_KF = 0.0000
+        val RIGHT_HIGH_KF = 1023.0 / 4420.0
 
         //subject to change
     }
 
     object Drive {
-        val LEFT_MASTER_ID = 2
-        val LEFT_SLAVE_1_ID = 3
-        val LEFT_SLAVE_2_ID = 0
-        val RIGHT_MASTER_ID = 4
-        val RIGHT_SLAVE_1_ID = 5
-        val RIGHT_SLAVE_2_ID = 0
+        val LEFT_MASTER_ID = 8
+        val LEFT_SLAVE_1_ID = 6
+        val LEFT_SLAVE_2_ID = 7
+        val RIGHT_MASTER_ID = 1
+        val RIGHT_SLAVE_1_ID = 2
+        val RIGHT_SLAVE_2_ID = 3
 
         val HIGH_GEAR_MAX_SETPOINT = 17.0  //17 fps
         val SHIFTER_CHANNEL = 0
         val SHIFTER_MODULE = 0
+
+
+        val SHIFTER_FORWARD_ID = 0
+        val SHIFTER_REVERSE_ID = 1
+
     }
 
     object Wheels {
@@ -90,8 +95,8 @@ class Constants {
     }
 
     object Intake {
-        val LEFT_INTAKE_TALON_ID = 0
-        val RIGHT_INTAKE_TALON_ID = 1
+        val LEFT_INTAKE_TALON_ID = 9
+        val RIGHT_INTAKE_TALON_ID = 4
     }
 
     object Climber{
