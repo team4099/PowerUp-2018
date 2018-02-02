@@ -26,6 +26,9 @@ class ControlBoard private constructor() {
     val quickTurn: Boolean
         get() = Math.abs(JoystickUtils.deadbandNoShape(throttle, 0.02)) < 0.01
 
+    val reverseIntake: Boolean
+        get() = driver.aButton
+
     val test: Boolean
         get() = driver.bButton
 

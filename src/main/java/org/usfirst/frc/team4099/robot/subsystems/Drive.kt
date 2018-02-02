@@ -41,12 +41,10 @@ class Drive private constructor() : Subsystem {
 
     var highGear: Boolean = false
         set(wantsHighGear) {
-            if (wantsHighGear != field) {
-                if (wantsHighGear) {
-                    pneumaticShifter.set(DoubleSolenoid.Value.kForward)
-                } else {
-                    pneumaticShifter.set(DoubleSolenoid.Value.kReverse)
-                }
+            if (wantsHighGear) {
+                pneumaticShifter.set(DoubleSolenoid.Value.kForward)
+            } else {
+                pneumaticShifter.set(DoubleSolenoid.Value.kReverse)
             }
             field = wantsHighGear
         }
@@ -107,6 +105,8 @@ class Drive private constructor() : Subsystem {
         rightMasterSRX.inverted = false
         rightSlave1SRX.inverted = false
         rightSlave2SPX.inverted = false
+
+        highGear = false
 
         setOpenLoop(DriveSignal.NEUTRAL)
 

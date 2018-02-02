@@ -14,6 +14,7 @@ import org.usfirst.frc.team4099.robot.loops.BrownoutDefender
 import org.usfirst.frc.team4099.robot.loops.Looper
 import org.usfirst.frc.team4099.robot.loops.VoltageEstimator
 import org.usfirst.frc.team4099.robot.subsystems.Drive
+import org.usfirst.frc.team4099.robot.subsystems.Intake
 
 class Robot : IterativeRobot() {
 
@@ -21,6 +22,7 @@ class Robot : IterativeRobot() {
 
     private val cheesyDriveHelper = CheesyDriveHelper.instance
     private val tankDriveHelper = TankDriveHelper.instance
+    private val intake = Intake.instance
 
     private val controls = ControlBoard.instance
     private val disabledLooper = Looper("disabledLooper")
@@ -44,6 +46,7 @@ class Robot : IterativeRobot() {
             //TODO: add the robot state estimator here
 //            CameraServer.getInstance().startAutomaticCapture()
             enabledLooper.register(drive.loop)
+            enabledLooper.register(intake.loop)
 
             enabledLooper.register(BrownoutDefender.instance)
 
@@ -138,6 +141,7 @@ class Robot : IterativeRobot() {
             val isQuickTurn = controls.quickTurn
             val shiftToHighGear = controls.switchToHighGear
             val shiftToLowGear = controls.switchToLowGear
+            val reverseIntake = controls.reverseIntake
 
             SmartDashboard.putBoolean("isQuickTurn", isQuickTurn)
             SmartDashboard.putNumber("voltage", VoltageEstimator.instance.averageVoltage)
@@ -155,6 +159,9 @@ class Robot : IterativeRobot() {
                 }
                 drive.setOpenLoop(cheesyDriveHelper.curvatureDrive(throttle, turn, isQuickTurn))
             }
+
+            intake.intakeState = if (reverseIntake) Intake.IntakeState.OUT else Intake.IntakeState.IN
+
             outputAllToSmartDashboard()
             updateDashboardFeedback() // things such as is aligned?, etc
 
