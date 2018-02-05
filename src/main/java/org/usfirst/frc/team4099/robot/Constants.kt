@@ -37,9 +37,13 @@ class Constants {
         val RIGHT_SLAVE_2_ID = 3
 
         val HIGH_GEAR_MAX_SETPOINT = 17.0  //17 fps
+        val SHIFTER_CHANNEL = 0
+        val SHIFTER_MODULE = 0
+
 
         val SHIFTER_FORWARD_ID = 0
         val SHIFTER_REVERSE_ID = 1
+
     }
 
     object Wheels {
@@ -56,8 +60,6 @@ class Constants {
         val DRIVE_LOW_GEAR_MAX_FORWARD_OUTPUT = 1.0
         val DRIVE_LOW_GEAR_MAX_REVERSE_OUTPUT = -1.0
 
-        val SHIFTER_CHANNEL = 0
-        val SHIFTER_MODULE = 0
     }
 
     object Joysticks {
@@ -78,10 +80,34 @@ class Constants {
 
 
     }
+    object Arm {
+        val MASTER_SRX_ID = 2
+        val SLAVE_SRX_1_ID = 3
+        val SLAVE_SRX_2_ID = 4
+        val SLAVE_SRX_3_ID = 5
+
+        val BRAKE_FORWARD_CHANNEL = 6
+        val BRAKE_REVERSE_CHANNEL = 7
+
+        val MIN_SPEED = -50
+        val MAX_SPEED = 50
+
+    }
 
     object Intake {
         val LEFT_INTAKE_TALON_ID = 9
         val RIGHT_INTAKE_TALON_ID = 4
+    }
+
+    object Climber{
+        val CLIMBER_TALON_ID=2
+    }
+
+    object Superstructure {
+        val armLength = 41 //in
+        val intakeLength = 20 //in
+        val distToFront = 17 //in
+        val maxExtendDist = 16 //in
     }
 
 }

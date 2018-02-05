@@ -78,5 +78,9 @@ PowerUp-2018.ipr
 
 # Keeps on changing the Project SDK, really annoying
 .idea/misc.xml
+<<<<<<< HEAD
+*.xml___jb_tmp___
+=======
 dist
 dist/FRCUserProgram.jar
+>>>>>>> 2bd86fc7108ba420d1ac05d599c6ba1abf510921
