@@ -1,14 +1,15 @@
 package org.usfirst.frc.team4099.robot.subsystems
 
 import org.usfirst.frc.team4099.robot.loops.Loop
+import org.usfirst.frc.team4099.robot.Constants
 
 class Superstructure private constructor(): Subsystem {
 
     private val arm = Arm.instance
-    //private val elevator = Elevator.instance
+    private val elevator = Elevator.instance
     private val drive = Drive.instance
     private val intake = Intake.instance
-    //private val wrist = Wrist.instance
+    private val wrist = Wrist.instance
     enum class SystemState{
         IDLE, AUTO, TELEOP //not sure
     }
@@ -29,26 +30,16 @@ class Superstructure private constructor(): Subsystem {
 
     val loop : Loop = object : Loop {
         override fun onStart() {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            wrist.WristState = Wrist.WristState.HORIZONTAL
         }
         override fun onLoop() {
-            synchronized(this@Superstructure){
-                when(arm.armState){
-                    Arm.ArmState.LOW ->{
-                        wrist.wristState = Wrist.WristState.STOWED_UP
-                    }
-                    Arm.ArmState.EXCHANGE ->{
-                        wrist.wristState = Wrist.WristState.HORIZONTAL
-                    }
-                    Arm.ArmState.HIGH ->{
-                        wrist.wristState = Wrist.WristState.STOWED_DOWN
-                    }
+            if(Math.cos(arm.armAngle) * Constants.Superstructure.armLength - Constants.Superstructure.distToFront + Constants.Superstructure.intakeLength > Constants.Superstructure.maxExtendDist){
+                if (arm.armAngle > Arm.ArmState.EXCHANGE.targetPos) {
+                    wrist.wristState = Wrist.WristState.STOWED_DOWN
+                } else {
+                    wrist.wristState = Wrist.WristState.STOWED_UP
                 }
-                when(systemState){
-                    SystemState.IDLE -> {}
-                    SystemState.AUTO -> {}
-                    SystemState.TELEOP -> {}
-                }
+
             }
         }
         override fun onStop() {

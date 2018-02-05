@@ -103,4 +103,11 @@ class Constants {
         val CLIMBER_TALON_ID=2
     }
 
+    object Superstructure {
+        val armLength = 41 //in
+        val intakeLength = 20 //in
+        val distToFront = 17 //in
+        val maxExtendDist = 16 //in
+    }
+
 }

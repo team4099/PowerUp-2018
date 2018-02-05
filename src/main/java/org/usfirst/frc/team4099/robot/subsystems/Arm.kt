@@ -30,7 +30,7 @@ class Arm private constructor() : Subsystem {
 
     var movementState = MovementState.STATIONARY
     private var armPower = 0.0
-    private var armAngle = 0.0
+    var armAngle = 0.0
     private var armBaseAngle = 0.0
 
     private var brakeTime = 0.0
