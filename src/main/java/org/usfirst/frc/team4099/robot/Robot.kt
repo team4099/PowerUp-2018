@@ -13,11 +13,13 @@ import org.usfirst.frc.team4099.robot.drive.TankDriveHelper
 import org.usfirst.frc.team4099.robot.loops.BrownoutDefender
 import org.usfirst.frc.team4099.robot.loops.Looper
 import org.usfirst.frc.team4099.robot.loops.VoltageEstimator
+import org.usfirst.frc.team4099.robot.subsystems.Arm
 import org.usfirst.frc.team4099.robot.subsystems.Drive
 
 class Robot : IterativeRobot() {
 
     private val drive = Drive.instance
+    private val arm = Arm.instance
 
     private val cheesyDriveHelper = CheesyDriveHelper.instance
     private val tankDriveHelper = TankDriveHelper.instance
@@ -135,8 +137,24 @@ class Robot : IterativeRobot() {
             val throttle = controls.throttle
             val turn = controls.turn
             val isQuickTurn = controls.quickTurn
+            val armVelocity = controls.armVelocity
+            val toggleArmState = controls.toggleArmState
 
+            if(toggleArmState){
+                when(arm.armState){
+                    Arm.ArmState.HIGH -> {
+                        arm.armState = Arm.ArmState.LOW
+                    }
+                    Arm.ArmState.EXCHANGE -> {
+                        arm.armState = Arm.ArmState.HIGH
+                    }
+                    Arm.ArmState.LOW -> {
+                        arm.armState = Arm.ArmState.EXCHANGE
+                    }
+                }
+            }
 
+            arm.setArmVelocity(armVelocity)
 
             SmartDashboard.putBoolean("isQuickTurn", isQuickTurn)
             SmartDashboard.putNumber("voltage", VoltageEstimator.instance.averageVoltage)

@@ -18,6 +18,12 @@ class ControlBoard private constructor() {
     val toggleSlowMode: Boolean
         get() = driver.aButton
 
+    val armVelocity : Double
+        get() = operator.leftYAxis
+
+    val toggleArmState : Boolean
+        get() = operator.bButton
+
     /**
      * Should the bot arcadeDrive in quick turn mode?
      * @return  true/false, depending on if the joystick is depressed

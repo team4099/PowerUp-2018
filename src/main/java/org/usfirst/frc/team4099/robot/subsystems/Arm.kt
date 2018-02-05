@@ -164,6 +164,25 @@ class Arm private constructor() : Subsystem {
                         brake.set(DoubleSolenoid.Value.kForward)
                     }
                 }
+                else {
+                    brake.set(DoubleSolenoid.Value.kForward)
+                    when (armState) {
+                        Arm.ArmState.LOW -> {
+                            setArmPosition(ArmState.LOW.targetPos)
+                        }
+                        Arm.ArmState.EXCHANGE -> {
+                            setArmPosition(ArmState.EXCHANGE.targetPos)
+                        }
+                        Arm.ArmState.HIGH -> {
+                            setArmPosition(ArmState.HIGH.targetPos)
+                        }
+                    //masterSRX.sensorCollection.quadratureVelocity
+                        Arm.ArmState.VELOCITY_CONTROL -> { }
+                        Arm.ArmState.STILL -> {
+                            masterSRX.set(ControlMode.MotionMagic, ArmConversion.pulsesToRadians(masterSRX.sensorCollection.pulseWidthPosition))
+                        }
+                    }
+                }
 
             }
         }
