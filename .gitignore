@@ -77,3 +77,4 @@ PowerUp-2018.ipr
 # Keeps on changing the Project SDK, really annoying
 .idea/misc.xml
 *.xml___jb_tmp___
+.idea/workspace.xml___jb_old___

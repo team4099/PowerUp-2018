@@ -124,56 +124,10 @@ class Arm private constructor() : Subsystem {
                 // after 0.5 seconds of hold, actuate the brake and prevent movement
                 // 0.5 seconds after actuating the brake, set to stationary
                 // once the user tries to move, un-actuate the brake
-               /* if (Timer.getFPGATimestamp() - brakeTime < 0.5) {
+                if (Timer.getFPGATimestamp() - brakeTime < 0.5) {
                     return
                 }
-                if (masterSRX.sensorCollection.quadratureVelocity == 0) {
-                    if (armState != Arm.ArmState.STILL) {
-                        armState = Arm.ArmState.STILL
-                        holdTime = Timer.getFPGATimestamp()
-                        movementState = Arm.MovementState.HOLD
-                    }
-                }
-                if(Timer.getFPGATimestamp() - holdTime >= 0.5 && movementState != Arm.MovementState.STATIONARY) {
-                    movementState = Arm.MovementState.STATIONARY
-                    brake.set(DoubleSolenoid.Value.kReverse)
-                    brakeTime = Timer.getFPGATimestamp()
-                }
 
-                armAngle = ArmConversion.pulsesToRadians(masterSRX.sensorCollection.pulseWidthPosition) - armBaseAngle
-                if (movementState == Arm.MovementState.STATIONARY) {
-                    brake.set(DoubleSolenoid.Value.kReverse)
-                    masterSRX.set(ControlMode.Velocity, 0.0)
-
-                }
-                if (movementState == Arm.MovementState.HOLD) {
-                    masterSRX.set(ControlMode.MotionMagic, ArmConversion.pulsesToRadians(masterSRX.sensorCollection.pulseWidthPosition))
-                } else {
-                    brake.set(DoubleSolenoid.Value.kForward)
-                    when (armState) {
-                        Arm.ArmState.LOW -> {
-                            setArmPosition(ArmState.LOW.targetPos)
-                            movementState = Arm.MovementState.MOVING_TO_BOTTOM
-                        }
-                        Arm.ArmState.EXCHANGE -> {
-                            setArmPosition(ArmState.EXCHANGE.targetPos)
-                            movementState = Arm.MovementState.MOVING_TO_EXCHANGE
-                        }
-                        Arm.ArmState.HIGH -> {
-                            setArmPosition(ArmState.HIGH.targetPos)
-                            movementState = Arm.MovementState.MOVING_TO_TOP
-                        }
-                            //masterSRX.sensorCollection.quadratureVelocity
-                        Arm.ArmState.VELOCITY_CONTROL -> { }
-                        Arm.ArmState.STILL -> {
-                            masterSRX.set(ControlMode.MotionMagic, ArmConversion.pulsesToRadians(masterSRX.sensorCollection.pulseWidthPosition))
-                        }
-                    }
-                }
-
-                if (masterSRX.sensorCollection.quadratureVelocity > 0) {
-                    movementState = Arm.MovementState.UP
-                }*/
                 if (armState != Arm.ArmState.STILL){
                     if (masterSRX.sensorCollection.quadratureVelocity == 0){
                         armState = Arm.ArmState.STILL
@@ -204,7 +158,7 @@ class Arm private constructor() : Subsystem {
                         brakeTime = Timer.getFPGATimestamp()
                     }
                 }
-                else if (movementState == Arm.MovementState.STATIONARY){
+                else if (movementState == Arm.MovementState.STATIONARY){    //may not be necessary
                     if (armState != Arm.ArmState.STILL && brakeTime - Timer.getFPGATimestamp() > 0.5) {//might not work b/c it may not be able to move when brake is put
                         movementState = Arm.MovementState.UP //may have to change
                         brake.set(DoubleSolenoid.Value.kForward)
