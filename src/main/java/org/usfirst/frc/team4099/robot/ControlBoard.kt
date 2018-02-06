@@ -15,10 +15,16 @@ class ControlBoard private constructor() {
         get() = driver.leftXAxis
 
     val switchToHighGear: Boolean
-        get() = driver.rightShoulderButton
+        get() = operator.dPadUp
 
     val switchToLowGear: Boolean
-        get() = driver.leftShoulderButton
+        get() = operator.dPadDown
+
+    val openIntake: Boolean
+        get() = operator.dPadLeft
+
+    val closeIntake: Boolean
+        get() = operator.dPadRight
     /**
      * Should the bot arcadeDrive in quick turn mode?
      * @return  true/false, depending on if the joystick is depressed
@@ -31,6 +37,8 @@ class ControlBoard private constructor() {
 
     val test: Boolean
         get() = driver.bButton
+
+
 
     companion object {
         val instance = ControlBoard()
