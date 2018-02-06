@@ -97,6 +97,8 @@ class Constants {
     object Intake {
         val LEFT_INTAKE_TALON_ID = 9
         val RIGHT_INTAKE_TALON_ID = 4
+        val SHIFTER_FORWARD_ID = 0
+        val SHIFTER_REVERSE_ID = 0
     }
 
     object Climber{
