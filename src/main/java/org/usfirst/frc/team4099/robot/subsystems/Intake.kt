@@ -10,17 +10,15 @@ class Intake private constructor() : Subsystem {
 
     private val rightTalon = Talon(Constants.Intake.RIGHT_INTAKE_TALON_ID)
     private val leftTalon = Talon(Constants.Intake.LEFT_INTAKE_TALON_ID)
-    private val pneumaticShifter: DoubleSolenoid = DoubleSolenoid(Constants.Intake.SHIFTER_FORWARD_ID,Constants.Intake.SHIFTER_REVERSE_ID)
+    private val pneumaticShifter: DoubleSolenoid = DoubleSolenoid(Constants.Intake.SHIFTER_FORWARD_ID,
+            Constants.Intake.SHIFTER_REVERSE_ID)
 
     var intakeState = IntakeState.STOP
     private var intakePower = 0.0
     var open: Boolean = false
-        set (wantsOpen){
-            if(wantsOpen){
-                pneumaticShifter.set(DoubleSolenoid.Value.kReverse)
-            } else{
-                pneumaticShifter.set(DoubleSolenoid.Value.kForward)
-            }
+        set (wantsOpen) {
+            pneumaticShifter.set(if (wantsOpen) DoubleSolenoid.Value.kReverse else DoubleSolenoid.Value.kForward)
+            field = wantsOpen
         }
 
     enum class IntakeState {
@@ -44,6 +42,7 @@ class Intake private constructor() : Subsystem {
     val loop: Loop = object : Loop {
         override fun onStart() {
             setIntakePower(0.0)
+            open = true
         }
 
         override fun onLoop() {
