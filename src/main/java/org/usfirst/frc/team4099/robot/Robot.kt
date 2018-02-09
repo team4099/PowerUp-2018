@@ -146,6 +146,8 @@ class Robot : IterativeRobot() {
             val shiftToHighGear = controls.switchToHighGear
             val shiftToLowGear = controls.switchToLowGear
             val reverseIntake = controls.reverseIntake
+            val openIntake = controls.openIntake
+            val closeIntake = controls.closeIntake
 
             SmartDashboard.putBoolean("isQuickTurn", isQuickTurn)
             SmartDashboard.putNumber("voltage", VoltageEstimator.instance.averageVoltage)
@@ -161,10 +163,24 @@ class Robot : IterativeRobot() {
                     drive.highGear = true
                     println("Shifting to high gear")
                 }
+                if (intake.open && closeIntake) {
+                    intake.open = false
+                    println("Closing intake")
+                } else if (!intake.open && openIntake) {
+                    intake.open = true
+                    println("Opening intake")
+                }
                 drive.setOpenLoop(cheesyDriveHelper.curvatureDrive(throttle, turn, isQuickTurn))
             }
 
-            intake.intakeState = if (reverseIntake) Intake.IntakeState.OUT else Intake.IntakeState.IN
+            if (reverseIntake) {
+                intake.intakeState = Intake.IntakeState.OUT
+            }
+            else if (intake.intakeState != Intake.IntakeState.SLOW) {
+                intake.intakeState = Intake.IntakeState.IN
+            }
+
+//            intake.intakeState = if (reverseIntake) Intake.IntakeState.OUT else Intake.IntakeState.IN
 
             outputAllToSmartDashboard()
             updateDashboardFeedback() // things such as is aligned?, etc

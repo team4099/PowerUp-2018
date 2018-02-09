@@ -41,11 +41,7 @@ class Drive private constructor() : Subsystem {
 
     var highGear: Boolean = false
         set(wantsHighGear) {
-            if (wantsHighGear) {
-                pneumaticShifter.set(DoubleSolenoid.Value.kForward)
-            } else {
-                pneumaticShifter.set(DoubleSolenoid.Value.kReverse)
-            }
+            pneumaticShifter.set(if (wantsHighGear) DoubleSolenoid.Value.kForward else DoubleSolenoid.Value.kReverse)
             field = wantsHighGear
         }
 
@@ -298,8 +294,8 @@ class Drive private constructor() : Subsystem {
 //        println("power: $left, $right")
         leftMasterSRX.set(ControlMode.PercentOutput, left)
         rightMasterSRX.set(ControlMode.PercentOutput, right)
-        println("left out: $left, left speed: ${leftMasterSRX.getSelectedSensorVelocity(0)}")
-        println("right out: $right, right speed: ${rightMasterSRX.getSelectedSensorVelocity(0)}")
+//        println("left out: $left, left speed: ${leftMasterSRX.getSelectedSensorVelocity(0)}")
+//        println("right out: $right, right speed: ${rightMasterSRX.getSelectedSensorVelocity(0)}")
 //        println("actual power: ${leftMasterSRX.motorOutputPercent}, ${rightMasterSRX.motorOutputPercent}")
     }
 
