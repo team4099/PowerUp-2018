@@ -169,7 +169,14 @@ class Robot : IterativeRobot() {
                 drive.setOpenLoop(cheesyDriveHelper.curvatureDrive(throttle, turn, isQuickTurn))
             }
 
-            intake.intakeState = if (reverseIntake) Intake.IntakeState.OUT else Intake.IntakeState.IN
+            if (reverseIntake) {
+                intake.intakeState = Intake.IntakeState.OUT
+            }
+            else if (intake.intakeState != Intake.IntakeState.SLOW) {
+                intake.intakeState = Intake.IntakeState.IN
+            }
+
+//            intake.intakeState = if (reverseIntake) Intake.IntakeState.OUT else Intake.IntakeState.IN
 
             outputAllToSmartDashboard()
             updateDashboardFeedback() // things such as is aligned?, etc
