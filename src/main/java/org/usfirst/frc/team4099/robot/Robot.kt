@@ -3,7 +3,7 @@ package org.usfirst.frc.team4099.robot
 import edu.wpi.first.wpilibj.IterativeRobot
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
-import org.usfirst.frc.team4099.AutonomousSelector
+import org.usfirst.frc.team4099.DashboardConfigurator
 import org.usfirst.frc.team4099.auto.AutoModeExecuter
 import org.usfirst.frc.team4099.lib.drive.DriveSignal
 import org.usfirst.frc.team4099.lib.util.CrashTracker
@@ -42,6 +42,8 @@ class Robot : IterativeRobot() {
     override fun robotInit() {
         try {
             CrashTracker.logRobotInit()
+
+            DashboardConfigurator.initDashboard()
 
             //TODO: add the robot state estimator here
 //            CameraServer.getInstance().startAutomaticCapture()
@@ -87,8 +89,10 @@ class Robot : IterativeRobot() {
             drive.zeroSensors()
             drive.getAHRS()?.zeroYaw()
 
+            val allianceOwnership = DashboardConfigurator.updateAllianceOwnership()
+
             autoModeExecuter = AutoModeExecuter()
-            autoModeExecuter?.setAutoMode(AutonomousSelector.getSelectedAutoMode())
+            autoModeExecuter?.setAutoMode(DashboardConfigurator.getSelectedAutoMode(allianceOwnership))
             autoModeExecuter?.start()
 
         } catch (t: Throwable) {
@@ -148,7 +152,7 @@ class Robot : IterativeRobot() {
 
             if (controls.test) {
                 println("testing")
-                drive.setVelocitySetpoint(300 * throttle, 300 * throttle)
+                drive.setVelocitySetpoint(600 * throttle, 600 * throttle)
             } else {
                 if (drive.highGear && shiftToLowGear) {
                     drive.highGear = false
