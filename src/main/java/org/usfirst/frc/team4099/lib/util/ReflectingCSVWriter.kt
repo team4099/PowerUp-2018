@@ -4,6 +4,7 @@ import java.io.FileNotFoundException
 import java.io.PrintWriter
 import java.lang.reflect.Field
 import java.util.concurrent.ConcurrentLinkedDeque
+import kotlin.reflect.KClass
 
 class ReflectingCSVWriter<T>(file: String, typeClass: Class<T>) {
 
