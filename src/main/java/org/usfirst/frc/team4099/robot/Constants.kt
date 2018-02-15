@@ -26,6 +26,10 @@ class Constants {
         val RIGHT_HIGH_KF = 1023.0 / 4420.0
 
         //subject to change
+        val ELEVATOR_KP = 0.0000
+        val ELEVATOR_KI = 0.0000
+        val ELEVATOR_KD = 0.0000
+        val ELEVATOR_KF = 0.0000
     }
 
     object Drive {

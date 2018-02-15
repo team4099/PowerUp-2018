@@ -76,9 +76,9 @@ class Robot : IterativeRobot() {
             enabledLooper.stop() // end EnabledLooper
             disabledLooper.start() // start DisabledLooper
 
-            println(csvWriter.linesToWrite)
-            if (csvWriter.linesToWrite.size > 0)
-                csvWriter.write()
+            if (csvWriter.linesToWrite.size > 0) {
+                csvWriter.flush()
+            }
         } catch (t: Throwable) {
             CrashTracker.logThrowableCrash("disabledInit", t)
             throw t
@@ -190,7 +190,15 @@ class Robot : IterativeRobot() {
                 intake.intakeState = Intake.IntakeState.IN
             }
 
-            elevator.setOpenLoop(controls.elevatorPower)
+            if (controls.elevatorTop) {
+                elevator.elevatorState = Elevator.ElevatorState.HIGH
+            }
+            else if (controls.elevatorBottom) {
+                elevator.elevatorState = Elevator.ElevatorState.LOW
+            }
+            else {
+                elevator.setOpenLoop(controls.elevatorPower)
+            }
 
             signalTable.sensorPosition = elevator.talon.sensorCollection.quadraturePosition
             signalTable.sensorVelocity = elevator.talon.sensorCollection.quadratureVelocity

@@ -4,7 +4,6 @@ import java.io.FileNotFoundException
 import java.io.PrintWriter
 import java.lang.reflect.Field
 import java.util.concurrent.ConcurrentLinkedDeque
-import kotlin.reflect.KClass
 
 class ReflectingCSVWriter<T>(file: String, typeClass: Class<T>) {
 
@@ -38,11 +37,16 @@ class ReflectingCSVWriter<T>(file: String, typeClass: Class<T>) {
     fun write() {
         var value: String
         while (true) {
-            value = linesToWrite.pollFirst()
-            if (value == null) {
+            try {
+                value = linesToWrite.pollFirst()
+                print(value)
+                if (value == null) {
+                    break
+                }
+                writeLine(value)
+            } catch (e : IllegalStateException) {
                 break
             }
-            writeLine(value)
         }
     }
 
@@ -56,6 +60,7 @@ class ReflectingCSVWriter<T>(file: String, typeClass: Class<T>) {
     init {
         try {
             output = PrintWriter(file)
+//            output?.write("")
         } catch (e: FileNotFoundException) {
             e.printStackTrace()
         }

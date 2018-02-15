@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4099.robot.subsystems
 
 import com.ctre.phoenix.motorcontrol.ControlMode
+import com.ctre.phoenix.motorcontrol.FeedbackDevice
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -16,7 +17,7 @@ class Elevator private constructor(): Subsystem {
     private var elevatorPosition = 0.0
 
     enum class ElevatorState (val targetPos : Double) {
-        LOW(0.0), MEDIUM(0.5), HIGH(1.0), STILL(Double.NaN), VELOCITY_CONTROL(Double.NaN), OPEN_LOOP(Double.NaN)
+        LOW(2.0), MEDIUM(0.5), HIGH(15.0), STILL(Double.NaN), VELOCITY_CONTROL(Double.NaN), OPEN_LOOP(Double.NaN)
     }
 
     enum class MovementState {
@@ -27,20 +28,33 @@ class Elevator private constructor(): Subsystem {
         talon.inverted = true
         talon.setSensorPhase(true)
         talon.set(ControlMode.Velocity, 0.0)
+        talon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0)
+        talon.configNominalOutputForward(0.0, 0)
+        talon.configNominalOutputReverse(0.0, 0)
+        talon.configPeakOutputReverse(-1.0, 0)
+        talon.configPeakOutputForward(1.0, 0)
+        talon.config_kP(0, Constants.Gains.ELEVATOR_KP, 0)
+        talon.config_kI(0, Constants.Gains.ELEVATOR_KI, 0)
+        talon.config_kD(0, Constants.Gains.ELEVATOR_KD, 0)
+        talon.config_kF(0, Constants.Gains.ELEVATOR_KF, 0)
+        talon.configMotionCruiseVelocity(0, 0)
+        talon.configMotionAcceleration(0, 0)
     }
 
     fun setOpenLoop(power: Double) {
+        println("power: $power")
         elevatorState = ElevatorState.OPEN_LOOP
         talon.set(ControlMode.PercentOutput, power)
-        println("elevator position: ${talon.sensorCollection.quadraturePosition}")
-        println("elevator inches: ${ElevatorConversion.pulsesToInches(talon.sensorCollection.quadraturePosition)}")
-        println("elevator speed: ${talon.sensorCollection. quadratureVelocity}")
+        println(talon.outputCurrent)
+//        println("elevator position: ${talon.sensorCollection.quadraturePosition}")
+//        println("elevator inches: ${ElevatorConversion.pulsesToInches(talon.sensorCollection.quadraturePosition)}")
+//        println("elevator speed: ${talon.sensorCollection. quadratureVelocity}")
     }
 
 
     fun setElevatorVelocity(power: Double) {
-        elevatorState = ElevatorState.OPEN_LOOP
-        talon.set(ControlMode.Velocity, Math.abs(power))
+        elevatorState = ElevatorState.VELOCITY_CONTROL
+        talon.set(ControlMode.Velocity, power)
         elevatorPower = power
 
     }
@@ -63,14 +77,16 @@ class Elevator private constructor(): Subsystem {
 
         override fun onLoop() {
             synchronized(this@Elevator) {
+                if (elevatorState == ElevatorState.OPEN_LOOP) {
+                    return
+                }
+
                 if (movementState != Elevator.MovementState.HOLD && talon.sensorCollection.quadratureVelocity == 0) {
                     movementState = Elevator.MovementState.HOLD
                 }
                 elevatorPosition = ElevatorConversion.pulsesToInches(talon.sensorCollection.quadraturePosition)
 
-                if (elevatorState == ElevatorState.OPEN_LOOP) {
-                    return
-                }
+
                 if (movementState == Elevator.MovementState.HOLD){
                     talon.set(ControlMode.MotionMagic, elevatorPosition)
                 } else {
@@ -128,6 +144,6 @@ class Elevator private constructor(): Subsystem {
     }
 
     override fun zeroSensors() {
-        TODO("not implemented") //not needed?
+        talon.sensorCollection.setQuadraturePosition(0, 0)
     }
 }
