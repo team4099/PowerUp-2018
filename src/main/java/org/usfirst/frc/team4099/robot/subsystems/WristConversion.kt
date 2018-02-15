@@ -1,5 +1,6 @@
 package org.usfirst.frc.team4099.robot.subsystems
 
+
 object WristConversion: EncoderConversion {
     override fun inchesPerSecondtoNativeSpeed(ips: Double): Int {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.

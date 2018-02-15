@@ -89,7 +89,18 @@ class Constants {
 
         val CONNECTION_TIMEOUT_MILLIS = 1000
         val NUMBER_OF_TRIES = 5
+    }
+    object Arm {
+        val MASTER_SRX_ID = 2
+        val SLAVE_SRX_1_ID = 3
+        val SLAVE_SRX_2_ID = 4
+        val SLAVE_SRX_3_ID = 5
 
+        val BRAKE_FORWARD_CHANNEL = 6
+        val BRAKE_REVERSE_CHANNEL = 7
+
+        val MIN_SPEED = -50
+        val MAX_SPEED = 50
 
     }
 
@@ -102,6 +113,15 @@ class Constants {
 
     object Elevator {
         val ELEVATOR_TALON_ID = 14
+    }
+
+    object Wrist {
+        val WRIST_TALON_ID = 6
+
+        val KP = 0.0115
+        val KI = 0.0000
+        val KD = 0.0000
+        val KF = 0.0000
     }
 
 }
