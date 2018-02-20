@@ -17,7 +17,7 @@ import org.usfirst.frc.team4099.robot.loops.VoltageEstimator
 import org.usfirst.frc.team4099.robot.subsystems.Drive
 import org.usfirst.frc.team4099.robot.subsystems.Elevator
 import org.usfirst.frc.team4099.robot.subsystems.Intake
-import kotlin.math.sign
+import org.usfirst.frc.team4099.robot.subsystems.Wrist
 
 class Robot : IterativeRobot() {
 
@@ -27,6 +27,7 @@ class Robot : IterativeRobot() {
     private val tankDriveHelper = TankDriveHelper.instance
     private val intake = Intake.instance
     private val elevator = Elevator.instance
+    private val wrist = Wrist.instance
 
     private val controls = ControlBoard.instance
     private val disabledLooper = Looper("disabledLooper")
@@ -55,8 +56,9 @@ class Robot : IterativeRobot() {
             //TODO: add the robot state estimator here
 //            CameraServer.getInstance().startAutomaticCapture()
 //            enabledLooper.register(drive.loop)
-//            enabledLooper.register(intake.loop)
+            enabledLooper.register(intake.loop)
             enabledLooper.register(elevator.loop)
+            enabledLooper.register(wrist.loop)
 
             enabledLooper.register(BrownoutDefender.instance)
 
@@ -181,7 +183,7 @@ class Robot : IterativeRobot() {
                     intake.open = true
                     println("Opening intake")
                 }
-                drive.setOpenLoop(cheesyDriveHelper.curvatureDrive(throttle, turn, isQuickTurn))
+//                drive.setOpenLoop(cheesyDriveHelper.curvatureDrive(throttle, turn, isQuickTurn))
             }
 
             if (reverseIntake) {
@@ -189,15 +191,18 @@ class Robot : IterativeRobot() {
             } else if (intake.intakeState != Intake.IntakeState.SLOW) {
                 intake.intakeState = Intake.IntakeState.IN
             }
+            intake.intakeState = Intake.IntakeState.STOP
 
-            if (controls.elevatorTop) {
-                elevator.elevatorState = Elevator.ElevatorState.HIGH
+            when {
+                controls.elevatorTop -> elevator.elevatorState = Elevator.ElevatorState.HIGH
+                controls.elevatorBottom -> elevator.elevatorState = Elevator.ElevatorState.LOW
+                else ->  elevator.setOpenLoop(controls.elevatorPower)
             }
-            else if (controls.elevatorBottom) {
-                elevator.elevatorState = Elevator.ElevatorState.LOW
-            }
-            else {
-                elevator.setOpenLoop(controls.elevatorPower)
+
+            when {
+                controls.wristTop -> wrist.wristState = Wrist.WristState.STOWED_UP
+                controls.wristBottom -> wrist.wristState = Wrist.WristState.HORIZONTAL
+                else -> wrist.setOpenLoop(controls.wristPower)
             }
 
             signalTable.sensorPosition = elevator.talon.sensorCollection.quadraturePosition
@@ -205,7 +210,11 @@ class Robot : IterativeRobot() {
             signalTable.closedLoopError = elevator.talon.getClosedLoopError(0)
             signalTable.activePosition = elevator.talon.activeTrajectoryPosition
             signalTable.activeVelocity = elevator.talon.activeTrajectoryVelocity
+            signalTable.elevatorVoltage = elevator.talon.motorOutputVoltage
+            signalTable.elevatorCurrent = elevator.talon.outputCurrent
             csvWriter.add(signalTable)
+
+            println(wrist.talon.sensorCollection.quadraturePosition)
 
             outputAllToSmartDashboard()
             updateDashboardFeedback() // things such as is aligned?, etc
@@ -225,9 +234,9 @@ class Robot : IterativeRobot() {
             enabledLooper.start() // start EnabledLooper
             disabledLooper.stop() // end DisabledLooper
             drive.zeroSensors()
+            elevator.zeroSensors()
+            wrist.zeroSensors()
             isTurning = true
-            LiveWindow.setEnabled(true)
-            startLiveWindowMode()
         } catch (t: Throwable) {
             CrashTracker.logThrowableCrash("testInit", t)
             throw t
@@ -235,29 +244,31 @@ class Robot : IterativeRobot() {
 
     }
 
-    override fun testPeriodic() {
-        try {
-            LiveWindow.run()
-            if (isTurning) {
-                //                isTurning = !mDrive.goForward()
-            } else {
-                drive.setOpenLoop(DriveSignal.NEUTRAL)
-            }
-            println("isTurning:" + isTurning)
-            //            DriveSignal lSignal = new DriveSignal(1, -1);
-            //            DriveSignal rSignal = new DriveSignal(-1, 1);
+//    override fun testPeriodic() {
+//        try {
+//            LiveWindow.run()
+//            if (isTurning) {
+//                //                isTurning = !mDrive.goForward()
+//            } else {
+//                drive.setOpenLoop(DriveSignal.NEUTRAL)
+//            }
+//            println("isTurning:" + isTurning)
+//            //            DriveSignal lSignal = new DriveSignal(1, -1);
+//            //            DriveSignal rSignal = new DriveSignal(-1, 1);
+//
+//
+//            outputAllToSmartDashboard()
+//            updateLiveWindowTables()
+//            updateDashboardFeedback()
+//        } catch (t: Throwable) {
+//
+//            CrashTracker.logThrowableCrash("testPeriodic", t)
+//            throw t
+//        }
+//
+//    }
 
-
-            outputAllToSmartDashboard()
-            updateLiveWindowTables()
-            updateDashboardFeedback()
-        } catch (t: Throwable) {
-
-            CrashTracker.logThrowableCrash("testPeriodic", t)
-            throw t
-        }
-
-    }
+    override fun testPeriodic() = teleopPeriodic()
 
     /**
      * Log information from all subsystems onto the SmartDashboard

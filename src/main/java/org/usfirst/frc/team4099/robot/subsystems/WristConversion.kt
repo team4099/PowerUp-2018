@@ -10,7 +10,7 @@ object WristConversion: EncoderConversion {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    val pulsesToRadians = 1.0
+    val pulsesToRadians = 0.055
 
     override fun inchesToPulses(radians: Double): Int {
         return (radians / pulsesToRadians).toInt()

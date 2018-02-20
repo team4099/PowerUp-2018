@@ -2,6 +2,7 @@ package org.usfirst.frc.team4099.robot.subsystems
 
 import com.ctre.phoenix.motorcontrol.ControlMode
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
+import com.ctre.phoenix.motorcontrol.can.VictorSPX
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import org.usfirst.frc.team4099.robot.Constants
 import org.usfirst.frc.team4099.robot.loops.Loop
@@ -19,7 +20,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid
 class Intake private constructor() : Subsystem {
 
     private val rightTalon = TalonSRX(Constants.Intake.RIGHT_INTAKE_TALON_ID)
-    private val leftTalon = TalonSRX(Constants.Intake.LEFT_INTAKE_TALON_ID)
+    private val leftTalon = VictorSPX(Constants.Intake.LEFT_INTAKE_TALON_ID)
     private val pneumaticShifter: DoubleSolenoid = DoubleSolenoid(Constants.Intake.SHIFTER_FORWARD_ID,
             Constants.Intake.SHIFTER_REVERSE_ID)
 
@@ -52,8 +53,8 @@ class Intake private constructor() : Subsystem {
      * @param power a double that is the power for the intake
      */
     private fun setIntakePower(power: Double) {
-        rightTalon.set(ControlMode.PercentOutput, -power)
-        leftTalon.set(ControlMode.PercentOutput, power)
+        rightTalon.set(ControlMode.PercentOutput, power)
+        leftTalon.set(ControlMode.PercentOutput, -power)
     }
 
     /**
@@ -70,15 +71,18 @@ class Intake private constructor() : Subsystem {
          * Sets Intake to -1 if pulling in, to 0 if stationary, and 1 if pushing out
          */
         override fun onLoop() {
+//            println("Right: ${rightTalon.outputCurrent}")
+//            println("Left: ${leftTalon.outputCurrent}")
+            if (rightTalon.outputCurrent > 30 || leftTalon.outputCurrent > 30) {
+                println("slow")
+                intakeState = IntakeState.SLOW
+            }
             synchronized(this@Intake) {
-                if (rightTalon.outputCurrent > 30 || leftTalon.outputCurrent > 30) {
-                    intakeState = IntakeState.SLOW
-                }
                 when (intakeState) {
                     IntakeState.IN -> setIntakePower(-0.7)
                     IntakeState.STOP -> setIntakePower(0.0)
                     IntakeState.OUT -> setIntakePower(0.7)
-                    IntakeState.SLOW -> setIntakePower(0.1)
+                    IntakeState.SLOW -> setIntakePower(-0.3)
                 }
             }
         }

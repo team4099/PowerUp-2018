@@ -6,4 +6,6 @@ class SignalTable {
     @JvmField var closedLoopError: Int = 0
     @JvmField var activePosition: Int = 0
     @JvmField var activeVelocity: Int = 0
+    @JvmField var elevatorVoltage: Double = 0.0
+    @JvmField var elevatorCurrent: Double = 0.0
 }

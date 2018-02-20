@@ -30,15 +30,21 @@ class Constants {
         val ELEVATOR_KI = 0.0000
         val ELEVATOR_KD = 0.0000
         val ELEVATOR_KF = 0.0000
+
+        //subject to change
+        val WRIST_KP = 0.0000
+        val WRIST_KI = 0.0000
+        val WRIST_KD = 0.0000
+        val WRIST_KF = 0.0000
     }
 
     object Drive {
-        val LEFT_MASTER_ID = 4
-        val LEFT_SLAVE_1_ID = 6
-        val LEFT_SLAVE_2_ID = 5
-        val RIGHT_MASTER_ID = 10
-        val RIGHT_SLAVE_1_ID = 9
-        val RIGHT_SLAVE_2_ID = 11
+        val LEFT_MASTER_ID = 20
+        val LEFT_SLAVE_1_ID = 21
+        val LEFT_SLAVE_2_ID = 22
+        val RIGHT_MASTER_ID = 23
+        val RIGHT_SLAVE_1_ID = 34
+        val RIGHT_SLAVE_2_ID = 25
 
         val HIGH_GEAR_MAX_SETPOINT = 17.0  //17 fps
 
@@ -90,6 +96,7 @@ class Constants {
         val CONNECTION_TIMEOUT_MILLIS = 1000
         val NUMBER_OF_TRIES = 5
     }
+
     object Arm {
         val MASTER_SRX_ID = 2
         val SLAVE_SRX_1_ID = 3
@@ -105,23 +112,23 @@ class Constants {
     }
 
     object Intake {
-        val LEFT_INTAKE_TALON_ID = 9
-        val RIGHT_INTAKE_TALON_ID = 4
+        val LEFT_INTAKE_TALON_ID = 6
+        val RIGHT_INTAKE_TALON_ID = 7
         val SHIFTER_FORWARD_ID = 2
         val SHIFTER_REVERSE_ID = 3
     }
 
     object Elevator {
-        val ELEVATOR_TALON_ID = 14
+        val ELEVATOR_TALON_ID = 10
     }
 
     object Wrist {
-        val WRIST_TALON_ID = 6
+        val WRIST_TALON_ID = 12
 
-        val KP = 0.0115
-        val KI = 0.0000
-        val KD = 0.0000
-        val KF = 0.0000
+        val WRIST_KP = 0.0000
+        val WRIST_KI = 0.0000
+        val WRIST_KD = 0.0000
+        val WRIST_KF = 0.0000
     }
 
 }

@@ -42,10 +42,10 @@ class Elevator private constructor(): Subsystem {
     }
 
     fun setOpenLoop(power: Double) {
-        println("power: $power")
+//        println("power: $power")
         elevatorState = ElevatorState.OPEN_LOOP
         talon.set(ControlMode.PercentOutput, power)
-        println(talon.outputCurrent)
+//        println("output ${talon.outputCurrent}")
 //        println("elevator position: ${talon.sensorCollection.quadraturePosition}")
 //        println("elevator inches: ${ElevatorConversion.pulsesToInches(talon.sensorCollection.quadraturePosition)}")
 //        println("elevator speed: ${talon.sensorCollection. quadratureVelocity}")
