@@ -201,6 +201,33 @@ class Drive private constructor() : Subsystem {
         resetEncoders()
     }
 
+    fun arcadeDrive(outputMagnitude: Double, curve: Double) {
+        val leftOutput: Double
+        val rightOutput: Double
+
+        if (curve < 0) {
+            val value = Math.log(-curve)
+            var ratio = (value - .5) / (value + .5)
+            if (ratio == 0.0) {
+                ratio = .0000000001
+            }
+            leftOutput = outputMagnitude / ratio
+            rightOutput = outputMagnitude
+        } else if (curve > 0) {
+            val value = Math.log(curve)
+            var ratio = (value - .5) / (value + .5)
+            if (ratio == 0.0) {
+                ratio = .0000000001
+            }
+            leftOutput = outputMagnitude
+            rightOutput = outputMagnitude / ratio
+        } else {
+            leftOutput = outputMagnitude
+            rightOutput = outputMagnitude
+        }
+        setLeftRightPower(leftOutput, rightOutput)
+    }
+
     @Synchronized
     fun setVelocitySetpoint(leftInchesPerSec: Double, rightInchesPerSec: Double) {
         configureTalonsForVelocityControl()
