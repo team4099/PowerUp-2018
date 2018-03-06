@@ -29,12 +29,12 @@ class Constants {
     }
 
     object Drive {
-        val LEFT_MASTER_ID = 8
-        val LEFT_SLAVE_1_ID = 6
-        val LEFT_SLAVE_2_ID = 7
-        val RIGHT_MASTER_ID = 1
-        val RIGHT_SLAVE_1_ID = 2
-        val RIGHT_SLAVE_2_ID = 3
+        val LEFT_MASTER_ID = 4
+        val LEFT_SLAVE_1_ID = 5
+        val LEFT_SLAVE_2_ID = 6
+        val RIGHT_MASTER_ID = 8
+        val RIGHT_SLAVE_1_ID = 9
+        val RIGHT_SLAVE_2_ID = 10
 
         val HIGH_GEAR_MAX_SETPOINT = 17.0  //17 fps
 
@@ -90,8 +90,8 @@ class Constants {
     }
 
     object Intake {
-        val LEFT_INTAKE_TALON_ID = 9
-        val RIGHT_INTAKE_TALON_ID = 4
+        val LEFT_INTAKE_TALON_ID = 0
+        val RIGHT_INTAKE_TALON_ID = 1
         val SHIFTER_FORWARD_ID = 2
         val SHIFTER_REVERSE_ID = 3
     }
