@@ -68,4 +68,5 @@ object Utils {
         }
         return total / list.size
     }
+
 }
