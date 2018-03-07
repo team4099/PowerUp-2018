@@ -7,6 +7,15 @@ import org.usfirst.frc.team4099.robot.Constants
 import org.usfirst.frc.team4099.robot.loops.BrownoutDefender
 import org.usfirst.frc.team4099.robot.loops.Loop
 
+
+/**
+ * @author Team 4099
+ *
+ * This class is the constructor for the Intake subsystem
+ *
+ * @constructor Creates the Intake subsystem
+ *
+ */
 class Intake private constructor() : Subsystem {
 
     private val rightTalon = Talon(Constants.Intake.RIGHT_INTAKE_TALON_ID)
@@ -30,22 +39,36 @@ class Intake private constructor() : Subsystem {
         SmartDashboard.putNumber("intakePower", intakePower)
     }
 
+    /**
+     * stops intake
+     */
     @Synchronized override fun stop() {
         intakeState = IntakeState.STOP
         setIntakePower(0.0)
     }
 
+    /**
+     * sets rightTalon to positive power and leftTalon to negative power
+     * @param power a double that is the power for the intake
+     */
     private fun setIntakePower(power: Double) {
         rightTalon.set(-power)
         leftTalon.set(power)
     }
 
+    /**
+     * Handles power to intake during each loop cycle
+     * @constructor Creates loop that controls power to intake during each loop cycle
+     */
     val loop: Loop = object : Loop {
         override fun onStart() {
             open = true
             intakeState = IntakeState.IN
         }
 
+        /**
+         * Sets Intake to -1 if pulling in, to 0 if stationary, and 1 if pushing out
+         */
         override fun onLoop() {
             synchronized(this@Intake) {
                 if (BrownoutDefender.instance.getCurrent(Constants.Intake.LEFT_INTAKE_TALON_ID) > 30 || BrownoutDefender.instance.getCurrent(Constants.Intake.RIGHT_INTAKE_TALON_ID) > 30) {
@@ -55,7 +78,7 @@ class Intake private constructor() : Subsystem {
                     IntakeState.IN -> setIntakePower(-0.7)
                     IntakeState.STOP -> setIntakePower(0.0)
                     IntakeState.OUT -> setIntakePower(0.7)
-                    IntakeState.SLOW -> setIntakePower(0.1)
+                    IntakeState.SLOW -> setIntakePower(-0.3)
                 }
             }
         }

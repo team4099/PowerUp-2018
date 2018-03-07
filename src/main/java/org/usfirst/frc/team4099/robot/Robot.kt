@@ -5,16 +5,19 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import org.usfirst.frc.team4099.DashboardConfigurator
 import org.usfirst.frc.team4099.auto.AutoModeExecuter
-import org.usfirst.frc.team4099.lib.drive.DriveSignal
 import org.usfirst.frc.team4099.lib.util.CrashTracker
 import org.usfirst.frc.team4099.lib.util.LatchedBoolean
+import org.usfirst.frc.team4099.lib.util.ReflectingCSVWriter
+import org.usfirst.frc.team4099.lib.util.SignalTable
 import org.usfirst.frc.team4099.robot.drive.CheesyDriveHelper
 import org.usfirst.frc.team4099.robot.drive.TankDriveHelper
 import org.usfirst.frc.team4099.robot.loops.BrownoutDefender
 import org.usfirst.frc.team4099.robot.loops.Looper
 import org.usfirst.frc.team4099.robot.loops.VoltageEstimator
 import org.usfirst.frc.team4099.robot.subsystems.Drive
+import org.usfirst.frc.team4099.robot.subsystems.Elevator
 import org.usfirst.frc.team4099.robot.subsystems.Intake
+import org.usfirst.frc.team4099.robot.subsystems.Wrist
 
 class Robot : IterativeRobot() {
 
@@ -23,12 +26,17 @@ class Robot : IterativeRobot() {
     private val cheesyDriveHelper = CheesyDriveHelper.instance
     private val tankDriveHelper = TankDriveHelper.instance
     private val intake = Intake.instance
+    private val elevator = Elevator.instance
+    private val wrist = Wrist.instance
 
     private val controls = ControlBoard.instance
     private val disabledLooper = Looper("disabledLooper")
     private val enabledLooper = Looper("enabledLooper")
 
     private var autoModeExecuter: AutoModeExecuter? = null
+
+    private val csvWriter = ReflectingCSVWriter<SignalTable>("/home/lvuser/out.csv", SignalTable::class.java)
+    private val signalTable = SignalTable()
 
     private val logging = true
     private var isTurning = true
@@ -43,12 +51,14 @@ class Robot : IterativeRobot() {
         try {
             CrashTracker.logRobotInit()
 
-            DashboardConfigurator.initDashboard()
+//            DashboardConfigurator.initDashboard()
 
             //TODO: add the robot state estimator here
 //            CameraServer.getInstance().startAutomaticCapture()
-            enabledLooper.register(drive.loop)
-//            enabledLooper.register(intake.loop)
+//            enabledLooper.register(drive.loop)
+            enabledLooper.register(intake.loop)
+            enabledLooper.register(elevator.loop)
+            enabledLooper.register(wrist.loop)
 
             enabledLooper.register(BrownoutDefender.instance)
 
@@ -68,6 +78,9 @@ class Robot : IterativeRobot() {
             enabledLooper.stop() // end EnabledLooper
             disabledLooper.start() // start DisabledLooper
 
+            if (csvWriter.linesToWrite.size > 0) {
+                csvWriter.flush()
+            }
         } catch (t: Throwable) {
             CrashTracker.logThrowableCrash("disabledInit", t)
             throw t
@@ -91,9 +104,9 @@ class Robot : IterativeRobot() {
 
             val allianceOwnership = DashboardConfigurator.updateAllianceOwnership()
 
-//            autoModeExecuter = AutoModeExecuter()
-//            autoModeExecuter?.setAutoMode(DashboardConfigurator.getSelectedAutoMode(allianceOwnership))
-//            autoModeExecuter?.start()
+            autoModeExecuter = AutoModeExecuter()
+            autoModeExecuter?.setAutoMode(DashboardConfigurator.getSelectedAutoMode(allianceOwnership))
+            autoModeExecuter?.start()
 
         } catch (t: Throwable) {
             CrashTracker.logThrowableCrash("autonomousInit", t)
@@ -179,6 +192,7 @@ class Robot : IterativeRobot() {
             else if (intake.intakeState != Intake.IntakeState.SLOW) {
                 intake.intakeState = Intake.IntakeState.IN
             }
+            intake.intakeState = Intake.IntakeState.STOP
 
 //            intake.intakeState = if (reverseIntake) Intake.IntakeState.OUT else Intake.IntakeState.IN
 
@@ -198,6 +212,8 @@ class Robot : IterativeRobot() {
             enabledLooper.start() // start EnabledLooper
             disabledLooper.stop() // end DisabledLooper
             drive.zeroSensors()
+            elevator.zeroSensors()
+            wrist.zeroSensors()
             isTurning = true
             LiveWindow.setEnabled(true)
             startLiveWindowMode()
@@ -208,29 +224,31 @@ class Robot : IterativeRobot() {
 
     }
 
-    override fun testPeriodic() {
-        try {
-            LiveWindow.run()
-            if (isTurning) {
-                //                isTurning = !mDrive.goForward()
-            } else {
-                drive.setOpenLoop(DriveSignal.NEUTRAL)
-            }
-            println("isTurning:" + isTurning)
-            //            DriveSignal lSignal = new DriveSignal(1, -1);
-            //            DriveSignal rSignal = new DriveSignal(-1, 1);
+//    override fun testPeriodic() {
+//        try {
+//            LiveWindow.run()
+//            if (isTurning) {
+//                //                isTurning = !mDrive.goForward()
+//            } else {
+//                drive.setOpenLoop(DriveSignal.NEUTRAL)
+//            }
+//            println("isTurning:" + isTurning)
+//            //            DriveSignal lSignal = new DriveSignal(1, -1);
+//            //            DriveSignal rSignal = new DriveSignal(-1, 1);
+//
+//
+//            outputAllToSmartDashboard()
+//            updateLiveWindowTables()
+//            updateDashboardFeedback()
+//        } catch (t: Throwable) {
+//
+//            CrashTracker.logThrowableCrash("testPeriodic", t)
+//            throw t
+//        }
+//
+//    }
 
-
-            outputAllToSmartDashboard()
-            updateLiveWindowTables()
-            updateDashboardFeedback()
-        } catch (t: Throwable) {
-
-            CrashTracker.logThrowableCrash("testPeriodic", t)
-            throw t
-        }
-
-    }
+    override fun testPeriodic() = teleopPeriodic()
 
     /**
      * Log information from all subsystems onto the SmartDashboard

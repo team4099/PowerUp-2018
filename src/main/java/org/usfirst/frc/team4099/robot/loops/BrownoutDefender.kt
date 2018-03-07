@@ -16,7 +16,7 @@ class BrownoutDefender private constructor() : Loop {
     }
 
     override fun onLoop() {
-        if
+
     }
 
     override fun onStop() {

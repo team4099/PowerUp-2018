@@ -2,7 +2,6 @@ package org.usfirst.frc.team4099
 
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
-import kotlinx.serialization.json.JSON
 import main.java.org.usfirst.frc.team4099.lib.util.AutoModeCreator
 import org.usfirst.frc.team4099.auto.modes.AutoModeBase
 import org.usfirst.frc.team4099.auto.modes.StandStillMode
@@ -41,11 +40,22 @@ object DashboardConfigurator {
         SmartDashboard.putString(Constants.Dashboard.ALLIANCE_COLOR_KEY, DriverStation.getInstance().alliance.name)
 
         // Set up autonomous selector
-        var autoModesString = JSON.Companion.stringify(allModes)
+        var autoModesString = "[ "
+        for (i in 0 until allModes.size - 1) {
+            autoModesString += "${allModes[i].dashboardName}, "
+        }
+        autoModesString += "${allModes[allModes.size - 1].dashboardName} ]"
+
         SmartDashboard.putString(AUTO_OPTIONS_DASHBOARD_KEY, autoModesString);
         SmartDashboard.putString(SELECTED_AUTO_MODE_DASHBOARD_KEY, defaultMode.dashboardName);
 
-        SmartDashboard.putString(AUTO_STARTS_DASHBOARD_KEY, JSON.Companion.stringify(startingPositions))
+        var autoStartsString = "[ "
+        for (i in 0 until startingPositions.size - 1) {
+            autoStartsString += "${startingPositions[i]}, "
+        }
+        autoStartsString += "${startingPositions[allModes.size - 1]} ]"
+
+        SmartDashboard.putString(AUTO_STARTS_DASHBOARD_KEY, autoStartsString)
         SmartDashboard.putString(SELECTED_AUTO_START_POS_KEY, defaultStart)
 
         SmartDashboard.putNumber(SELECTED_AUTO_START_DELAY_KEY, defaultDelay)
@@ -62,7 +72,12 @@ object DashboardConfigurator {
     }
 
     fun updateAllianceOwnership(): String {
-        val allianceOwnership = DriverStation.getInstance().gameSpecificMessage
+        var allianceOwnership = ""
+        // TODO: Check if this ever hangs
+        while(allianceOwnership == "") {
+            allianceOwnership = DriverStation.getInstance().gameSpecificMessage
+        }
+
         SmartDashboard.putString(Constants.Dashboard.ALLIANCE_OWNERSHIP_KEY, allianceOwnership)
         return allianceOwnership
     }

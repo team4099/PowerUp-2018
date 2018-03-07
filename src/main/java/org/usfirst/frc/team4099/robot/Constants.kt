@@ -26,6 +26,16 @@ class Constants {
         val RIGHT_HIGH_KF = 1023.0 / 4420.0
 
         //subject to change
+        val ELEVATOR_KP = 0.0000
+        val ELEVATOR_KI = 0.0000
+        val ELEVATOR_KD = 0.0000
+        val ELEVATOR_KF = 0.0000
+
+        //subject to change
+        val WRIST_KP = 0.0000
+        val WRIST_KI = 0.0000
+        val WRIST_KD = 0.0000
+        val WRIST_KF = 0.0000
     }
 
     object Drive {
@@ -85,7 +95,19 @@ class Constants {
 
         val CONNECTION_TIMEOUT_MILLIS = 1000
         val NUMBER_OF_TRIES = 5
+    }
 
+    object Arm {
+        val MASTER_SRX_ID = 2
+        val SLAVE_SRX_1_ID = 3
+        val SLAVE_SRX_2_ID = 4
+        val SLAVE_SRX_3_ID = 5
+
+        val BRAKE_FORWARD_CHANNEL = 6
+        val BRAKE_REVERSE_CHANNEL = 7
+
+        val MIN_SPEED = -50
+        val MAX_SPEED = 50
 
     }
 
@@ -94,6 +116,19 @@ class Constants {
         val RIGHT_INTAKE_TALON_ID = 1
         val SHIFTER_FORWARD_ID = 2
         val SHIFTER_REVERSE_ID = 3
+    }
+
+    object Elevator {
+        val ELEVATOR_TALON_ID = 10
+    }
+
+    object Wrist {
+        val WRIST_TALON_ID = 12
+
+        val WRIST_KP = 0.0000
+        val WRIST_KI = 0.0000
+        val WRIST_KD = 0.0000
+        val WRIST_KF = 0.0000
     }
 
 }
