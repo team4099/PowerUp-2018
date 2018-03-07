@@ -27,7 +27,7 @@ class TurnAction(angleToTurn: Double) : Action {
     }
 
     override fun isFinished(): Boolean {
-        return Math.abs(mDrive.getAHRS()!!.angle) >= angleToTurn || done
+        return Math.abs(mDrive.getAHRS()!!.angle - startAngle) >= angleToTurn || done
     }
 
     override fun update() {
