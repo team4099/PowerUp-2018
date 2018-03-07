@@ -1,16 +1,16 @@
 package org.usfirst.frc.team4099.robot.subsystems
 
-import com.ctre.phoenix.motorcontrol.ControlMode
-import com.ctre.phoenix.motorcontrol.can.TalonSRX
+import edu.wpi.first.wpilibj.DoubleSolenoid
+import edu.wpi.first.wpilibj.Talon
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import org.usfirst.frc.team4099.robot.Constants
+import org.usfirst.frc.team4099.robot.loops.BrownoutDefender
 import org.usfirst.frc.team4099.robot.loops.Loop
-import edu.wpi.first.wpilibj.DoubleSolenoid
 
 class Intake private constructor() : Subsystem {
 
-    private val rightTalon = TalonSRX(Constants.Intake.RIGHT_INTAKE_TALON_ID)
-    private val leftTalon = TalonSRX(Constants.Intake.LEFT_INTAKE_TALON_ID)
+    private val rightTalon = Talon(Constants.Intake.RIGHT_INTAKE_TALON_ID)
+    private val leftTalon = Talon(Constants.Intake.LEFT_INTAKE_TALON_ID)
     private val pneumaticShifter: DoubleSolenoid = DoubleSolenoid(Constants.Intake.SHIFTER_FORWARD_ID,
             Constants.Intake.SHIFTER_REVERSE_ID)
 
@@ -36,8 +36,8 @@ class Intake private constructor() : Subsystem {
     }
 
     private fun setIntakePower(power: Double) {
-        rightTalon.set(ControlMode.PercentOutput, -power)
-        leftTalon.set(ControlMode.PercentOutput, power)
+        rightTalon.set(-power)
+        leftTalon.set(power)
     }
 
     val loop: Loop = object : Loop {
@@ -48,7 +48,7 @@ class Intake private constructor() : Subsystem {
 
         override fun onLoop() {
             synchronized(this@Intake) {
-                if (rightTalon.outputCurrent > 30 || leftTalon.outputCurrent > 30) {
+                if (BrownoutDefender.instance.getCurrent(Constants.Intake.LEFT_INTAKE_TALON_ID) > 30 || BrownoutDefender.instance.getCurrent(Constants.Intake.RIGHT_INTAKE_TALON_ID) > 30) {
                     intakeState = IntakeState.SLOW
                 }
                 when (intakeState) {

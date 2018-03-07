@@ -10,18 +10,19 @@ import edu.wpi.first.wpilibj.SPI
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import org.usfirst.frc.team4099.lib.drive.DriveSignal
+import org.usfirst.frc.team4099.lib.util.CANMotorControllerFactory
 import org.usfirst.frc.team4099.robot.Constants
 import org.usfirst.frc.team4099.robot.loops.Loop
 
 
 class Drive private constructor() : Subsystem {
 
-    private val leftMasterSRX: TalonSRX = TalonSRX(Constants.Drive.LEFT_MASTER_ID)
-    private val leftSlave1SRX: TalonSRX = TalonSRX(Constants.Drive.LEFT_SLAVE_1_ID)
-    private val leftSlave2SPX: VictorSPX = VictorSPX(Constants.Drive.LEFT_SLAVE_2_ID)
-    private val rightMasterSRX: TalonSRX = TalonSRX(Constants.Drive.RIGHT_MASTER_ID)
-    private val rightSlave1SRX: TalonSRX = TalonSRX(Constants.Drive.RIGHT_SLAVE_1_ID)
-    private val rightSlave2SPX: VictorSPX = VictorSPX(Constants.Drive.RIGHT_SLAVE_2_ID)
+    private val leftMasterSRX: TalonSRX = CANMotorControllerFactory.createDefaultTalon(Constants.Drive.LEFT_MASTER_ID)
+    private val leftSlave1SRX: TalonSRX = CANMotorControllerFactory.createPermanentSlaveTalon(Constants.Drive.LEFT_SLAVE_1_ID, Constants.Drive.LEFT_MASTER_ID)
+    private val leftSlave2SPX: VictorSPX = CANMotorControllerFactory.createPermanentSlaveVictor(Constants.Drive.LEFT_SLAVE_2_ID, leftMasterSRX)
+    private val rightMasterSRX: TalonSRX = CANMotorControllerFactory.createDefaultTalon(Constants.Drive.RIGHT_MASTER_ID)
+    private val rightSlave1SRX: TalonSRX = CANMotorControllerFactory.createPermanentSlaveTalon(Constants.Drive.RIGHT_SLAVE_1_ID, Constants.Drive.RIGHT_MASTER_ID)
+    private val rightSlave2SPX: VictorSPX = CANMotorControllerFactory.createPermanentSlaveVictor(Constants.Drive.RIGHT_SLAVE_2_ID, rightMasterSRX)
 
     private val pneumaticShifter: DoubleSolenoid = DoubleSolenoid(Constants.Drive.SHIFTER_FORWARD_ID,Constants.Drive.SHIFTER_REVERSE_ID)
 
@@ -69,10 +70,6 @@ class Drive private constructor() : Subsystem {
         leftMasterSRX.config_kD(1, Constants.Gains.LEFT_HIGH_KD, 0)
         leftMasterSRX.config_kF(1, Constants.Gains.LEFT_HIGH_KF, 0)
 
-        leftSlave1SRX.set(ControlMode.Follower, Constants.Drive.LEFT_MASTER_ID.toDouble()) //makes slaves
-        leftSlave2SPX.follow(leftMasterSRX)
-//        leftSlave2SPX.set(ControlMode.Follower, Constants.Drive.LEFT_MASTER_ID.toDouble())
-
         rightMasterSRX.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0) //configs sensor to a quad encoder
         rightMasterSRX.setSensorPhase(true) //to align positive sensor velocity with positive motor output
         rightMasterSRX.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 5, 0)
@@ -85,10 +82,6 @@ class Drive private constructor() : Subsystem {
         rightMasterSRX.config_kI(1, Constants.Gains.RIGHT_HIGH_KI, 0)
         rightMasterSRX.config_kD(1, Constants.Gains.RIGHT_HIGH_KD, 0)
         rightMasterSRX.config_kF(1, Constants.Gains.RIGHT_HIGH_KF, 0)
-
-        rightSlave1SRX.set(ControlMode.Follower, Constants.Drive.RIGHT_MASTER_ID.toDouble()) //makes slaves
-        rightSlave2SPX.follow(rightMasterSRX)
-//        rightSlave2SPX.set(ControlMode.Follower, Constants.Drive.RIGHT_MASTER_ID.toDouble())
 
         leftMasterSRX.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0)
         leftMasterSRX.configVelocityMeasurementWindow(32, 0)
@@ -125,34 +118,26 @@ class Drive private constructor() : Subsystem {
         setLeftRightPower(signal.leftMotor, signal.rightMotor)
     }
 
-
-    fun onStart(timestamp: Double) {
-        synchronized(this) {
-            setOpenLoop(DriveSignal.NEUTRAL)
-            brakeMode = NeutralMode.Coast
-            setVelocitySetpoint(0.0, 0.0) //could update in future
-        }
+    /**
+     * Powers the left and right talons during OPEN_LOOP
+     * @param left
+     * @param right
+     */
+    @Synchronized
+    private fun setLeftRightPower(left: Double, right: Double) {
+        //        println("power: $left, $right")
+        leftMasterSRX.set(ControlMode.PercentOutput, left)
+        rightMasterSRX.set(ControlMode.PercentOutput, right)
+        //        println("left out: $left, left speed: ${leftMasterSRX.getSelectedSensorVelocity(0)}")
+        //        println("right out: $right, right speed: ${rightMasterSRX.getSelectedSensorVelocity(0)}")
+        //        println("actual power: ${leftMasterSRX.motorOutputPercent}, ${rightMasterSRX.motorOutputPercent}")
     }
 
-    fun usesTalonVelocityControl(state: DriveControlState): Boolean {
-        if (state == DriveControlState.VELOCITY_SETPOINT || state == DriveControlState.PATH_FOLLOWING) {
-            return true
+    override fun zeroSensors() {
+        if (ahrs.isConnected) {
+            ahrs.reset()
         }
-        return false
-    }
-
-    fun usesTalonPositionControl(state: DriveControlState): Boolean {
-        if (state == DriveControlState.TURN_TO_HEADING) {
-            return true
-        }
-        return false
-    }
-
-
-    override fun stop() {
-        synchronized(this) {
-            setOpenLoop(DriveSignal.NEUTRAL)
-        }
+        resetEncoders()
     }
 
     @Synchronized
@@ -194,38 +179,52 @@ class Drive private constructor() : Subsystem {
 
     }
 
-    override fun zeroSensors() {
-        if (ahrs.isConnected) {
-            ahrs.reset()
-        }
-        resetEncoders()
-    }
-
+    @Synchronized
     fun arcadeDrive(outputMagnitude: Double, curve: Double) {
         val leftOutput: Double
         val rightOutput: Double
 
-        if (curve < 0) {
-            val value = Math.log(-curve)
-            var ratio = (value - .5) / (value + .5)
-            if (ratio == 0.0) {
-                ratio = .0000000001
+        when {
+            curve < 0 -> {
+                val value = Math.log(-curve)
+                var ratio = (value - .5) / (value + .5)
+                if (ratio == 0.0) {
+                    ratio = .0000000001
+                }
+                leftOutput = outputMagnitude / ratio
+                rightOutput = outputMagnitude
             }
-            leftOutput = outputMagnitude / ratio
-            rightOutput = outputMagnitude
-        } else if (curve > 0) {
-            val value = Math.log(curve)
-            var ratio = (value - .5) / (value + .5)
-            if (ratio == 0.0) {
-                ratio = .0000000001
+            curve > 0 -> {
+                val value = Math.log(curve)
+                var ratio = (value - .5) / (value + .5)
+                if (ratio == 0.0) {
+                    ratio = .0000000001
+                }
+                leftOutput = outputMagnitude
+                rightOutput = outputMagnitude / ratio
             }
-            leftOutput = outputMagnitude
-            rightOutput = outputMagnitude / ratio
-        } else {
-            leftOutput = outputMagnitude
-            rightOutput = outputMagnitude
+            else -> {
+                leftOutput = outputMagnitude
+                rightOutput = outputMagnitude
+            }
         }
         setLeftRightPower(leftOutput, rightOutput)
+    }
+
+    @Synchronized
+    fun usesTalonVelocityControl(state: DriveControlState): Boolean {
+        if (state == DriveControlState.VELOCITY_SETPOINT || state == DriveControlState.PATH_FOLLOWING) {
+            return true
+        }
+        return false
+    }
+
+    @Synchronized
+    fun usesTalonPositionControl(state: DriveControlState): Boolean {
+        if (state == DriveControlState.TURN_TO_HEADING) {
+            return true
+        }
+        return false
     }
 
     @Synchronized
@@ -236,7 +235,7 @@ class Drive private constructor() : Subsystem {
     }
 
     @Synchronized
-    public fun updateVelocitySetpoint(leftInchesPerSec: Double, rightInchesPerSec: Double) {
+    fun updateVelocitySetpoint(leftInchesPerSec: Double, rightInchesPerSec: Double) {
         if (usesTalonVelocityControl(currentState)) {
 //            val maxDesired: Double = Math.max(Math.abs(leftInchesPerSec), Math.abs(rightInchesPerSec))
 //            val scale: Double
@@ -271,6 +270,7 @@ class Drive private constructor() : Subsystem {
         }
     }
 
+    @Synchronized
     private fun configureTalonsForVelocityControl() { //should further review cause im bad
         if (!usesTalonVelocityControl(currentState)) {
             // We entered a velocity control state.
@@ -291,6 +291,7 @@ class Drive private constructor() : Subsystem {
         }
     }
 
+    @Synchronized
     private fun configureTalonsforPositionControl() {
         if (!usesTalonPositionControl(currentState)) {
             // We entered a position control state.
@@ -311,21 +312,19 @@ class Drive private constructor() : Subsystem {
     }
 
 
-    /**
-     * Powers the left and right talons during OPEN_LOOP
-     * @param left
-     * @param right
-     */
-    @Synchronized
-    private fun setLeftRightPower(left: Double, right: Double) {
-//        println("power: $left, $right")
-        leftMasterSRX.set(ControlMode.PercentOutput, left)
-        rightMasterSRX.set(ControlMode.PercentOutput, right)
-//        println("left out: $left, left speed: ${leftMasterSRX.getSelectedSensorVelocity(0)}")
-//        println("right out: $right, right speed: ${rightMasterSRX.getSelectedSensorVelocity(0)}")
-//        println("actual power: ${leftMasterSRX.motorOutputPercent}, ${rightMasterSRX.motorOutputPercent}")
+    fun onStart(timestamp: Double) {
+        synchronized(this) {
+            setOpenLoop(DriveSignal.NEUTRAL)
+            brakeMode = NeutralMode.Coast
+            setVelocitySetpoint(0.0, 0.0) //could update in future
+        }
     }
 
+    override fun stop() {
+        synchronized(this) {
+            setOpenLoop(DriveSignal.NEUTRAL)
+        }
+    }
 
     val loop: Loop = object : Loop {
         override fun onStart() {
