@@ -48,7 +48,7 @@ class Robot : IterativeRobot() {
             //TODO: add the robot state estimator here
 //            CameraServer.getInstance().startAutomaticCapture()
             enabledLooper.register(drive.loop)
-            enabledLooper.register(intake.loop)
+//            enabledLooper.register(intake.loop)
 
             enabledLooper.register(BrownoutDefender.instance)
 
@@ -91,9 +91,9 @@ class Robot : IterativeRobot() {
 
             val allianceOwnership = DashboardConfigurator.updateAllianceOwnership()
 
-            autoModeExecuter = AutoModeExecuter()
-            autoModeExecuter?.setAutoMode(DashboardConfigurator.getSelectedAutoMode(allianceOwnership))
-            autoModeExecuter?.start()
+//            autoModeExecuter = AutoModeExecuter()
+//            autoModeExecuter?.setAutoMode(DashboardConfigurator.getSelectedAutoMode(allianceOwnership))
+//            autoModeExecuter?.start()
 
         } catch (t: Throwable) {
             CrashTracker.logThrowableCrash("autonomousInit", t)
