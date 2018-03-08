@@ -2,26 +2,29 @@ package org.usfirst.frc.team4099.robot.subsystems
 
 import com.ctre.phoenix.motorcontrol.ControlMode
 import com.ctre.phoenix.motorcontrol.FeedbackDevice
-import com.ctre.phoenix.motorcontrol.can.TalonSRX
-import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import org.usfirst.frc.team4099.lib.util.CANMotorControllerFactory
 import org.usfirst.frc.team4099.robot.Constants
 import org.usfirst.frc.team4099.robot.loops.Loop
 
 class Elevator private constructor(): Subsystem {
-    val talon = TalonSRX(Constants.Elevator.ELEVATOR_TALON_ID)
+    val talon = CANMotorControllerFactory.createDefaultTalon(Constants.Elevator.ELEVATOR_TALON_ID)
 
     private var elevatorPower = 0.0
     var elevatorState = ElevatorState.OPEN_LOOP
-    var movementState = MovementState.HOLD
-    private var elevatorPosition = 0.0
+    var movementState = MovementState.STILL
+        private set
+    var observedElevatorPosition = 0.0
+        private set
+    var observedElevatorVelocity = 0.0
+        private set
 
     enum class ElevatorState (val targetPos : Double) {
-        LOW(2.0), MEDIUM(0.5), HIGH(15.0), STILL(Double.NaN), VELOCITY_CONTROL(Double.NaN), OPEN_LOOP(Double.NaN)
+        LOW(2.0), MEDIUM(0.5), HIGH(15.0), VELOCITY_CONTROL(Double.NaN), OPEN_LOOP(Double.NaN)
     }
 
     enum class MovementState {
-        UP, DOWN, HOLD
+        UP, DOWN, STILL
     }
 
     init {
@@ -52,11 +55,9 @@ class Elevator private constructor(): Subsystem {
     }
 
 
-    fun setElevatorVelocity(power: Double) {
+    fun setElevatorVelocity(inchesPerSecond: Double) {
         elevatorState = ElevatorState.VELOCITY_CONTROL
-        talon.set(ControlMode.Velocity, power)
-        elevatorPower = power
-
+        talon.set(ControlMode.Velocity, inchesPerSecond)
     }
 
 
@@ -64,78 +65,59 @@ class Elevator private constructor(): Subsystem {
         SmartDashboard.putNumber("elevatorPower", elevatorPower)
     }
 
-    private fun setElevatorPosition(position : Double) {
-        elevatorPosition = position
-        talon.set(ControlMode.MotionMagic, ElevatorConversion.inchesToPulses(position).toDouble())
+    private fun setElevatorPosition(position: ElevatorState) {
+        var target = position.targetPos
+        if (target == Double.NaN) {
+            target = observedElevatorPosition
+        }
+        observedElevatorPosition = target
+        talon.set(ControlMode.MotionMagic, ElevatorConversion.inchesToPulses(target).toDouble())
     }
 
     val loop: Loop = object : Loop {
         override fun onStart() {
-            setElevatorVelocity(0.0)
-            movementState = Elevator.MovementState.HOLD
+            elevatorState = ElevatorState.LOW
         }
 
         override fun onLoop() {
             synchronized(this@Elevator) {
-                if (elevatorState == ElevatorState.OPEN_LOOP) {
-                    return
-                }
+                observedElevatorVelocity = ElevatorConversion.nativeSpeedToInchesPerSecond(talon.sensorCollection.quadratureVelocity)
+                observedElevatorPosition = ElevatorConversion.pulsesToInches(talon.sensorCollection.quadraturePosition)
+                elevatorPower = talon.motorOutputPercent
 
-                if (movementState != Elevator.MovementState.HOLD && talon.sensorCollection.quadratureVelocity == 0) {
-                    movementState = Elevator.MovementState.HOLD
-                }
-                elevatorPosition = ElevatorConversion.pulsesToInches(talon.sensorCollection.quadraturePosition)
-
-
-                if (movementState == Elevator.MovementState.HOLD){
-                    talon.set(ControlMode.MotionMagic, elevatorPosition)
-                } else {
-                    when(elevatorState){
-                        ElevatorState.VELOCITY_CONTROL -> {
-                            talon.set(ControlMode.Velocity, 0.0)
-                            if (/** limitSwitch.get() == true **/ false) {
-                                when (movementState) {
-                                    MovementState.UP -> setElevatorVelocity(1.0)
-                                    MovementState.DOWN -> setElevatorVelocity(-1.0)
-                                    MovementState.HOLD -> {
-                                        talon.set(ControlMode.MotionMagic, ElevatorConversion.pulsesToInches(talon.sensorCollection.pulseWidthPosition))
-                                    }
-                                }
-                            } else {
-                                movementState = MovementState.HOLD
-                                talon.set(ControlMode.MotionMagic, ElevatorConversion.pulsesToInches(talon.sensorCollection.pulseWidthPosition))
-                            }
-                        }
-                        ElevatorState.OPEN_LOOP -> {
-                            return
-                        }
-                        ElevatorState.HIGH -> {
-                            setElevatorPosition(Elevator.ElevatorState.HIGH.targetPos)
-                        }
-                        ElevatorState.LOW -> {
-                            setElevatorPosition(Elevator.ElevatorState.LOW.targetPos)
-                        }
-                        ElevatorState.MEDIUM -> {
-                            setElevatorPosition(Elevator.ElevatorState.MEDIUM.targetPos)
-                        }
-                        ElevatorState.STILL -> {
-                            talon.set(ControlMode.MotionMagic, ElevatorConversion.inchesToPulses(ElevatorState.STILL.targetPos).toDouble())
-                        }
+                when (elevatorState){
+                    ElevatorState.OPEN_LOOP -> {
+                        return
+                    }
+                    ElevatorState.VELOCITY_CONTROL -> {
+                        return
+                    }
+                    ElevatorState.HIGH -> {
+                        setElevatorPosition(ElevatorState.HIGH)
+                    }
+                    ElevatorState.LOW -> {
+                        setElevatorPosition(ElevatorState.LOW)
+                    }
+                    ElevatorState.MEDIUM -> {
+                        setElevatorPosition(ElevatorState.MEDIUM)
                     }
                 }
+                when {
+                    observedElevatorVelocity in -1 .. 1 -> movementState = MovementState.STILL
+                    observedElevatorVelocity > 1 -> movementState = MovementState.UP
+                    observedElevatorVelocity < 1 -> movementState = MovementState.DOWN
+                }
             }
-
         }
 
         override fun onStop() {
-            movementState = MovementState.HOLD
-            setElevatorPosition(ElevatorState.STILL.targetPos)
+            setElevatorVelocity(0.0)
         }
     }
 
     override fun stop() {
-        movementState = Elevator.MovementState.HOLD
-        talon.set(ControlMode.Velocity, 0.0)
+        movementState = Elevator.MovementState.STILL
+        setElevatorVelocity(0.0)
 
     }
 

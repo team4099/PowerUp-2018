@@ -26,13 +26,12 @@ class CheesyDriveHelper {
         var throttle = throttle
         var wheel = wheel
         throttle = JoystickUtils.deadband(throttle, kThrottleDeadband)
-        // TODO: see if moving wheel in the beginning makes a difference in throttle stop
-        // TODO: because it used to come after the negativeInertia code
+        // TODO: see if moving wheel in the beginning makes a difference in throttle stop (because it used to come after the negativeInertia code)
         wheel = -JoystickUtils.deadbandNoShape(wheel, kWheelDeadband)
 
-        if (isQuickTurn)
+        if (isQuickTurn) {
             wheel /= 1.55
-
+        }
         // TODO: test this, does it really make controls feel better?
         val wheelNonLinearity = 0.5
         wheel = Math.sin(Math.PI / 2.0 * wheelNonLinearity * wheel) / Math.sin(Math.PI / 2.0 * wheelNonLinearity)
@@ -122,24 +121,24 @@ class CheesyDriveHelper {
             }
         }
 
-        var rightPWM = throttle - angularPower
-        var leftPWM = throttle + angularPower
-        if (leftPWM > 1.0) {
-            rightPWM -= overPower * (leftPWM - 1.0)
-            leftPWM = 1.0
-        } else if (rightPWM > 1.0) {
-            leftPWM -= overPower * (rightPWM - 1.0)
-            rightPWM = 1.0
-        } else if (leftPWM < -1.0) {
-            rightPWM += overPower * (-1.0 - leftPWM)
-            leftPWM = -1.0
-        } else if (rightPWM < -1.0) {
-            leftPWM += overPower * (-1.0 - rightPWM)
-            rightPWM = -1.0
+        var rightPower = throttle - angularPower
+        var leftPower = throttle + angularPower
+        if (leftPower > 1.0) {
+            rightPower -= overPower * (leftPower - 1.0)
+            leftPower = 1.0
+        } else if (rightPower > 1.0) {
+            leftPower -= overPower * (rightPower - 1.0)
+            rightPower = 1.0
+        } else if (leftPower < -1.0) {
+            rightPower += overPower * (-1.0 - leftPower)
+            leftPower = -1.0
+        } else if (rightPower < -1.0) {
+            leftPower += overPower * (-1.0 - rightPower)
+            rightPower = -1.0
         }
 
-        signal.rightMotor = rightPWM
-        signal.leftMotor = leftPWM
+        signal.rightMotor = rightPower
+        signal.leftMotor = leftPower
 
         return signal
     }
