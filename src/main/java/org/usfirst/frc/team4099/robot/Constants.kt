@@ -119,11 +119,11 @@ class Constants {
     }
 
     object Elevator {
-        val ELEVATOR_TALON_ID = 10
+        val ELEVATOR_TALON_ID = 0
     }
 
     object Wrist {
-        val WRIST_TALON_ID = 12
+        val WRIST_TALON_ID = 1
 
         val WRIST_KP = 0.0000
         val WRIST_KI = 0.0000

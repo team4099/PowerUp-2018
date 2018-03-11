@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4099.robot
 
 import edu.wpi.first.wpilibj.IterativeRobot
+import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import org.usfirst.frc.team4099.auto.AutoModeExecuter
@@ -55,10 +56,10 @@ class Robot : IterativeRobot() {
 
             //TODO: add the robot state estimator here
 //            CameraServer.getInstance().startAutomaticCapture()
-//            enabledLooper.register(drive.loop)
-            enabledLooper.register(intake.loop)
-            enabledLooper.register(elevator.loop)
-            enabledLooper.register(wrist.loop)
+            enabledLooper.register(drive.loop)
+//            enabledLooper.register(intake.loop)
+//            enabledLooper.register(elevator.loop)
+//            enabledLooper.register(wrist.loop)
 
             enabledLooper.register(BrownoutDefender.instance)
 
@@ -165,45 +166,45 @@ class Robot : IterativeRobot() {
             SmartDashboard.putBoolean("isQuickTurn", isQuickTurn)
             SmartDashboard.putNumber("voltage", VoltageEstimator.instance.averageVoltage)
 
-            if (controls.test) {
-                println("testing")
-                drive.setVelocitySetpoint(600 * throttle, 600 * throttle)
-            } else {
-                if (drive.highGear && shiftToLowGear) {
-                    drive.highGear = false
-                    println("Shifting to low gear")
-                } else if (!drive.highGear && shiftToHighGear) {
-                    drive.highGear = true
-                    println("Shifting to high gear")
-                }
-                if (intake.open && closeIntake) {
-                    intake.open = false
-                    println("Closing intake")
-                } else if (!intake.open && openIntake) {
-                    intake.open = true
-                    println("Opening intake")
-                }
-//                drive.setOpenLoop(cheesyDriveHelper.curvatureDrive(throttle, turn, isQuickTurn))
-            }
+//            if (controls.test) {
+//                println("testing")
+//                drive.setVelocitySetpoint(600 * throttle, 600 * throttle)
+//            } else {
+//                if (drive.highGear && shiftToLowGear) {
+//                    drive.highGear = false
+//                    println("Shifting to low gear")
+//                } else if (!drive.highGear && shiftToHighGear) {
+//                    drive.highGear = true
+//                    println("Shifting to high gear")
+//                }
+//                if (intake.open && closeIntake) {
+//                    intake.open = false
+//                    println("Closing intake")
+//                } else if (!intake.open && openIntake) {
+//                    intake.open = true
+//                    println("Opening intake")
+//                }
+            println(throttle)
+                drive.setOpenLoop(cheesyDriveHelper.curvatureDrive(throttle, turn, isQuickTurn))
+//            }
 
-            if (reverseIntake) {
-                intake.intakeState = Intake.IntakeState.OUT
-            } else if (intake.intakeState != Intake.IntakeState.SLOW) {
-                intake.intakeState = Intake.IntakeState.IN
-            }
-            intake.intakeState = Intake.IntakeState.STOP
-
+//            if (reverseIntake) {
+//                intake.intakeState = Intake.IntakeState.OUT
+//            } else if (intake.intakeState != Intake.IntakeState.SLOW) {
+//                intake.intakeState = Intake.IntakeState.IN
+//            }
+//
             when {
                 controls.elevatorTop -> elevator.elevatorState = Elevator.ElevatorState.HIGH
                 controls.elevatorBottom -> elevator.elevatorState = Elevator.ElevatorState.LOW
                 else ->  elevator.setOpenLoop(controls.elevatorPower)
             }
 
-            when {
-                controls.wristTop -> wrist.wristState = Wrist.WristState.STOWED_UP
-                controls.wristBottom -> wrist.wristState = Wrist.WristState.HORIZONTAL
-                else -> wrist.setOpenLoop(controls.wristPower)
-            }
+//            when {
+//                controls.wristTop -> wrist.wristState = Wrist.WristState.STOWED_UP
+//                controls.wristBottom -> wrist.wristState = Wrist.WristState.HORIZONTAL
+//                else -> wrist.setOpenLoop(controls.wristPower)
+//            }
 
             signalTable.sensorPosition = elevator.talon.sensorCollection.quadraturePosition
             signalTable.sensorVelocity = elevator.talon.sensorCollection.quadratureVelocity
@@ -214,7 +215,10 @@ class Robot : IterativeRobot() {
             signalTable.elevatorCurrent = elevator.talon.outputCurrent
             csvWriter.add(signalTable)
 
-            println(wrist.talon.sensorCollection.quadraturePosition)
+//            println(wrist.talon.sensorCollection.quadraturePosition)
+            println("Current: ${elevator.talon.outputCurrent}")
+            println("Voltage: ${elevator.talon.motorOutputVoltage}")
+            println("Output: ${elevator.talon.motorOutputPercent}")
 
             outputAllToSmartDashboard()
             updateDashboardFeedback() // things such as is aligned?, etc
@@ -268,7 +272,15 @@ class Robot : IterativeRobot() {
 //
 //    }
 
-    override fun testPeriodic() = teleopPeriodic()
+//    override fun testPeriodic() = teleopPeriodic()
+
+    override fun testPeriodic() {
+        val initial = Timer.getFPGATimestamp()
+        while (Timer.getFPGATimestamp() - initial < 300) {
+            drive.setOpenLoop(DriveSignal(1.0, 1.0))
+        }
+        drive.setOpenLoop(DriveSignal(0.0, 0.0))
+    }
 
     /**
      * Log information from all subsystems onto the SmartDashboard
