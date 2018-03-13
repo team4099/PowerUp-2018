@@ -1,6 +1,5 @@
 package org.usfirst.frc.team4099.robot
 
-import org.usfirst.frc.team4099.lib.joystick.DualShock4Gamepad
 import org.usfirst.frc.team4099.lib.joystick.Gamepad
 import org.usfirst.frc.team4099.lib.joystick.JoystickUtils
 import org.usfirst.frc.team4099.lib.joystick.XboxOneGamepad
@@ -13,7 +12,7 @@ class ControlBoard private constructor() {
         get() = driver.rightTriggerAxis - driver.leftTriggerAxis
 
     val turn: Double
-        get() = driver.leftXAxis
+        get() = -driver.leftXAxis
 
     val switchToHighGear: Boolean
         get() = driver.rightShoulderButton

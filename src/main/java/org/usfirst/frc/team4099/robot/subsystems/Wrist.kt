@@ -1,11 +1,10 @@
 package org.usfirst.frc.team4099.robot.subsystems
+
 import com.ctre.phoenix.motorcontrol.ControlMode
 import com.ctre.phoenix.motorcontrol.FeedbackDevice
-import org.usfirst.frc.team4099.robot.Constants
-
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
-import com.ctre.phoenix.motorcontrol.can.VictorSPX
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import org.usfirst.frc.team4099.robot.Constants
 import org.usfirst.frc.team4099.robot.loops.Loop
 
 /**
@@ -18,7 +17,7 @@ import org.usfirst.frc.team4099.robot.loops.Loop
  */
 
 class Wrist private constructor(): Subsystem {
-    val talon = TalonSRX(Constants.Wrist.WRIST_TALON_ID)
+    private val talon = TalonSRX(Constants.Wrist.WRIST_TALON_ID)
 //    private val arm = Arm.instance
 
     var wristState = WristState.HORIZONTAL
@@ -73,6 +72,10 @@ class Wrist private constructor(): Subsystem {
      */
     fun setWristMode(state: WristState) {
         wristState = state
+    }
+
+    fun getWristPosition() : Double {
+        return WristConversion.pulsesToRadians(talon.sensorCollection.quadraturePosition)
     }
 
     fun setOpenLoop(power: Double) {

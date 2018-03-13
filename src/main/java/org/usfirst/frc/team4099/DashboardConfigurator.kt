@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import main.java.org.usfirst.frc.team4099.lib.util.AutoModeCreator
 import org.usfirst.frc.team4099.auto.modes.AutoModeBase
+import org.usfirst.frc.team4099.auto.modes.SingleCubeSwitch
 import org.usfirst.frc.team4099.auto.modes.StandStillMode
 import org.usfirst.frc.team4099.robot.Constants
 import org.usfirst.frc.team4099.robot.Constants.Autonomous.AUTO_OPTIONS_DASHBOARD_KEY
@@ -20,18 +21,19 @@ import org.usfirst.frc.team4099.robot.Constants.Autonomous.SELECTED_AUTO_START_P
  * invariants.
  */
 object DashboardConfigurator {
-    private val defaultStart = "CENTER"
     private val defaultDelay = 0.0
+    private val defaultStart = StartingPosition.CENTER
     private val defaultMode = AutoModeCreator("Stand Still", { _, _, _ -> StandStillMode() })
 
-    private val startingPositions = arrayOf(
-            defaultStart,
-            "LEFT",
-            "RIGHT"
-    )
+    enum class StartingPosition(val printableName: String)  {
+        LEFT("LEFT"),
+        CENTER("CENTER"),
+        RIGHT("RIGHT")
+    }
     private val allModes = arrayOf(
             defaultMode,
-            AutoModeCreator("Move Forward", { _, _, _ -> StandStillMode() })
+            AutoModeCreator("Move Forward", { _, _, _ -> StandStillMode() }),
+            AutoModeCreator("Center to Switch", {startingPos, startingConfig, delay -> SingleCubeSwitch(startingPos, startingConfig, delay) })
     )
 
 
@@ -50,23 +52,24 @@ object DashboardConfigurator {
         SmartDashboard.putString(SELECTED_AUTO_MODE_DASHBOARD_KEY, defaultMode.dashboardName);
 
         var autoStartsString = "[ "
-        for (i in 0 until startingPositions.size - 1) {
-            autoStartsString += "${startingPositions[i]}, "
+        for (i in 0 until StartingPosition.values().size - 1) {
+            autoStartsString += "${StartingPosition.values()[i].printableName}, "
         }
-        autoStartsString += "${startingPositions[allModes.size - 1]} ]"
+        autoStartsString += "${StartingPosition.values()[StartingPosition.values().size - 1].printableName} ]"
 
         SmartDashboard.putString(AUTO_STARTS_DASHBOARD_KEY, autoStartsString)
-        SmartDashboard.putString(SELECTED_AUTO_START_POS_KEY, defaultStart)
+        SmartDashboard.putString(SELECTED_AUTO_START_POS_KEY, defaultStart.printableName)
 
         SmartDashboard.putNumber(SELECTED_AUTO_START_DELAY_KEY, defaultDelay)
     }
 
     fun getSelectedAutoMode(allianceOwnership: String): AutoModeBase {
         val selectedModeName = SmartDashboard.getString(SELECTED_AUTO_MODE_DASHBOARD_KEY, defaultMode.dashboardName)
-        val selectedStartingPosition = SmartDashboard.getString(SELECTED_AUTO_START_POS_KEY, defaultStart)
+        val selectedStartingPosition = SmartDashboard.getString(SELECTED_AUTO_START_POS_KEY, defaultStart.printableName)
         val selectedStartingDelay = SmartDashboard.getNumber(SELECTED_AUTO_START_DELAY_KEY, defaultDelay)
 
-        allModes.filter { it.dashboardName == selectedModeName }.map { return it.creator(selectedStartingPosition, allianceOwnership, selectedStartingDelay) }
+        val selectedStartEnum = StartingPosition.values().filter { it.printableName == selectedStartingPosition }[0]
+        allModes.filter { it.dashboardName == selectedModeName }.map { return it.creator(selectedStartEnum, allianceOwnership, selectedStartingDelay) }
         DriverStation.reportError("Failed to select a proper autonomous: $selectedModeName", false)
         return defaultMode.creator(defaultStart, allianceOwnership, defaultDelay)
     }
