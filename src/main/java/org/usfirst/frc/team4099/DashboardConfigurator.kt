@@ -3,9 +3,7 @@ package org.usfirst.frc.team4099
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import main.java.org.usfirst.frc.team4099.lib.util.AutoModeCreator
-import org.usfirst.frc.team4099.auto.modes.AutoModeBase
-import org.usfirst.frc.team4099.auto.modes.SingleCubeSwitch
-import org.usfirst.frc.team4099.auto.modes.StandStillMode
+import org.usfirst.frc.team4099.auto.modes.*
 import org.usfirst.frc.team4099.robot.Constants
 import org.usfirst.frc.team4099.robot.Constants.Autonomous.AUTO_OPTIONS_DASHBOARD_KEY
 import org.usfirst.frc.team4099.robot.Constants.Autonomous.AUTO_STARTS_DASHBOARD_KEY
@@ -23,17 +21,18 @@ import org.usfirst.frc.team4099.robot.Constants.Autonomous.SELECTED_AUTO_START_P
 object DashboardConfigurator {
     private val defaultDelay = 0.0
     private val defaultStart = StartingPosition.CENTER
-    private val defaultMode = AutoModeCreator("Stand Still", { _, _, _ -> StandStillMode() })
+    private val defaultMode = AutoModeCreator("Line Cross", { startingPos, startingConfig, delay -> LineCrossMode(startingPos, startingConfig, delay) })
 
-    enum class StartingPosition(val printableName: String)  {
+    enum class StartingPosition(val dashboardName: String)  {
         LEFT("LEFT"),
         CENTER("CENTER"),
         RIGHT("RIGHT")
     }
     private val allModes = arrayOf(
             defaultMode,
-            AutoModeCreator("Move Forward", { _, _, _ -> StandStillMode() }),
-            AutoModeCreator("Center to Switch", {startingPos, startingConfig, delay -> SingleCubeSwitch(startingPos, startingConfig, delay) })
+            AutoModeCreator("Stand Still", { _, _ ,_ -> StandStillMode() }),
+            AutoModeCreator("Single Cube Switch", { startingPos, startingConfig, delay -> SingleCubeSwitch(startingPos, startingConfig, delay) }),
+            AutoModeCreator("Single Cube Scale", { startingPos, startingConfig, delay -> SingleCubeScale(startingPos, startingConfig, delay) })
     )
 
 
