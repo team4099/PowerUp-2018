@@ -52,22 +52,22 @@ object DashboardConfigurator {
 
         var autoStartsString = "[ "
         for (i in 0 until StartingPosition.values().size - 1) {
-            autoStartsString += "${StartingPosition.values()[i].printableName}, "
+            autoStartsString += "${StartingPosition.values()[i].dashboardName}, "
         }
-        autoStartsString += "${StartingPosition.values()[StartingPosition.values().size - 1].printableName} ]"
+        autoStartsString += "${StartingPosition.values()[StartingPosition.values().size - 1].dashboardName} ]"
 
         SmartDashboard.putString(AUTO_STARTS_DASHBOARD_KEY, autoStartsString)
-        SmartDashboard.putString(SELECTED_AUTO_START_POS_KEY, defaultStart.printableName)
+        SmartDashboard.putString(SELECTED_AUTO_START_POS_KEY, defaultStart.dashboardName)
 
         SmartDashboard.putNumber(SELECTED_AUTO_START_DELAY_KEY, defaultDelay)
     }
 
     fun getSelectedAutoMode(allianceOwnership: String): AutoModeBase {
         val selectedModeName = SmartDashboard.getString(SELECTED_AUTO_MODE_DASHBOARD_KEY, defaultMode.dashboardName)
-        val selectedStartingPosition = SmartDashboard.getString(SELECTED_AUTO_START_POS_KEY, defaultStart.printableName)
+        val selectedStartingPosition = SmartDashboard.getString(SELECTED_AUTO_START_POS_KEY, defaultStart.dashboardName)
         val selectedStartingDelay = SmartDashboard.getNumber(SELECTED_AUTO_START_DELAY_KEY, defaultDelay)
 
-        val selectedStartEnum = StartingPosition.values().filter { it.printableName == selectedStartingPosition }[0]
+        val selectedStartEnum = StartingPosition.values().filter { it.dashboardName == selectedStartingPosition }[0]
         allModes.filter { it.dashboardName == selectedModeName }.map { return it.creator(selectedStartEnum, allianceOwnership, selectedStartingDelay) }
         DriverStation.reportError("Failed to select a proper autonomous: $selectedModeName", false)
         return defaultMode.creator(defaultStart, allianceOwnership, defaultDelay)
