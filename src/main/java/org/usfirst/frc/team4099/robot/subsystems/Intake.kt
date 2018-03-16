@@ -36,7 +36,8 @@ class Intake private constructor() : Subsystem {
     }
 
     override fun outputToSmartDashboard() {
-        SmartDashboard.putNumber("intakePower", intakePower)
+        SmartDashboard.putNumber("intake/intakePower", intakePower)
+        SmartDashboard.putBoolean("intake/isOpen", open)
     }
 
     /**
@@ -71,7 +72,9 @@ class Intake private constructor() : Subsystem {
          */
         override fun onLoop() {
             synchronized(this@Intake) {
-                if (BrownoutDefender.instance.getCurrent(Constants.Intake.LEFT_INTAKE_TALON_ID) > 30 || BrownoutDefender.instance.getCurrent(Constants.Intake.RIGHT_INTAKE_TALON_ID) > 30) {
+                if (intakeState == IntakeState.IN && (
+                        BrownoutDefender.instance.getCurrent(11) > 30
+                    || BrownoutDefender.instance.getCurrent(7) > 30)) {
                     intakeState = IntakeState.SLOW
                 }
                 when (intakeState) {

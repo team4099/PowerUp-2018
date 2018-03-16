@@ -26,10 +26,15 @@ class Constants {
         val RIGHT_HIGH_KF = 1023.0 / 4420.0
 
         //subject to change
-        val ELEVATOR_KP = 0.0000
-        val ELEVATOR_KI = 0.0000
-        val ELEVATOR_KD = 0.0000
-        val ELEVATOR_KF = 0.0000
+        val ELEVATOR_UP_KP = 0.5
+        val ELEVATOR_UP_KI = 0.01
+        val ELEVATOR_UP_KD = 70.000
+        val ELEVATOR_UP_KF = 0.5700
+
+        val ELEVATOR_DOWN_KP = 1.00
+        val ELEVATOR_DOWN_KI = 0.002
+        val ELEVATOR_DOWN_KD = 60.0
+        val ELEVATOR_DOWN_KF = 0.78
 
         //subject to change
         val WRIST_KP = 0.0000
@@ -119,11 +124,11 @@ class Constants {
     }
 
     object Elevator {
-        val ELEVATOR_TALON_ID = 10
+        val ELEVATOR_TALON_ID = 0
     }
 
     object Wrist {
-        val WRIST_TALON_ID = 12
+        val WRIST_TALON_ID = 1
 
         val WRIST_KP = 0.0000
         val WRIST_KI = 0.0000

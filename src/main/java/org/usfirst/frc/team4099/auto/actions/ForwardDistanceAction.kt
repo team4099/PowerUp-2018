@@ -30,7 +30,7 @@ class ForwardDistanceAction(initInchesToMove: Double) : Action {
     }
 
     override fun isFinished(): Boolean {
-        return mDrive.getLeftDistanceInches() - startDist >= inchesToMove || done
+        return mDrive.getRightDistanceInches() - startDist >= inchesToMove || done
     }
 
     override fun update() {
@@ -42,7 +42,7 @@ class ForwardDistanceAction(initInchesToMove: Double) : Action {
             done = true
             return
         }
-        mDrive.arcadeDrive(-power * direction, correctionAngle * 0.07 * direction.toDouble())
+        mDrive.arcadeDrive(power * direction, correctionAngle * 0.07 * direction.toDouble())
         //        System.out.println("yaw: " + yaw);
         println("correctionAngle: " + correctionAngle)
     }
@@ -62,6 +62,6 @@ class ForwardDistanceAction(initInchesToMove: Double) : Action {
         startAngle = mDrive.getAHRS()!!.yaw.toDouble()
         println("------- NEW START AUTONOMOUS RUN -------")
         println("Starting angle: " + startAngle)
-        startDist = mDrive.getLeftDistanceInches()
+        startDist = mDrive.getRightDistanceInches()
     }
 }

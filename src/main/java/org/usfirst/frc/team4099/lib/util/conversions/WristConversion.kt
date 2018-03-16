@@ -1,14 +1,14 @@
-package org.usfirst.frc.team4099.robot.subsystems
+package org.usfirst.frc.team4099.lib.util.conversions
 
 
 object WristConversion {
     val pulsesToRadians = 0.055
 
-    fun radiansToPulses(radians: Double): Int {
-        return (radians / pulsesToRadians).toInt()
+    fun radiansToPulses(radians: Double): Double {
+        return (radians / pulsesToRadians)
     }
 
-    fun pulsesToRadians(pulses: Int): Double {
+    fun pulsesToRadians(pulses: Double): Double {
         return pulses * pulsesToRadians
     }
 }

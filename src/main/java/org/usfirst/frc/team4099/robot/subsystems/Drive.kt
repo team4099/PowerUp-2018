@@ -165,6 +165,8 @@ class Drive private constructor() : Subsystem {
         }
         SmartDashboard.putNumber("leftTalon", leftMasterSRX.motorOutputVoltage)
         SmartDashboard.putNumber("rightTalon", rightMasterSRX.motorOutputVoltage)
+        SmartDashboard.putNumber("leftEncoderInches", getLeftDistanceInches())
+        SmartDashboard.putNumber("rightEncoderInches", getRightDistanceInches())
     }
 
     fun startLiveWindowMode() {
@@ -362,41 +364,12 @@ class Drive private constructor() : Subsystem {
         }
     }
 
-    /* private fun updateTurnToHeading(timestamp: Double) {
-         /*if (Superstructure.getInstance().isShooting()) {
-             // Do not update heading while shooting - just base lock. By not updating the setpoint, we will fight to
-             // keep position.
-             return
-         }*/
-         val field_to_robot = currentState.getLatestFieldToVehicle().getValue().getRotation()
-
-         // Figure out the rotation necessary to turn to face the goal.
-         val robot_to_target = field_to_robot.inverse().rotateBy(mTargetHeading)
-
-         // Check if we are on target
-         val kGoalPosTolerance = 0.75 // degrees
-         val kGoalVelTolerance = 5.0 // inches per second
-         if (Math.abs(robot_to_target.getDegrees()) < kGoalPosTolerance
-                 && Math.abs(getLeftVelocityInchesPerSec()) < kGoalVelTolerance
-                 && Math.abs(getRightVelocityInchesPerSec()) < kGoalVelTolerance) {
-             // Use the current setpoint and base lock.
-             mIsOnTarget = true
-             updatePositionSetpoint(getLeftDistanceInches(), getRightDistanceInches())
-             return
-         }
-
-         val wheel_delta = Kinematics
-                 .inverseKinematics(Twist2d(0, 0, robot_to_target.getRadians()))
-         updatePositionSetpoint(wheel_delta.left + getLeftDistanceInches(),
-                 wheel_delta.right + getRightDistanceInches())
-     }*/
-
-    private fun rotationsToInches(rotations: Double): Double {
-        return rotations * (Constants.Wheels.DRIVE_WHEEL_DIAMETER_INCHES * Math.PI)
+    private fun pulsesToInches(rotations: Double): Double {
+        return rotations * 4
     }
 
     private fun rpmToInchesPerSecond(rpm: Double): Double {
-        return rotationsToInches(rpm) / 60
+        return pulsesToInches(rpm) / 60
     }
 
     private fun inchesToRotations(inches: Double): Double {
@@ -408,11 +381,11 @@ class Drive private constructor() : Subsystem {
     }
 
     fun getLeftDistanceInches(): Double {
-        return rotationsToInches(leftMasterSRX.getSelectedSensorPosition(0).toDouble())
+        return pulsesToInches(leftMasterSRX.getSelectedSensorPosition(0).toDouble())
     }
 
     fun getRightDistanceInches(): Double {
-        return rotationsToInches(rightMasterSRX.getSelectedSensorPosition(0).toDouble())
+        return pulsesToInches(rightMasterSRX.getSelectedSensorPosition(0).toDouble())
     }
 
     fun getLeftVelocityInchesPerSec(): Double {

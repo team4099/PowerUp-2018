@@ -2,10 +2,11 @@ package org.usfirst.frc.team4099.robot
 
 import org.usfirst.frc.team4099.lib.joystick.Gamepad
 import org.usfirst.frc.team4099.lib.joystick.JoystickUtils
+import org.usfirst.frc.team4099.lib.joystick.LogitechF310Gamepad
 import org.usfirst.frc.team4099.lib.joystick.XboxOneGamepad
 
 class ControlBoard private constructor() {
-    private val driver: Gamepad = XboxOneGamepad(Constants.Joysticks.DRIVER_PORT)
+    private val driver: Gamepad = LogitechF310Gamepad(Constants.Joysticks.DRIVER_PORT)
     private val operator: Gamepad = XboxOneGamepad(Constants.Joysticks.SHOTGUN_PORT)
 
     val throttle: Double
@@ -34,28 +35,28 @@ class ControlBoard private constructor() {
         get() = Math.abs(JoystickUtils.deadbandNoShape(throttle, 0.02)) < 0.01
 
     val reverseIntake: Boolean
-        get() = operator.aButton
+        get() = operator.bButton
 
     val test: Boolean
-        get() = driver.bButton
+        get() = operator.aButton
 
-    val elevatorTop: Boolean
-        get() = operator.dPadUp
+//    val elevatorTop: Boolean
+//        get() = operator.dPadUp
+//
+//    val elevatorBottom: Boolean
+//        get() = operator.dPadDown
 
-    val elevatorBottom: Boolean
-        get() = operator.dPadDown
-
-    val wristTop: Boolean
-        get() = driver.dPadUp
-
-    val wristBottom: Boolean
-        get() = driver.dPadDown
+//    val wristTop: Boolean
+//        get() = driver.dPadUp
+//
+//    val wristBottom: Boolean
+//        get() = driver.dPadDown
 
     val elevatorPower: Double
-        get() = operator.rightTriggerAxis - operator.leftTriggerAxis
+        get() = (operator.rightTriggerAxis - operator.leftTriggerAxis) * 1
 
     val wristPower: Double
-        get() = driver.rightTriggerAxis - driver.leftTriggerAxis
+        get() = operator.leftYAxis
 
     companion object {
         val instance = ControlBoard()

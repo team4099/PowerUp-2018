@@ -1,8 +1,6 @@
 package org.usfirst.frc.team4099.robot.loops
 
-import edu.wpi.first.wpilibj.Compressor
-import edu.wpi.first.wpilibj.PowerDistributionPanel
-import org.usfirst.frc.team4099.robot.subsystems.Elevator
+import edu.wpi.first.wpilibj.CameraServer
 
 /** Manages the shutting off of components and subsystems when at risk of brownout.
  * It does this through a multitude of steps:
@@ -10,32 +8,45 @@ import org.usfirst.frc.team4099.robot.subsystems.Elevator
  * 2.
  * 3.
  */
-class BrownoutDefender private constructor() : Loop {
-    private val pdp = PowerDistributionPanel()
-    private val elevator = Elevator.instance
-    private val compressor = Compressor()
+class CameraSwitcher private constructor() : Loop {
+    enum class Camera {
+        INTAKE_CAMERA,
+        ELEVATOR_CAMERA
+    }
+
+    private val intakeCamera = CameraServer.getInstance().startAutomaticCapture(0)
+    private val elevatorCamera = CameraServer.getInstance().startAutomaticCapture(1)
+    private val server = CameraServer.getInstance().getServer()
+
+    private var currentSource = Camera.ELEVATOR_CAMERA
 
     override fun onStart() {
-        pdp.clearStickyFaults()
+        server.source = elevatorCamera
+        currentSource = Camera.ELEVATOR_CAMERA
     }
 
     override fun onLoop() {
-        if (pdp.voltage < 10 || pdp.totalCurrent > 70) {
-            compressor.stop()
-        } else {
-            compressor.start()
-        }
+
     }
 
     override fun onStop() {
 
     }
 
-    fun getCurrent(channel: Int): Double {
-        return pdp.getCurrent(channel)
+    fun switchCamera(camera: Camera) {
+        when (camera) {
+            Camera.INTAKE_CAMERA -> {
+                server.source = intakeCamera
+                currentSource = Camera.INTAKE_CAMERA
+            }
+            Camera.ELEVATOR_CAMERA -> {
+                server.source = elevatorCamera
+                currentSource = Camera.ELEVATOR_CAMERA
+            }
+        }
     }
 
     companion object {
-        val instance = BrownoutDefender()
+        val instance = CameraSwitcher()
     }
 }

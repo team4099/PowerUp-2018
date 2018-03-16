@@ -4,6 +4,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode
 import com.ctre.phoenix.motorcontrol.FeedbackDevice
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import org.usfirst.frc.team4099.lib.util.CANMotorControllerFactory
+import org.usfirst.frc.team4099.lib.util.Utils
+import org.usfirst.frc.team4099.lib.util.conversions.ElevatorConversion
 import org.usfirst.frc.team4099.robot.Constants
 import org.usfirst.frc.team4099.robot.loops.Loop
 
@@ -34,14 +36,37 @@ class Elevator private constructor(): Subsystem {
         talon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0)
         talon.configNominalOutputForward(0.0, 0)
         talon.configNominalOutputReverse(0.0, 0)
-        talon.configPeakOutputReverse(-1.0, 0)
+        talon.configPeakOutputReverse(0.0, 0)
         talon.configPeakOutputForward(1.0, 0)
-        talon.config_kP(0, Constants.Gains.ELEVATOR_KP, 0)
-        talon.config_kI(0, Constants.Gains.ELEVATOR_KI, 0)
-        talon.config_kD(0, Constants.Gains.ELEVATOR_KD, 0)
-        talon.config_kF(0, Constants.Gains.ELEVATOR_KF, 0)
+        talon.config_kP(0, Constants.Gains.ELEVATOR_UP_KP, 0)
+        talon.config_kI(0, Constants.Gains.ELEVATOR_UP_KI, 0)
+        talon.config_kD(0, Constants.Gains.ELEVATOR_UP_KD, 0)
+        talon.config_kF(0, Constants.Gains.ELEVATOR_UP_KF, 0)
+
+        talon.config_kP(1, Constants.Gains.ELEVATOR_DOWN_KP, 0)
+        talon.config_kI(1, Constants.Gains.ELEVATOR_DOWN_KI, 0)
+        talon.config_kD(1, Constants.Gains.ELEVATOR_DOWN_KD, 0)
+        talon.config_kF(1, Constants.Gains.ELEVATOR_DOWN_KF, 0)
+
+
         talon.configMotionCruiseVelocity(0, 0)
         talon.configMotionAcceleration(0, 0)
+
+        talon.configForwardSoftLimitEnable(true, 0)
+        talon.configForwardSoftLimitThreshold(36000, 0)
+        talon.configReverseSoftLimitEnable(true, 0)
+        talon.configReverseSoftLimitThreshold(0, 0)
+        talon.overrideSoftLimitsEnable(true)
+
+        SmartDashboard.putNumber("elevator/pidPDown", Constants.Gains.ELEVATOR_DOWN_KP)
+        SmartDashboard.putNumber("elevator/pidIDown", Constants.Gains.ELEVATOR_DOWN_KI)
+        SmartDashboard.putNumber("elevator/pidDDown", Constants.Gains.ELEVATOR_DOWN_KD)
+        SmartDashboard.putNumber("elevator/pidFDown", Constants.Gains.ELEVATOR_DOWN_KF)
+
+        SmartDashboard.putNumber("elevator/pidPUP", Constants.Gains.ELEVATOR_UP_KP)
+        SmartDashboard.putNumber("elevator/pidIUP", Constants.Gains.ELEVATOR_UP_KI)
+        SmartDashboard.putNumber("elevator/pidDUP", Constants.Gains.ELEVATOR_UP_KD)
+        SmartDashboard.putNumber("elevator/pidFUP", Constants.Gains.ELEVATOR_UP_KF)
     }
 
     fun setOpenLoop(power: Double) {
@@ -56,21 +81,48 @@ class Elevator private constructor(): Subsystem {
 
 
     fun setElevatorVelocity(inchesPerSecond: Double) {
+        if ((inchesPerSecond <= 0  || Utils.around(inchesPerSecond, 0.0, .1)) && observedElevatorPosition < 2.5) {
+            setOpenLoop(0.0)
+            return
+        }
         elevatorState = ElevatorState.VELOCITY_CONTROL
-        talon.set(ControlMode.Velocity, inchesPerSecond)
+        if(inchesPerSecond >= 0) {
+            talon.selectProfileSlot(0, 0)
+        } else {
+            talon.selectProfileSlot(1, 0)
+        }
+        talon.set(ControlMode.Velocity, ElevatorConversion.inchesPerSecondtoNativeSpeed(inchesPerSecond))
     }
 
 
     override fun outputToSmartDashboard() {
-        SmartDashboard.putNumber("elevatorPower", elevatorPower)
+        SmartDashboard.putNumber("elevator/elevatorVoltage", talon.motorOutputVoltage)
+        SmartDashboard.putNumber("elevator/elevatorVelocity", talon.sensorCollection.quadratureVelocity.toDouble())
+        SmartDashboard.putNumber("elevator/elevatorHeight", observedElevatorPosition)
+        SmartDashboard.putNumber("elevator/closedLoopError", talon.getClosedLoopError(0).toDouble())
+        SmartDashboard.putNumber("elevator/actualMeasuredHeight", talon.sensorCollection.quadraturePosition.toDouble())
+
+
+        talon.config_kP(1, SmartDashboard.getNumber("elevator/pidPDown", Constants.Gains.ELEVATOR_DOWN_KP), 0)
+        talon.config_kI(1, SmartDashboard.getNumber("elevator/pidIDown", Constants.Gains.ELEVATOR_DOWN_KI), 0)
+        talon.config_kD(1, SmartDashboard.getNumber("elevator/pidDDown", Constants.Gains.ELEVATOR_DOWN_KD), 0)
+        talon.config_kF(1, SmartDashboard.getNumber("elevator/pidFDown", Constants.Gains.ELEVATOR_DOWN_KF), 0)
+
+
+        talon.config_kP(0, SmartDashboard.getNumber("elevator/pidPUP", Constants.Gains.ELEVATOR_UP_KP), 0)
+        talon.config_kI(0, SmartDashboard.getNumber("elevator/pidIUP", Constants.Gains.ELEVATOR_UP_KI), 0)
+        talon.config_kD(0, SmartDashboard.getNumber("elevator/pidDUP", Constants.Gains.ELEVATOR_UP_KD), 0)
+        talon.config_kF(0, SmartDashboard.getNumber("elevator/pidFUP", Constants.Gains.ELEVATOR_UP_KF), 0)
+
     }
 
     private fun setElevatorPosition(position: ElevatorState) {
         var target = position.targetPos
         if (target == Double.NaN) {
             target = observedElevatorPosition
+        } else {
+            observedElevatorPosition = target
         }
-        observedElevatorPosition = target
         talon.set(ControlMode.MotionMagic, ElevatorConversion.inchesToPulses(target).toDouble())
     }
 
@@ -81,8 +133,8 @@ class Elevator private constructor(): Subsystem {
 
         override fun onLoop() {
             synchronized(this@Elevator) {
-                observedElevatorVelocity = ElevatorConversion.nativeSpeedToInchesPerSecond(talon.sensorCollection.quadratureVelocity)
-                observedElevatorPosition = ElevatorConversion.pulsesToInches(talon.sensorCollection.quadraturePosition)
+                observedElevatorVelocity = ElevatorConversion.nativeSpeedToInchesPerSecond(talon.sensorCollection.quadratureVelocity.toDouble())
+                observedElevatorPosition = ElevatorConversion.pulsesToInches(talon.sensorCollection.quadraturePosition.toDouble())
                 elevatorPower = talon.motorOutputPercent
 
                 when (elevatorState){

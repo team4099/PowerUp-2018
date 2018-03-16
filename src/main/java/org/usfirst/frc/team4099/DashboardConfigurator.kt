@@ -38,7 +38,10 @@ object DashboardConfigurator {
 
     fun initDashboard() {
         // Give alliance color
-        SmartDashboard.putString(Constants.Dashboard.ALLIANCE_COLOR_KEY, DriverStation.getInstance().alliance.name)
+        var color = ""
+        while (color == "")
+            color = DriverStation.getInstance().alliance.name
+        SmartDashboard.putString(Constants.Dashboard.ALLIANCE_COLOR_KEY, color)
 
         // Set up autonomous selector
         var autoModesString = "[ "
@@ -77,6 +80,7 @@ object DashboardConfigurator {
         var allianceOwnership = ""
         // TODO: Check if this ever hangs
         while(allianceOwnership == "") {
+            println("Waiting for alliance config...")
             allianceOwnership = DriverStation.getInstance().gameSpecificMessage
         }
 

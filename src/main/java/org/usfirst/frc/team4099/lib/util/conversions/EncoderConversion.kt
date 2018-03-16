@@ -1,8 +1,8 @@
-package org.usfirst.frc.team4099.robot.subsystems
+package org.usfirst.frc.team4099.lib.util.conversions
 
 interface EncoderConversion {
-    fun inchesToPulses(radians: Double): Int
-    fun pulsesToInches(pulses: Int): Double
-    fun inchesPerSecondtoNativeSpeed(ips: Double): Int
-    fun nativeSpeedToInchesPerSecond(nativeSpeed: Int): Double
+    fun inchesToPulses(radians: Double): Double
+    fun pulsesToInches(pulses: Double): Double
+    fun inchesPerSecondtoNativeSpeed(ips: Double): Double
+    fun nativeSpeedToInchesPerSecond(nativeSpeed: Double): Double
 }
