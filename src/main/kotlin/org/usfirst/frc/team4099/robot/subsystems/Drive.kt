@@ -24,7 +24,7 @@ class Drive private constructor() : Subsystem {
     private val rightSlave1SRX: TalonSRX = CANMotorControllerFactory.createPermanentSlaveTalon(Constants.Drive.RIGHT_SLAVE_1_ID, Constants.Drive.RIGHT_MASTER_ID)
     private val rightSlave2SPX: VictorSPX = CANMotorControllerFactory.createPermanentSlaveVictor(Constants.Drive.RIGHT_SLAVE_2_ID, rightMasterSRX)
 
-    private val pneumaticShifter: DoubleSolenoid = DoubleSolenoid(Constants.Drive.SHIFTER_FORWARD_ID,Constants.Drive.SHIFTER_REVERSE_ID)
+    private val pneumaticShifter: DoubleSolenoid = DoubleSolenoid(Constants.Drive.SHIFTER_FORWARD_ID, Constants.Drive.SHIFTER_REVERSE_ID)
 
     private val ahrs: AHRS
 

@@ -96,7 +96,7 @@ class Rotation2D : Interpolable<Rotation2D> {
             return Rotation2D(other)
         }
         val angle_diff = inverse().rotateBy(other).radians
-        return this.rotateBy(Rotation2D.fromRadians(angle_diff * x))
+        return this.rotateBy(fromRadians(angle_diff * x))
     }
 
     override fun toString(): String {
@@ -107,8 +107,8 @@ class Rotation2D : Interpolable<Rotation2D> {
     companion object {
         protected val kEpsilon = 1E-9
 
-        var FORWARDS = Rotation2D.fromDegrees(0.0)
-        var BACKWARDS = Rotation2D.fromDegrees(179.9)
+        var FORWARDS = fromDegrees(0.0)
+        var BACKWARDS = fromDegrees(179.9)
 
         fun fromRadians(angle_radians: Double): Rotation2D {
             return Rotation2D(Math.cos(angle_radians), Math.sin(angle_radians), false)

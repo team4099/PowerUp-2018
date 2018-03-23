@@ -74,8 +74,8 @@ class Intake private constructor() : Subsystem {
         override fun onLoop() {
             synchronized(this@Intake) {
                 if (intakeState == IntakeState.IN && (
-                        BrownoutDefender.instance.getCurrent(11) > 10
-                    || BrownoutDefender.instance.getCurrent(7) > 10)) {
+                                BrownoutDefender.instance.getCurrent(11) > 10
+                                || BrownoutDefender.instance.getCurrent(7) > 10)) {
                     intakeState = IntakeState.SLOW
                 }
                 when (intakeState) {
