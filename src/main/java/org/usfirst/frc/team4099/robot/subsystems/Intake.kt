@@ -38,6 +38,7 @@ class Intake private constructor() : Subsystem {
     override fun outputToSmartDashboard() {
         SmartDashboard.putNumber("intake/intakePower", intakePower)
         SmartDashboard.putBoolean("intake/isOpen", open)
+        SmartDashboard.putNumber("intake/current", BrownoutDefender.instance.getCurrent(7))
     }
 
     /**
@@ -63,8 +64,8 @@ class Intake private constructor() : Subsystem {
      */
     val loop: Loop = object : Loop {
         override fun onStart() {
-            open = true
-            intakeState = IntakeState.IN
+            open = false
+            intakeState = IntakeState.STOP
         }
 
         /**
@@ -73,15 +74,15 @@ class Intake private constructor() : Subsystem {
         override fun onLoop() {
             synchronized(this@Intake) {
                 if (intakeState == IntakeState.IN && (
-                        BrownoutDefender.instance.getCurrent(11) > 30
-                    || BrownoutDefender.instance.getCurrent(7) > 30)) {
+                        BrownoutDefender.instance.getCurrent(11) > 10
+                    || BrownoutDefender.instance.getCurrent(7) > 10)) {
                     intakeState = IntakeState.SLOW
                 }
                 when (intakeState) {
                     IntakeState.IN -> setIntakePower(-0.7)
                     IntakeState.STOP -> setIntakePower(0.0)
-                    IntakeState.OUT -> setIntakePower(0.7)
-                    IntakeState.SLOW -> setIntakePower(-0.3)
+                    IntakeState.OUT -> setIntakePower(1.0)
+                    IntakeState.SLOW -> setIntakePower(-0.5)
                 }
             }
         }

@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4099.auto.actions
 
 import edu.wpi.first.wpilibj.Timer
+import org.usfirst.frc.team4099.lib.drive.DriveSignal
 import org.usfirst.frc.team4099.lib.util.Utils
 import org.usfirst.frc.team4099.robot.subsystems.Drive
 
@@ -11,11 +12,13 @@ class ForwardDistanceAction(initInchesToMove: Double) : Action {
     private val mDrive: Drive = Drive.instance
     private val inchesToMove: Double = Math.abs(initInchesToMove)
     private var startDist: Double = 0.toDouble()
+    private var otherStart: Double = 0.0
     private val direction: Int
     private var power: Double = 0.toDouble()
     private var startAngle: Double = 0.toDouble()
     private var resetGyro: Boolean = false
     private var done: Boolean = false
+    private var startTime = 0.0
 
     constructor(inchesToMove: Double, slowMode: Boolean, resetGyro: Boolean) : this(inchesToMove) {
         if (slowMode) {
@@ -25,12 +28,12 @@ class ForwardDistanceAction(initInchesToMove: Double) : Action {
     }
 
     init {
-        direction = this.inchesToMove.toInt() / this.inchesToMove.toInt()
+        direction = inchesToMove.toInt() / initInchesToMove.toInt()
         this.power = .5
     }
 
     override fun isFinished(): Boolean {
-        return mDrive.getRightDistanceInches() - startDist >= inchesToMove || done
+        return Math.abs(mDrive.getLeftDistanceInches()) - startDist >= inchesToMove || Math.abs(mDrive.getRightDistanceInches()) - otherStart >= inchesToMove || done || Timer.getFPGATimestamp() - startTime > 3
     }
 
     override fun update() {
@@ -42,13 +45,13 @@ class ForwardDistanceAction(initInchesToMove: Double) : Action {
             done = true
             return
         }
-        mDrive.arcadeDrive(power * direction, correctionAngle * 0.07 * direction.toDouble())
+        mDrive.arcadeDrive(power * direction, correctionAngle * 0.01 * direction.toDouble())
         //        System.out.println("yaw: " + yaw);
         println("correctionAngle: " + correctionAngle)
     }
 
     override fun done() {
-        //        mDrive.finishForward()
+        mDrive.setOpenLoop(DriveSignal.NEUTRAL)
         println("------- END FORWARD -------")
     }
 
@@ -59,9 +62,11 @@ class ForwardDistanceAction(initInchesToMove: Double) : Action {
             }
             Timer.delay(1.0)
         }
+        startTime = Timer.getFPGATimestamp()
         startAngle = mDrive.getAHRS()!!.yaw.toDouble()
         println("------- NEW START AUTONOMOUS RUN -------")
         println("Starting angle: " + startAngle)
-        startDist = mDrive.getRightDistanceInches()
+        startDist = mDrive.getLeftDistanceInches()
+        otherStart = mDrive.getRightDistanceInches()
     }
 }

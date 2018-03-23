@@ -117,10 +117,10 @@ class Constants {
     }
 
     object Intake {
-        val LEFT_INTAKE_TALON_ID = 0
-        val RIGHT_INTAKE_TALON_ID = 1
-        val SHIFTER_FORWARD_ID = 2
-        val SHIFTER_REVERSE_ID = 3
+        val LEFT_INTAKE_TALON_ID = 8
+        val RIGHT_INTAKE_TALON_ID = 9
+        val SHIFTER_FORWARD_ID = 7
+        val SHIFTER_REVERSE_ID = 6
     }
 
     object Elevator {

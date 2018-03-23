@@ -166,7 +166,7 @@ class Drive private constructor() : Subsystem {
         SmartDashboard.putNumber("leftTalon", leftMasterSRX.motorOutputVoltage)
         SmartDashboard.putNumber("rightTalon", rightMasterSRX.motorOutputVoltage)
         SmartDashboard.putNumber("leftEncoderInches", getLeftDistanceInches())
-        SmartDashboard.putNumber("rightEncoderInches", getRightDistanceInches())
+        SmartDashboard.putNumber("rightEncoderInches", rightMasterSRX.sensorCollection.quadraturePosition.toDouble())
     }
 
     fun startLiveWindowMode() {
@@ -364,8 +364,8 @@ class Drive private constructor() : Subsystem {
         }
     }
 
-    private fun pulsesToInches(rotations: Double): Double {
-        return rotations * 4
+    private fun pulsesToInches(pulses: Double): Double {
+        return pulses*12/2336
     }
 
     private fun rpmToInchesPerSecond(rpm: Double): Double {
@@ -381,11 +381,11 @@ class Drive private constructor() : Subsystem {
     }
 
     fun getLeftDistanceInches(): Double {
-        return pulsesToInches(leftMasterSRX.getSelectedSensorPosition(0).toDouble())
+        return pulsesToInches(leftMasterSRX.sensorCollection.quadraturePosition.toDouble())
     }
 
     fun getRightDistanceInches(): Double {
-        return pulsesToInches(rightMasterSRX.getSelectedSensorPosition(0).toDouble())
+        return pulsesToInches(rightMasterSRX.sensorCollection.quadraturePosition.toDouble())
     }
 
     fun getLeftVelocityInchesPerSec(): Double {

@@ -21,7 +21,7 @@ import org.usfirst.frc.team4099.robot.Constants.Autonomous.SELECTED_AUTO_START_P
 object DashboardConfigurator {
     private val defaultDelay = 0.0
     private val defaultStart = StartingPosition.CENTER
-    private val defaultMode = AutoModeCreator("Line Cross", { startingPos, startingConfig, delay -> LineCrossMode(startingPos, startingConfig, delay) })
+    private val defaultMode = AutoModeCreator("Switch", { startingPos, startingConfig, delay -> SingleCubeSwitch(startingPos, startingConfig, delay) })
 
     enum class StartingPosition(val dashboardName: String)  {
         LEFT("LEFT"),
@@ -31,8 +31,8 @@ object DashboardConfigurator {
     private val allModes = arrayOf(
             defaultMode,
             AutoModeCreator("Stand Still", { _, _ ,_ -> StandStillMode() }),
-            AutoModeCreator("Single Cube Switch", { startingPos, startingConfig, delay -> SingleCubeSwitch(startingPos, startingConfig, delay) }),
-            AutoModeCreator("Single Cube Scale", { startingPos, startingConfig, delay -> SingleCubeScale(startingPos, startingConfig, delay) })
+            AutoModeCreator("Line Cross", { startingPos, startingConfig, delay -> LineCrossMode(startingPos, startingConfig, delay) }),
+            AutoModeCreator("Scale", { startingPos, startingConfig, delay -> SingleCubeScale(startingPos, startingConfig, delay) })
     )
 
 
@@ -66,14 +66,30 @@ object DashboardConfigurator {
     }
 
     fun getSelectedAutoMode(allianceOwnership: String): AutoModeBase {
+
         val selectedModeName = SmartDashboard.getString(SELECTED_AUTO_MODE_DASHBOARD_KEY, defaultMode.dashboardName)
         val selectedStartingPosition = SmartDashboard.getString(SELECTED_AUTO_START_POS_KEY, defaultStart.dashboardName)
         val selectedStartingDelay = SmartDashboard.getNumber(SELECTED_AUTO_START_DELAY_KEY, defaultDelay)
 
-        val selectedStartEnum = StartingPosition.values().filter { it.dashboardName == selectedStartingPosition }[0]
-        allModes.filter { it.dashboardName == selectedModeName }.map { return it.creator(selectedStartEnum, allianceOwnership, selectedStartingDelay) }
+        var selectedStartEnum = StartingPosition.RIGHT
+
+        for (start in StartingPosition.values()) {
+            if (start.dashboardName == selectedStartingPosition) {
+                selectedStartEnum = start
+                break
+            }
+        }
+
+        for (mode in allModes) {
+            if (mode.dashboardName == selectedModeName) {
+                return mode.creator(selectedStartEnum, allianceOwnership, selectedStartingDelay)
+            }
+        }
+
+        println("$selectedModeName $selectedStartingPosition")
+
         DriverStation.reportError("Failed to select a proper autonomous: $selectedModeName", false)
-        return defaultMode.creator(defaultStart, allianceOwnership, defaultDelay)
+        return defaultMode.creator(defaultStart, allianceOwnership, selectedStartingDelay)
     }
 
     fun updateAllianceOwnership(): String {

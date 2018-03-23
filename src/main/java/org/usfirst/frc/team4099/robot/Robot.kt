@@ -1,16 +1,13 @@
 package org.usfirst.frc.team4099.robot
 
-import edu.wpi.first.wpilibj.CameraServer
 import edu.wpi.first.wpilibj.IterativeRobot
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import org.usfirst.frc.team4099.DashboardConfigurator
 import org.usfirst.frc.team4099.auto.AutoModeExecuter
 import org.usfirst.frc.team4099.lib.util.CrashTracker
 import org.usfirst.frc.team4099.lib.util.LatchedBoolean
 import org.usfirst.frc.team4099.lib.util.ReflectingCSVWriter
 import org.usfirst.frc.team4099.lib.util.SignalTable
-import org.usfirst.frc.team4099.lib.util.conversions.ElevatorConversion
 import org.usfirst.frc.team4099.robot.drive.CheesyDriveHelper
 import org.usfirst.frc.team4099.robot.drive.TankDriveHelper
 import org.usfirst.frc.team4099.robot.loops.BrownoutDefender
@@ -51,16 +48,18 @@ class Robot : IterativeRobot() {
 
     override fun robotInit() {
         try {
-            CameraServer.getInstance().startAutomaticCapture()
+//            CameraServer.getInstance().startAutomaticCapture()
             CrashTracker.logRobotInit()
 
             DashboardConfigurator.initDashboard()
 
             //TODO: add the robot state estimator here
             enabledLooper.register(drive.loop)
-            enabledLooper.register( intake.loop)
+            enabledLooper.register(intake.loop)
             enabledLooper.register(elevator.loop)
             enabledLooper.register(wrist.loop)
+
+            elevator.zeroSensors()
 
 //            enabledLooper.register(CameraSwitcher.instance)
             enabledLooper.register(BrownoutDefender.instance)
@@ -166,42 +165,43 @@ class Robot : IterativeRobot() {
             val openIntake = controls.openIntake
             val closeIntake = controls.closeIntake
 
-            SmartDashboard.putBoolean("isQuickTurn", isQuickTurn)
-            SmartDashboard.putNumber("voltage", VoltageEstimator.instance.averageVoltage)
+//            SmartDashboard.putBoolean("isQuickTurn", isQuickTurn)
+//            SmartDashboard.putNumber("voltage", VoltageEstimator.instance.averageVoltage)
 
-//            if (drive.highGear && shiftToLowGear) {
-//                drive.highGear = false
-//                println("Shifting to low gear")
-//            } else if (!drive.highGear && shiftToHighGear) {
-//                drive.highGear = true
-//                println("Shifting to high gear")
-//            }
-//
-//            drive.setOpenLoop(cheesyDriveHelper.curvatureDrive(throttle, turn, isQuickTurn))
-
-//            if (intake.open && closeIntake) {
-//                intake.open = false
-//                println("Closing intake")
-//            } else if (!intake.open && openIntake) {
-//                intake.open = true
-//                println("Opening intake")
-//            }
-//
-//            if (reverseIntake) {
-//                intake.intakeState = Intake.IntakeState.OUT
-//            } else if (intake.intakeState != Intake.IntakeState.SLOW) {
-//                intake.intakeState = Intake.IntakeState.IN
-//            }
-////            intake.intakeState = Intake.IntakeState.STOP
-
-
-            if (controls.test)
-                elevator.setOpenLoop(controls.elevatorPower)
-            else {
-                val target = controls.elevatorPower * 1800
-                elevator.setElevatorVelocity(ElevatorConversion.nativeSpeedToInchesPerSecond(target))
-                SmartDashboard.putNumber("elevator/closedLoopTarget", target)
+            if (drive.highGear && shiftToLowGear) {
+                drive.highGear = false
+                println("Shifting to low gear")
+            } else if (!drive.highGear && shiftToHighGear) {
+                drive.highGear = true
+                println("Shifting to high gear")
             }
+
+            drive.setOpenLoop(cheesyDriveHelper.curvatureDrive(throttle, turn, isQuickTurn))
+
+            if (intake.open && closeIntake) {
+                intake.open = false
+                println("Closing intake")
+            } else if (!intake.open && openIntake) {
+                intake.open = true
+                println("Opening intake")
+            }
+
+            if (reverseIntake) {
+                intake.intakeState = Intake.IntakeState.OUT
+            } else if (controls.runIntake) {
+                intake.intakeState = Intake.IntakeState.IN
+            } else if (intake.intakeState != Intake.IntakeState.SLOW) {
+                intake.intakeState = Intake.IntakeState.STOP
+            }
+
+//            elevator.setOpenLoop(controls.elevatorPower)
+
+//            if (controls.test)
+//            else {
+            val target = controls.elevatorPower * 1800
+            elevator.setElevatorVelocity(target)
+//            SmartDashboard.putNumber("elevator/closedLoopTarget", target)
+////            }
             wrist.setOpenLoop(controls.wristPower)
 
 //            intake.intakeState = if (reverseIntake) Intake.IntakeState.OUT else Intake.IntakeState.IN

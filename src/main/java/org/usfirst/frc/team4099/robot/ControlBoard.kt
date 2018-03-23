@@ -2,11 +2,10 @@ package org.usfirst.frc.team4099.robot
 
 import org.usfirst.frc.team4099.lib.joystick.Gamepad
 import org.usfirst.frc.team4099.lib.joystick.JoystickUtils
-import org.usfirst.frc.team4099.lib.joystick.LogitechF310Gamepad
 import org.usfirst.frc.team4099.lib.joystick.XboxOneGamepad
 
 class ControlBoard private constructor() {
-    private val driver: Gamepad = LogitechF310Gamepad(Constants.Joysticks.DRIVER_PORT)
+    private val driver: Gamepad = XboxOneGamepad(Constants.Joysticks.DRIVER_PORT)
     private val operator: Gamepad = XboxOneGamepad(Constants.Joysticks.SHOTGUN_PORT)
 
     val throttle: Double
@@ -37,8 +36,11 @@ class ControlBoard private constructor() {
     val reverseIntake: Boolean
         get() = operator.bButton
 
-    val test: Boolean
+    val runIntake: Boolean
         get() = operator.aButton
+
+    val test: Boolean
+        get() = false
 
 //    val elevatorTop: Boolean
 //        get() = operator.dPadUp

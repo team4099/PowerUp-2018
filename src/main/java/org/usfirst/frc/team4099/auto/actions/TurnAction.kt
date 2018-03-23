@@ -11,8 +11,8 @@ import org.usfirst.frc.team4099.robot.subsystems.Drive
 class TurnAction(angleToTurn: Double) : Action {
     private val mDrive: Drive = Drive.instance
     private val angleToTurn: Double = Math.abs(angleToTurn)
-    private val direction: Int = angleToTurn.toInt() / angleToTurn.toInt()
-    private var power: Double = 0.5
+    private val direction: Int = Math.abs(angleToTurn.toInt()) / angleToTurn.toInt()
+    private var power: Double = 0.3
     private var startAngle: Double = 0.toDouble()
     private var resetGyro: Boolean = false
     private var done: Boolean = false
@@ -21,7 +21,7 @@ class TurnAction(angleToTurn: Double) : Action {
 
     constructor(angleToTurn: Double, slowMode: Boolean, resetGyro: Boolean) : this(angleToTurn) {
         if (slowMode) {
-            this.power = .35
+            this.power = .2
         }
         this.resetGyro = resetGyro
     }
