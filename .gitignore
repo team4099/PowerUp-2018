@@ -17,6 +17,8 @@ hs_err_pid*
 .idea/**/workspace.xml
 .idea/**/tasks.xml
 .idea/dictionaries
+.idea/*
+.idea
 
 # Sensitive or high-churn files:
 .idea/**/dataSources/
@@ -76,3 +78,5 @@ PowerUp-2018.ipr
 
 # Keeps on changing the Project SDK, really annoying
 .idea/misc.xml
+dist
+dist/FRCUserProgram.jar
