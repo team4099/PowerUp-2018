@@ -39,19 +39,23 @@ class ControlBoard private constructor() {
     val runIntake: Boolean
         get() = operator.aButton
 
-    val test: Boolean
-        get() = false
-
-//    val elevatorTop: Boolean
+    //    val elevatorTop: Boolean
 //        get() = operator.dPadUp
 //
 //    val elevatorBottom: Boolean
-//        get() = operator.dPadDown
-
 //    val wristTop: Boolean
 //        get() = driver.dPadUp
 //
 //    val wristBottom: Boolean
+
+    val deployForks: Boolean
+        get() = operator.rightShoulderButton && operator.leftShoulderButton
+
+    val test: Boolean
+        get() = false
+
+//        get() = operator.dPadDown
+
 //        get() = driver.dPadDown
 
     val elevatorPower: Double

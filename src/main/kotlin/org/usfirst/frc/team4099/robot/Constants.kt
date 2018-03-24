@@ -136,4 +136,9 @@ class Constants {
         val WRIST_KF = 0.0000
     }
 
+    object Forks {
+        val LATCH_FORWARD_ID = 2
+        val LATCH_REVERSE_ID = 3
+    }
+
 }

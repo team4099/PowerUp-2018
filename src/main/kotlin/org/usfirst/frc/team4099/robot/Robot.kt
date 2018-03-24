@@ -13,10 +13,7 @@ import org.usfirst.frc.team4099.robot.drive.TankDriveHelper
 import org.usfirst.frc.team4099.robot.loops.BrownoutDefender
 import org.usfirst.frc.team4099.robot.loops.Looper
 import org.usfirst.frc.team4099.robot.loops.VoltageEstimator
-import org.usfirst.frc.team4099.robot.subsystems.Drive
-import org.usfirst.frc.team4099.robot.subsystems.Elevator
-import org.usfirst.frc.team4099.robot.subsystems.Intake
-import org.usfirst.frc.team4099.robot.subsystems.Wrist
+import org.usfirst.frc.team4099.robot.subsystems.*
 
 class Robot : IterativeRobot() {
 
@@ -27,6 +24,7 @@ class Robot : IterativeRobot() {
     private val intake = Intake.instance
     private val elevator = Elevator.instance
     private val wrist = Wrist.instance
+    private val forks = Forks.instance
 
     private val controls = ControlBoard.instance
     private val disabledLooper = Looper("disabledLooper")
@@ -107,6 +105,7 @@ class Robot : IterativeRobot() {
 
             val allianceOwnership = DashboardConfigurator.updateAllianceOwnership()
 
+            forks.latched = true
             autoModeExecuter = AutoModeExecuter()
             autoModeExecuter?.setAutoMode(DashboardConfigurator.getSelectedAutoMode(allianceOwnership))
             autoModeExecuter?.start()
@@ -193,6 +192,8 @@ class Robot : IterativeRobot() {
             } else if (intake.intakeState != Intake.IntakeState.SLOW) {
                 intake.intakeState = Intake.IntakeState.STOP
             }
+
+            forks.latched = !controls.deployForks
 
 //            elevator.setOpenLoop(controls.elevatorPower)
 
