@@ -42,7 +42,10 @@ class ControlBoard private constructor() {
     val runIntake: Boolean
         get() = operator.aButton
 
-    //    val elevatorTop: Boolean
+    val test: Boolean
+        get() = operator.yButton
+
+//    val elevatorTop: Boolean
 //        get() = operator.dPadUp
 //
 //    val elevatorBottom: Boolean
@@ -60,9 +63,6 @@ class ControlBoard private constructor() {
 
     val runClimber: Boolean
         get() = operator.xButton && !unClimber
-
-    val test: Boolean
-        get() = false
 
 //        get() = operator.dPadDown
 
