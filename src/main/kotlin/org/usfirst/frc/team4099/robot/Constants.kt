@@ -130,10 +130,15 @@ class Constants {
     object Wrist {
         val WRIST_TALON_ID = 1
 
-        val WRIST_KP = 0.0000
-        val WRIST_KI = 0.0000
-        val WRIST_KD = 0.0000
-        val WRIST_KF = 0.0000
+        val WRIST_UP_KP = 1.0525
+        val WRIST_UP_KI = 0.0000
+        val WRIST_UP_KD = 0.000
+        val WRIST_UP_KF = 1.5547
+
+        val WRIST_DOWN_KP = 3.5460
+        val WRIST_DOWN_KI = 0.0456
+        val WRIST_DOWN_KD = 0.0000
+        val WRIST_DOWN_KF = 1.1440
     }
 
 }

@@ -40,7 +40,7 @@ class ControlBoard private constructor() {
         get() = operator.aButton
 
     val test: Boolean
-        get() = false
+        get() = operator.yButton
 
 //    val elevatorTop: Boolean
 //        get() = operator.dPadUp

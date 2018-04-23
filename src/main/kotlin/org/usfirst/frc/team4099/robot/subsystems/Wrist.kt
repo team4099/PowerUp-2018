@@ -4,7 +4,6 @@ import com.ctre.phoenix.motorcontrol.ControlMode
 import com.ctre.phoenix.motorcontrol.FeedbackDevice
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import org.usfirst.frc.team4099.lib.util.CANMotorControllerFactory
-import org.usfirst.frc.team4099.lib.util.Utils
 import org.usfirst.frc.team4099.lib.util.conversions.WristConversion
 import org.usfirst.frc.team4099.robot.Constants
 import org.usfirst.frc.team4099.robot.loops.Loop
@@ -50,10 +49,17 @@ class Wrist private constructor(): Subsystem {
         talon.configNominalOutputReverse(0.0, 0)
         talon.configPeakOutputReverse(-1.0, 0)
         talon.configPeakOutputForward(1.0, 0)
-        talon.config_kP(0, Constants.Gains.WRIST_KP, 0)
-        talon.config_kI(0, Constants.Gains.WRIST_KI, 0)
-        talon.config_kD(0, Constants.Gains.WRIST_KD, 0)
-        talon.config_kF(0, Constants.Gains.WRIST_KF, 0)
+
+        talon.config_kP(0, Constants.Wrist.WRIST_UP_KP, 0)
+        talon.config_kI(0, Constants.Wrist.WRIST_UP_KI, 0)
+        talon.config_kD(0, Constants.Wrist.WRIST_UP_KD, 0)
+        talon.config_kF(0, Constants.Wrist.WRIST_UP_KF, 0)
+
+        talon.config_kP(1, Constants.Wrist.WRIST_DOWN_KP, 0)
+        talon.config_kI(1, Constants.Wrist.WRIST_DOWN_KI, 0)
+        talon.config_kD(1, Constants.Wrist.WRIST_DOWN_KD, 0)
+        talon.config_kF(1, Constants.Wrist.WRIST_DOWN_KF, 0)
+
         talon.configMotionCruiseVelocity(0, 0)
         talon.configMotionAcceleration(0, 0)
         talon.configForwardSoftLimitEnable(false, 0)
@@ -70,6 +76,7 @@ class Wrist private constructor(): Subsystem {
     override fun outputToSmartDashboard() {
         SmartDashboard.putNumber("wrist/wristAngle", wristAngle)
         SmartDashboard.putBoolean("wrist/wristUp", wristAngle > Math.PI / 4)
+        SmartDashboard.putNumber("wrist/wristSpeed", talon.sensorCollection.quadratureVelocity.toDouble())
     }
 
     @Synchronized override fun stop() {
@@ -96,20 +103,20 @@ class Wrist private constructor(): Subsystem {
         println("wrist speed: ${talon.sensorCollection.quadratureVelocity}")
     }
 
-    fun setElevatorVelocity(radiansPerSecond: Double) {
-        if ((radiansPerSecond <= 0 || Utils.around(radiansPerSecond, 0.0, .1)) && talon.sensorCollection.quadraturePosition < 2.5) {
-            setOpenLoop(0.0)
-            println("exiting at 0 power, $radiansPerSecond")
-            return
-        }
+    fun setWristVelocity(radiansPerSecond: Double) {
+//        if ((radiansPerSecond <= 0 || Utils.around(radiansPerSecond, 0.0, .1)) && talon.sensorCollection.quadraturePosition < 2.5) {
+//            setOpenLoop(0.0)
+//            println("wrist exiting at 0 power, $radiansPerSecond")
+//            return
+//        }
         wristState = WristState.VELOCITY_CONTROL
         if(radiansPerSecond >= 0) {
-            talon.selectProfileSlot(0, 0)
-        } else {
             talon.selectProfileSlot(1, 0)
+        } else {
+            talon.selectProfileSlot(0, 0)
         }
         talon.set(ControlMode.Velocity, radiansPerSecond)
-        println("nativeVel: $radiansPerSecond, observedVel: ${talon.sensorCollection.quadratureVelocity}")
+        println("nativeVel: $radiansPerSecond, observedVel: ${talon.sensorCollection.quadratureVelocity}, error: ${talon.sensorCollection.quadratureVelocity - radiansPerSecond}")
 
     }
 

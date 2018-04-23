@@ -202,7 +202,12 @@ class Robot : IterativeRobot() {
             elevator.setElevatorVelocity(target)
 //            SmartDashboard.putNumber("elevator/closedLoopTarget", target)
 ////            }
-            wrist.setOpenLoop(controls.wristPower)
+            if(controls.test) {
+                wrist.setOpenLoop(controls.wristPower)
+            } else {
+                wrist.setWristVelocity(controls.wristPower * 650)
+            }
+
 
 //            intake.intakeState = if (reverseIntake) Intake.IntakeState.OUT else Intake.IntakeState.IN
 
