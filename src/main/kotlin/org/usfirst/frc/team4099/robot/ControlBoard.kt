@@ -33,8 +33,11 @@ class ControlBoard private constructor() {
     val quickTurn: Boolean
         get() = Math.abs(JoystickUtils.deadbandNoShape(throttle, 0.02)) < 0.01
 
-    val reverseIntake: Boolean
+    val reverseIntakeSlow: Boolean
         get() = operator.bButton
+
+    val reverseIntakeFast: Boolean
+        get() = operator.yButton
 
     val runIntake: Boolean
         get() = operator.aButton
@@ -50,6 +53,13 @@ class ControlBoard private constructor() {
 
     val deployForks: Boolean
         get() = operator.rightShoulderButton && operator.leftShoulderButton
+
+    val unClimber: Boolean
+        get() = operator.xButton && operator.rightJoystickButton && operator.leftShoulderButton
+                && operator.leftJoystickButton
+
+    val runClimber: Boolean
+        get() = operator.xButton && !unClimber
 
     val test: Boolean
         get() = false

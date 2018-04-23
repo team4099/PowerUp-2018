@@ -32,7 +32,7 @@ class Intake private constructor() : Subsystem {
         }
 
     enum class IntakeState {
-        IN, STOP, OUT, SLOW
+        IN, STOP, SLOW_OUT, FAST_OUT, SLOW
     }
 
     override fun outputToSmartDashboard() {
@@ -81,7 +81,8 @@ class Intake private constructor() : Subsystem {
                 when (intakeState) {
                     IntakeState.IN -> setIntakePower(-0.7)
                     IntakeState.STOP -> setIntakePower(0.0)
-                    IntakeState.OUT -> setIntakePower(1.0)
+                    IntakeState.SLOW_OUT -> setIntakePower(0.5)
+                    IntakeState.FAST_OUT -> setIntakePower(1.0)
                     IntakeState.SLOW -> setIntakePower(-0.5)
                 }
             }

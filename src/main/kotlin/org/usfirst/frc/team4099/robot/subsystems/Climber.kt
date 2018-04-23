@@ -1,17 +1,20 @@
 package org.usfirst.frc.team4099.robot.subsystems
 
-import edu.wpi.first.wpilibj.DoubleSolenoid
+import com.ctre.phoenix.motorcontrol.ControlMode
+import edu.wpi.first.wpilibj.Talon
+import org.usfirst.frc.team4099.lib.util.CANMotorControllerFactory
 import org.usfirst.frc.team4099.robot.Constants
 import org.usfirst.frc.team4099.robot.loops.Loop
 
-class Forks private constructor(): Subsystem {
-    private val pneumaticLatch = DoubleSolenoid(Constants.Forks.LATCH_FORWARD_ID, Constants.Forks.LATCH_REVERSE_ID)
 
-    var latched = false
-        set(state) {
-            pneumaticLatch.set(if (state) DoubleSolenoid.Value.kForward else DoubleSolenoid.Value.kReverse)
-            field = state
-        }
+class Climber private constructor(): Subsystem {
+    enum class ClimberState {
+        CLIMBING, NOT_CLIMBING, UNCLIMBING
+    }
+
+    var climberState = ClimberState.NOT_CLIMBING
+
+    val talon = Talon(Constants.Climber.CLIMBER_TALON_ID)
 
     override fun outputToSmartDashboard() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -25,15 +28,17 @@ class Forks private constructor(): Subsystem {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-
     val loop: Loop = object : Loop {
         override fun onStart() {
-            latched = true
         }
 
         override fun onLoop() {
-            synchronized(this@Forks) {
-
+            synchronized(this@Climber) {
+                when(climberState) {
+                    ClimberState.CLIMBING -> talon.set(-1.0)
+                    ClimberState.NOT_CLIMBING -> talon.set(0.0)
+                    ClimberState.UNCLIMBING -> talon.set(1.0)
+                }
             }
         }
 
@@ -42,7 +47,7 @@ class Forks private constructor(): Subsystem {
     }
 
     companion object {
-        val instance = Forks()
+        val instance = Climber()
     }
 
 }

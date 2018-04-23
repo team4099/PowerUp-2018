@@ -25,6 +25,7 @@ class Robot : IterativeRobot() {
     private val elevator = Elevator.instance
     private val wrist = Wrist.instance
     private val forks = Forks.instance
+    private val climber = Climber.instance
 
     private val controls = ControlBoard.instance
     private val disabledLooper = Looper("disabledLooper")
@@ -56,6 +57,8 @@ class Robot : IterativeRobot() {
             enabledLooper.register(intake.loop)
             enabledLooper.register(elevator.loop)
             enabledLooper.register(wrist.loop)
+            enabledLooper.register(forks.loop)
+            enabledLooper.register(climber.loop)
 
             elevator.zeroSensors()
 
@@ -160,7 +163,8 @@ class Robot : IterativeRobot() {
             val isQuickTurn = controls.quickTurn
             val shiftToHighGear = controls.switchToHighGear
             val shiftToLowGear = controls.switchToLowGear
-            val reverseIntake = controls.reverseIntake
+            val reverseIntakeFast = controls.reverseIntakeFast
+            val reverseIntakeSlow = controls.reverseIntakeSlow
             val openIntake = controls.openIntake
             val closeIntake = controls.closeIntake
 
@@ -185,17 +189,31 @@ class Robot : IterativeRobot() {
                 println("Opening intake")
             }
 
-            if (reverseIntake) {
-                intake.intakeState = Intake.IntakeState.OUT
-            } else if (controls.runIntake) {
-                intake.intakeState = Intake.IntakeState.IN
-            } else if (intake.intakeState != Intake.IntakeState.SLOW) {
-                intake.intakeState = Intake.IntakeState.STOP
+            intake.intakeState = when {
+                reverseIntakeFast -> Intake.IntakeState.FAST_OUT
+                reverseIntakeSlow -> Intake.IntakeState.SLOW_OUT
+                controls.runIntake -> Intake.IntakeState.IN
+                intake.intakeState != Intake.IntakeState.SLOW -> Intake.IntakeState.STOP
+                else -> intake.intakeState
             }
 
-            forks.latched = !controls.deployForks
+            if (controls.deployForks) {
+                forks.latched = false
+            }
 
-//            elevator.setOpenLoop(controls.elevatorPower)
+//            elevator.s+etOpenLoop(controls.elevatorPower)
+
+//            if (controls.test)
+//            else {
+//            SmartDashboard.putNumber("elevator/closedLoopTarget", target)
+////            }
+//            val wristTarget = controls.wristPower * 1000
+//            wrist.setWristVelocity(wristTarget)
+
+//            intake.intakeState = if (reverseIntake) Intake.IntakeState.OUT else Intake.IntakeState.IN
+            // things such as is aligned?, etc
+
+//            elevator.s+etOpenLoop(controls.elevatorPower)
 
 //            if (controls.test)
 //            else {
@@ -203,7 +221,15 @@ class Robot : IterativeRobot() {
             elevator.setElevatorVelocity(target)
 //            SmartDashboard.putNumber("elevator/closedLoopTarget", target)
 ////            }
+//            val wristTarget = controls.wristPower * 1000
+//            wrist.setWristVelocity(wristTarget)
             wrist.setOpenLoop(controls.wristPower)
+
+            climber.climberState = when {
+                controls.runClimber -> Climber.ClimberState.CLIMBING
+                controls.unClimber -> Climber.ClimberState.UNCLIMBING
+                else -> Climber.ClimberState.NOT_CLIMBING
+            }
 
 //            intake.intakeState = if (reverseIntake) Intake.IntakeState.OUT else Intake.IntakeState.IN
 

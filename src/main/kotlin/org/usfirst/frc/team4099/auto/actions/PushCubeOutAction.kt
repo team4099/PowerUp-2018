@@ -8,7 +8,7 @@ class PushCubeOutAction : Action {
     private var startTime = 0.0
 
     override fun update() {
-        mIntake.intakeState = Intake.IntakeState.OUT
+        mIntake.intakeState = Intake.IntakeState.SLOW_OUT
     }
 
     override fun isFinished(): Boolean {

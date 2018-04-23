@@ -96,7 +96,7 @@ class Wrist private constructor(): Subsystem {
         println("wrist speed: ${talon.sensorCollection.quadratureVelocity}")
     }
 
-    fun setElevatorVelocity(radiansPerSecond: Double) {
+    fun setWristVelocity(radiansPerSecond: Double) {
         if ((radiansPerSecond <= 0 || Utils.around(radiansPerSecond, 0.0, .1)) && talon.sensorCollection.quadraturePosition < 2.5) {
             setOpenLoop(0.0)
             println("exiting at 0 power, $radiansPerSecond")
