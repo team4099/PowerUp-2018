@@ -221,18 +221,13 @@ class Robot : IterativeRobot() {
             elevator.setElevatorVelocity(target)
 //            SmartDashboard.putNumber("elevator/closedLoopTarget", target)
 ////            }
-<<<<<<< HEAD
 //            val wristTarget = controls.wristPower * 1000
 //            wrist.setWristVelocity(wristTarget)
-            wrist.setOpenLoop(controls.wristPower)
-=======
             if(controls.test) {
                 wrist.setOpenLoop(controls.wristPower)
             } else {
                 wrist.setWristVelocity(controls.wristPower * 650)
             }
-
->>>>>>> 4fbe075... Add mostly-working wrist PID
 
             climber.climberState = when {
                 controls.runClimber -> Climber.ClimberState.CLIMBING

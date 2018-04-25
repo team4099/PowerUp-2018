@@ -121,6 +121,8 @@ class Constants {
         val RIGHT_INTAKE_TALON_ID = 9
         val SHIFTER_FORWARD_ID = 6
         val SHIFTER_REVERSE_ID = 7
+
+        val RIBBON_SWITCH_PORT = 9
     }
 
     object Elevator {
@@ -130,14 +132,24 @@ class Constants {
     object Wrist {
         val WRIST_TALON_ID = 1
 
-        val WRIST_UP_KP = 1.0525
-        val WRIST_UP_KI = 0.0000
-        val WRIST_UP_KD = 0.000
+//        val WRIST_UP_KP = 1.0525
+//        val WRIST_UP_KI = 0.0000
+//        val WRIST_UP_KD = 0.000
+//        val WRIST_UP_KF = 1.5547
+//
+//        val WRIST_DOWN_KP = 3.5460
+//        val WRIST_DOWN_KI = 0.0456
+//        val WRIST_DOWN_KD = 0.0000
+//        val WRIST_DOWN_KF = 1.1440
+
+        val WRIST_UP_KP = 1.0000
+        val WRIST_UP_KI = 0.0050
+        val WRIST_UP_KD = 2.0000
         val WRIST_UP_KF = 1.5547
 
-        val WRIST_DOWN_KP = 3.5460
-        val WRIST_DOWN_KI = 0.0456
-        val WRIST_DOWN_KD = 0.0000
+        val WRIST_DOWN_KP = 0.1000
+        val WRIST_DOWN_KI = 0.0100
+        val WRIST_DOWN_KD = 1.0000
         val WRIST_DOWN_KF = 1.1440
     }
 

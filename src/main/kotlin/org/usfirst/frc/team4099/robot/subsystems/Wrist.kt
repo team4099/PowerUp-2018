@@ -7,6 +7,7 @@ import org.usfirst.frc.team4099.lib.util.CANMotorControllerFactory
 import org.usfirst.frc.team4099.lib.util.conversions.WristConversion
 import org.usfirst.frc.team4099.robot.Constants
 import org.usfirst.frc.team4099.robot.loops.Loop
+import java.lang.Math.abs
 
 /**
  * @author Team 4099
@@ -104,21 +105,13 @@ class Wrist private constructor(): Subsystem {
     }
 
     fun setWristVelocity(radiansPerSecond: Double) {
-<<<<<<< HEAD
-        if ((radiansPerSecond <= 0 || Utils.around(radiansPerSecond, 0.0, .1)) && talon.sensorCollection.quadraturePosition < 2.5) {
-            setOpenLoop(0.0)
-            println("exiting at 0 power, $radiansPerSecond")
-            return
-        }
-=======
 //        if ((radiansPerSecond <= 0 || Utils.around(radiansPerSecond, 0.0, .1)) && talon.sensorCollection.quadraturePosition < 2.5) {
 //            setOpenLoop(0.0)
 //            println("wrist exiting at 0 power, $radiansPerSecond")
 //            return
 //        }
->>>>>>> 4fbe075... Add mostly-working wrist PID
         wristState = WristState.VELOCITY_CONTROL
-        if(radiansPerSecond >= 0) {
+        if(radiansPerSecond > 0) {
             talon.selectProfileSlot(1, 0)
         } else {
             talon.selectProfileSlot(0, 0)

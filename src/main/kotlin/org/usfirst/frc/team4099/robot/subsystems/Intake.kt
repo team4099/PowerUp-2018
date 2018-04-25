@@ -1,5 +1,6 @@
 package org.usfirst.frc.team4099.robot.subsystems
 
+import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.DoubleSolenoid
 import edu.wpi.first.wpilibj.Talon
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -22,6 +23,7 @@ class Intake private constructor() : Subsystem {
     private val leftTalon = Talon(Constants.Intake.LEFT_INTAKE_TALON_ID)
     private val pneumaticShifter: DoubleSolenoid = DoubleSolenoid(Constants.Intake.SHIFTER_FORWARD_ID,
             Constants.Intake.SHIFTER_REVERSE_ID)
+    private val ribbonSwitch = DigitalInput(Constants.Intake.RIBBON_SWITCH_PORT)
 
     var intakeState = IntakeState.IN
     private var intakePower = 0.0
@@ -73,10 +75,12 @@ class Intake private constructor() : Subsystem {
          */
         override fun onLoop() {
             synchronized(this@Intake) {
-                if (intakeState == IntakeState.IN && (
-                                BrownoutDefender.instance.getCurrent(11) > 10
-                                || BrownoutDefender.instance.getCurrent(7) > 10)) {
+                if (ribbonSwitch.get() && (intakeState == IntakeState.IN || intakeState == IntakeState.SLOW)) {
+//                if (intakeState == IntakeState.IN && (
+//                                BrownoutDefender.instance.getCurrent(11) > 10
+//                                || BrownoutDefender.instance.getCurrent(7) > 10)) {
                     intakeState = IntakeState.SLOW
+                    open = false
                 }
                 when (intakeState) {
                     IntakeState.IN -> setIntakePower(-0.7)
