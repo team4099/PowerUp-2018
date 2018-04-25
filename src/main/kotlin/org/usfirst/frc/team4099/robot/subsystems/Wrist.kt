@@ -63,9 +63,9 @@ class Wrist private constructor(): Subsystem {
 
         talon.configMotionCruiseVelocity(0, 0)
         talon.configMotionAcceleration(0, 0)
-        talon.configForwardSoftLimitEnable(false, 0)
+        talon.configForwardSoftLimitEnable(true, 0)
         talon.configForwardSoftLimitThreshold(100, 0)
-        talon.configReverseSoftLimitEnable(false, 0)
+        talon.configReverseSoftLimitEnable(true, 0)
         talon.configReverseSoftLimitThreshold(0, 0)
         talon.overrideSoftLimitsEnable(false)
         talon.overrideLimitSwitchesEnable(true)

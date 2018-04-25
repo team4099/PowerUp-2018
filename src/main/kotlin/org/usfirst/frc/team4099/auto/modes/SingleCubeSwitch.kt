@@ -8,6 +8,7 @@ class SingleCubeSwitch(private val startingPosition: DashboardConfigurator.Start
         runAction(WaitAction(delay))
         runAction(DropWristAction())
         if (startingPosition == DashboardConfigurator.StartingPosition.CENTER) {
+            //TODO: test changes; probably doesn't work as is
             runAction(ForwardDistanceAction(15.0))
             runAction(MoveElevatorAction(0.75))
 
@@ -25,7 +26,7 @@ class SingleCubeSwitch(private val startingPosition: DashboardConfigurator.Start
 //            runAction(PushCubeOutAction())
             runAction(OpenIntakeAction())
             runAction(WaitAction(2.0))
-            runAction(ForwardDistanceAction(-45.0))
+            runAction(ForwardDistanceAction(-30.0))
             runAction(MoveElevatorAction(-1.25))
         } else {
             runAction(ForwardDistanceAction(60.0))

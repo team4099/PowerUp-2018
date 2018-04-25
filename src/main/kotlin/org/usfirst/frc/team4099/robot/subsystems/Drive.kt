@@ -40,7 +40,7 @@ class Drive private constructor() : Subsystem {
             }
         }
 
-    var highGear: Boolean = false
+    var highGear: Boolean = true
         set(wantsHighGear) {
             pneumaticShifter.set(if (wantsHighGear) DoubleSolenoid.Value.kForward else DoubleSolenoid.Value.kReverse)
             field = wantsHighGear

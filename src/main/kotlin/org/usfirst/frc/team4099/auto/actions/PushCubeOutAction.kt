@@ -4,11 +4,11 @@ import edu.wpi.first.wpilibj.Timer
 import org.usfirst.frc.team4099.robot.subsystems.Intake
 
 class PushCubeOutAction : Action {
-    private val mIntake = Intake.instance
+    private val intake = Intake.instance
     private var startTime = 0.0
 
     override fun update() {
-        mIntake.intakeState = Intake.IntakeState.SLOW_OUT
+        intake.intakeState = Intake.IntakeState.SLOW_OUT
     }
 
     override fun isFinished(): Boolean {
@@ -16,7 +16,7 @@ class PushCubeOutAction : Action {
     }
 
     override fun done() {
-        mIntake.intakeState = Intake.IntakeState.SLOW
+        intake.intakeState = Intake.IntakeState.SLOW
     }
 
     override fun start() {

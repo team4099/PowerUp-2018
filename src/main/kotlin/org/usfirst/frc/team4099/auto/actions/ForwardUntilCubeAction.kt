@@ -1,43 +1,36 @@
 package org.usfirst.frc.team4099.auto.actions
 
 import edu.wpi.first.wpilibj.Timer
+import org.usfirst.frc.team4099.lib.drive.DriveSignal
 import org.usfirst.frc.team4099.lib.util.Utils
 import org.usfirst.frc.team4099.robot.subsystems.Drive
+import org.usfirst.frc.team4099.robot.subsystems.Intake
 
-/**
- * Created by Oksana on 2/16/2017.
- */
-class ForwardAction(secondsToMove: Double) : Action {
+class ForwardUntilCubeAction(private val timeout: Double) : Action {
     private val mDrive: Drive = Drive.instance
-    private val secondsToMove: Double = Math.abs(secondsToMove)
-    private var startTime: Double = 0.toDouble()
-    private val direction: Int
+    private val intake = Intake.instance
+    private var startDist: Double = 0.toDouble()
+    private var otherStart: Double = 0.0
     private var power: Double = 0.toDouble()
     private var startAngle: Double = 0.toDouble()
     private var resetGyro: Boolean = false
     private var done: Boolean = false
+    private var startTime = 0.0
 
-    constructor(secondsToMove: Double, slowMode: Boolean, resetGyro: Boolean) : this(secondsToMove) {
-        if (slowMode) {
-            this.power = .35
-        }
+    constructor(timeout: Double, resetGyro: Boolean) : this(timeout) {
         this.resetGyro = resetGyro
     }
 
-    constructor(secondsToMove: Double, direction: Int) : this(secondsToMove) {
-        this.power = this.power * direction
-    }
-
     init {
-        direction = secondsToMove.toInt() / this.secondsToMove.toInt()
-        this.power = .5
+        power = 0.5
     }
 
     override fun isFinished(): Boolean {
-        return Timer.getFPGATimestamp() - startTime >= secondsToMove || done
+        return Timer.getFPGATimestamp() - timeout > 3 || intake.switchPressed
     }
 
     override fun update() {
+        intake.intakeState = Intake.IntakeState.IN
         val ahrs = mDrive.getAHRS()
         val yaw = ahrs!!.yaw.toDouble()
         //        double correctionAngle = Math.IEEEremainder(yaw - startAngle, 360);
@@ -46,13 +39,13 @@ class ForwardAction(secondsToMove: Double) : Action {
             done = true
             return
         }
-        mDrive.arcadeDrive(-power * direction, correctionAngle * 0.07 * direction.toDouble())
+        mDrive.arcadeDrive(power, correctionAngle * 0.01)
         //        System.out.println("yaw: " + yaw);
         println("correctionAngle: " + correctionAngle)
     }
 
     override fun done() {
-        //        mDrive.finishForward()
+        mDrive.setOpenLoop(DriveSignal.NEUTRAL)
         println("------- END FORWARD -------")
     }
 
@@ -63,9 +56,11 @@ class ForwardAction(secondsToMove: Double) : Action {
             }
             Timer.delay(1.0)
         }
+        startTime = Timer.getFPGATimestamp()
         startAngle = mDrive.getAHRS()!!.yaw.toDouble()
         println("------- NEW START AUTONOMOUS RUN -------")
         println("Starting angle: " + startAngle)
-        startTime = Timer.getFPGATimestamp()
+        startDist = mDrive.getLeftDistanceInches()
+        otherStart = mDrive.getRightDistanceInches()
     }
 }

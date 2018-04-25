@@ -217,7 +217,7 @@ class Robot : IterativeRobot() {
 
 //            if (controls.test)
 //            else {
-            val target = controls.elevatorPower * 1800
+            val target = controls.elevatorPower * 2400
             elevator.setElevatorVelocity(target)
 //            SmartDashboard.putNumber("elevator/closedLoopTarget", target)
 ////            }

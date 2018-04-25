@@ -27,11 +27,13 @@ class Intake private constructor() : Subsystem {
 
     var intakeState = IntakeState.IN
     private var intakePower = 0.0
-    var open: Boolean = false
+    var open = false
         set (wantsOpen) {
             pneumaticShifter.set(if (wantsOpen) DoubleSolenoid.Value.kReverse else DoubleSolenoid.Value.kForward)
             field = wantsOpen
         }
+    var switchPressed = false
+        get() = ribbonSwitch.get()
 
     enum class IntakeState {
         IN, STOP, SLOW_OUT, FAST_OUT, SLOW
@@ -75,7 +77,7 @@ class Intake private constructor() : Subsystem {
          */
         override fun onLoop() {
             synchronized(this@Intake) {
-                if (ribbonSwitch.get() && (intakeState == IntakeState.IN || intakeState == IntakeState.SLOW)) {
+                if (switchPressed && intakeState == IntakeState.IN) {
 //                if (intakeState == IntakeState.IN && (
 //                                BrownoutDefender.instance.getCurrent(11) > 10
 //                                || BrownoutDefender.instance.getCurrent(7) > 10)) {
