@@ -77,7 +77,7 @@ class Intake private constructor() : Subsystem {
          */
         override fun onLoop() {
             synchronized(this@Intake) {
-                println("Ribbon switch pressed: $switchPressed")
+//                println("Ribbon switch pressed: $switchPressed")
                 if (switchPressed && intakeState == IntakeState.IN) {
 //                if (intakeState == IntakeState.IN && (
 //                                BrownoutDefender.instance.getCurrent(11) > 10

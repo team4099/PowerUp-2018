@@ -7,7 +7,6 @@ import org.usfirst.frc.team4099.lib.util.CANMotorControllerFactory
 import org.usfirst.frc.team4099.lib.util.conversions.WristConversion
 import org.usfirst.frc.team4099.robot.Constants
 import org.usfirst.frc.team4099.robot.loops.Loop
-import java.lang.Math.abs
 
 /**
  * @author Team 4099
@@ -101,7 +100,7 @@ class Wrist private constructor(): Subsystem {
         wristState = WristState.OPEN_LOOP
         wristPower = power
         talon.set(ControlMode.PercentOutput, wristPower)
-        println("wrist speed: ${talon.sensorCollection.quadratureVelocity}")
+//        println("wrist speed: ${talon.sensorCollection.quadratureVelocity}")
     }
 
     fun setWristVelocity(radiansPerSecond: Double) {

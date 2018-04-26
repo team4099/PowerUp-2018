@@ -78,7 +78,7 @@ class Elevator private constructor(): Subsystem {
     fun setElevatorVelocity(inchesPerSecond: Double) {
         if ((inchesPerSecond <= 0 || Utils.around(inchesPerSecond, 0.0, .1)) && observedElevatorPosition < 2.5) {
             setOpenLoop(0.0)
-            println("exiting at 0 power, $inchesPerSecond")
+//            println("exiting at 0 power, $inchesPerSecond")
             return
         }
         elevatorState = ElevatorState.VELOCITY_CONTROL

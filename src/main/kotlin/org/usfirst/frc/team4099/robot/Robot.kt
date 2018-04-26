@@ -1,5 +1,6 @@
 package org.usfirst.frc.team4099.robot
 
+import edu.wpi.first.wpilibj.CameraServer
 import edu.wpi.first.wpilibj.IterativeRobot
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
 import org.usfirst.frc.team4099.DashboardConfigurator
@@ -47,7 +48,7 @@ class Robot : IterativeRobot() {
 
     override fun robotInit() {
         try {
-//            CameraServer.getInstance().startAutomaticCapture()
+            CameraServer.getInstance().startAutomaticCapture()
             CrashTracker.logRobotInit()
 
             DashboardConfigurator.initDashboard()
