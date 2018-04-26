@@ -28,7 +28,7 @@ class Drive private constructor() : Subsystem {
 
     private val ahrs: AHRS
 
-    var brakeMode: NeutralMode = NeutralMode.Coast //sets whether the break mode should be coast (no resistence) or by force
+    var brakeMode: NeutralMode = NeutralMode.Coast //sets whether the break mode should be coast (no resistance) or by force
         set(type) {
             if (brakeMode != type) {
                 rightMasterSRX.setNeutralMode(type)

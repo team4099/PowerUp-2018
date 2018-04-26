@@ -12,7 +12,7 @@ abstract class AutoModeBase {
         protected set
 
     @Throws(AutoModeEndedException::class)
-    public abstract fun routine()
+    abstract fun routine()
 
     fun run() {
         isActive = true

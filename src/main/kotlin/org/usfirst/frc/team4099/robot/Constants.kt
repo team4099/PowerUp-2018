@@ -154,8 +154,8 @@ class Constants {
     }
 
     object Forks {
-        val LATCH_FORWARD_ID = 2
-        val LATCH_REVERSE_ID = 3
+        val LATCH_FORWARD_ID = 4
+        val LATCH_REVERSE_ID = 5
     }
 
     object Climber {

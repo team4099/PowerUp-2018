@@ -22,9 +22,8 @@ class TwoCubeSwitch(private val startingPosition: DashboardConfigurator.Starting
             val startTime = Timer.getFPGATimestamp()
             runAction(ForwardUntilCubeAction(3.0))
             val elapsed = Timer.getFPGATimestamp() - startTime
-            runAction(ShiftGearAction(true))
+            runAction(StopIntakeAction())
             if (intake.switchPressed) {
-                runAction(CloseIntakeAction())
                 runAction(WaitAction(0.5))
                 runAction(ForwardAction(elapsed, -1))
                 runAction(TurnAction(-turn))
@@ -37,6 +36,7 @@ class TwoCubeSwitch(private val startingPosition: DashboardConfigurator.Starting
             } else {
                 runAction(ForwardDistanceAction(-15.0))
             }
+            runAction(ShiftGearAction(true))
         }
         else {
             LineCrossMode(startingPosition, ownershipConfig, delay).routine()

@@ -33,7 +33,7 @@ class Intake private constructor() : Subsystem {
             field = wantsOpen
         }
     var switchPressed = false
-        get() = ribbonSwitch.get()
+        get() = !ribbonSwitch.get()
 
     enum class IntakeState {
         IN, STOP, SLOW_OUT, FAST_OUT, SLOW
@@ -77,6 +77,7 @@ class Intake private constructor() : Subsystem {
          */
         override fun onLoop() {
             synchronized(this@Intake) {
+                println("Ribbon switch pressed: $switchPressed")
                 if (switchPressed && intakeState == IntakeState.IN) {
 //                if (intakeState == IntakeState.IN && (
 //                                BrownoutDefender.instance.getCurrent(11) > 10
