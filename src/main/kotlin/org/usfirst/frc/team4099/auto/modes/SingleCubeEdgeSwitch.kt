@@ -29,14 +29,14 @@ class SingleCubeEdgeSwitch(private val startingPosition: DashboardConfigurator.S
             runAction(ForwardDistanceAction(-30.0))
             runAction(MoveElevatorAction(-1.25))
         } else {
-            runAction(ForwardDistanceAction(130.0))
+            runAction(ForwardDistanceAction(170.0))
             if ((startingPosition == DashboardConfigurator.StartingPosition.LEFT && ownershipConfig[0] == 'L')
                 || (startingPosition == DashboardConfigurator.StartingPosition.RIGHT && ownershipConfig[0] == 'R')) {
                 runAction(MoveElevatorAction(1.0))
                 if(startingPosition == DashboardConfigurator.StartingPosition.LEFT) {
-                    runAction(TurnAction(-90.0))
-                } else {
                     runAction(TurnAction(90.0))
+                } else {
+                    runAction(TurnAction(-90.0))
                 }
                 runAction(ForwardDistanceAction(20.0))
 //                runAction(PushCubeOutAction())

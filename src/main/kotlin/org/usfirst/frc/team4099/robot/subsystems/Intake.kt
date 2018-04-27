@@ -86,7 +86,7 @@ class Intake private constructor() : Subsystem {
                     open = false
                 }
                 when (intakeState) {
-                    IntakeState.IN -> setIntakePower(-0.7)
+                    IntakeState.IN -> setIntakePower(-1.0)
                     IntakeState.STOP -> setIntakePower(0.0)
                     IntakeState.SLOW_OUT -> setIntakePower(0.5)
                     IntakeState.FAST_OUT -> setIntakePower(1.0)

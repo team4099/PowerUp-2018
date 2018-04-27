@@ -7,7 +7,7 @@ class SingleCubeScale(private val startingPosition: DashboardConfigurator.Starti
     override fun routine() {
         runAction(WaitAction(delay))
         if (startingPosition == DashboardConfigurator.StartingPosition.CENTER) {
-            runAction(ForwardDistanceAction(120.0))
+            Better2CubeSwitch(startingPosition, ownershipConfig, 0.0).routine()
         } else {
             runAction(ForwardDistanceAction(400.0))
             if ((startingPosition == DashboardConfigurator.StartingPosition.LEFT && ownershipConfig[0] == 'L')

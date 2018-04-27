@@ -45,6 +45,7 @@ class ForwardUntilCubeAction(private val timeout: Double) : Action {
     }
 
     override fun done() {
+        intake.open = false
         mDrive.setOpenLoop(DriveSignal.NEUTRAL)
         println("------- END FORWARD -------")
     }

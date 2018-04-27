@@ -53,6 +53,10 @@ class Elevator private constructor(): Subsystem {
         talon.configMotionCruiseVelocity(0, 0)
         talon.configMotionAcceleration(0, 0)
 
+        talon.configReverseSoftLimitEnable(true, 0)
+        talon.configReverseSoftLimitThreshold(-ElevatorConversion.inchesToPulses(70.0).toInt(), 0)
+        talon.overrideSoftLimitsEnable(true)
+
         SmartDashboard.putNumber("elevator/pidPDown", Constants.Gains.ELEVATOR_DOWN_KP)
         SmartDashboard.putNumber("elevator/pidIDown", Constants.Gains.ELEVATOR_DOWN_KI)
         SmartDashboard.putNumber("elevator/pidDDown", Constants.Gains.ELEVATOR_DOWN_KD)
@@ -78,6 +82,7 @@ class Elevator private constructor(): Subsystem {
     fun setElevatorVelocity(inchesPerSecond: Double) {
         if ((inchesPerSecond <= 0 || Utils.around(inchesPerSecond, 0.0, .1)) && observedElevatorPosition < 2.5) {
             setOpenLoop(0.0)
+            talon.sensorCollection.setQuadraturePosition(0, 0)
 //            println("exiting at 0 power, $inchesPerSecond")
             return
         }
@@ -133,7 +138,7 @@ class Elevator private constructor(): Subsystem {
                 observedElevatorPosition = -ElevatorConversion.pulsesToInches(talon.sensorCollection.quadraturePosition.toDouble())
                 elevatorPower = -talon.motorOutputPercent
 
-//                println("elevatorPos: $observedElevatorPosition")
+                println("elevatorPos: $observedElevatorPosition")
 
                 when (elevatorState){
                     ElevatorState.OPEN_LOOP -> {

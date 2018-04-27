@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4099.auto.actions
 
 import edu.wpi.first.wpilibj.Timer
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import org.usfirst.frc.team4099.lib.drive.DriveSignal
 import org.usfirst.frc.team4099.lib.util.Utils
 import org.usfirst.frc.team4099.robot.subsystems.Drive
@@ -22,14 +23,14 @@ class ForwardDistanceAction(initInchesToMove: Double) : Action {
 
     constructor(inchesToMove: Double, slowMode: Boolean, resetGyro: Boolean) : this(inchesToMove) {
         if (slowMode) {
-            this.power = .35
+            this.power = .6
         }
         this.resetGyro = resetGyro
     }
 
     init {
         direction = inchesToMove.toInt() / initInchesToMove.toInt()
-        this.power = .5
+        this.power = 1.0
     }
 
     override fun isFinished(): Boolean {
@@ -48,10 +49,13 @@ class ForwardDistanceAction(initInchesToMove: Double) : Action {
         mDrive.arcadeDrive(power * direction, correctionAngle * 0.01 * direction.toDouble())
         //        System.out.println("yaw: " + yaw);
         println("correctionAngle: " + correctionAngle)
+        SmartDashboard.putNumber("distanceInAction", Math.abs(mDrive.getRightDistanceInches()) - otherStart)
     }
 
     override fun done() {
         mDrive.setOpenLoop(DriveSignal.NEUTRAL)
+        mDrive.highGear = !mDrive.highGear
+        mDrive.highGear = !mDrive.highGear
         println("------- END FORWARD -------")
     }
 

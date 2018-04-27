@@ -97,9 +97,7 @@ class Robot : IterativeRobot() {
         try {
             CrashTracker.logAutoInit()
 
-            if (autoModeExecuter != null) {
-                autoModeExecuter!!.stop()
-            }
+            autoModeExecuter?.stop()
             autoModeExecuter = null
 
             disabledLooper.stop() // end DisabledLooper
@@ -124,6 +122,7 @@ class Robot : IterativeRobot() {
     override fun teleopInit() {
         try {
             CrashTracker.logTeleopInit()
+            autoModeExecuter?.stop()
             isTurning = true
             enabledLooper.start() // start EnabledLooper
             disabledLooper.stop() // end DisabledLooper
@@ -227,7 +226,7 @@ class Robot : IterativeRobot() {
             if(controls.test) {
                 wrist.setOpenLoop(controls.wristPower)
             } else {
-                wrist.setWristVelocity(controls.wristPower * 650)
+                wrist.setWristVelocity(controls.wristPower * 350)
             }
 
             climber.climberState = when {

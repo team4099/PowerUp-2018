@@ -13,6 +13,7 @@ class TwoCubeSwitch(private val startingPosition: DashboardConfigurator.Starting
                 startingPosition == DashboardConfigurator.StartingPosition.LEFT && ownershipConfig[0] == 'L' ||
                 startingPosition == DashboardConfigurator.StartingPosition.RIGHT && ownershipConfig[0] == 'R') {
             SingleCubeSwitch(startingPosition, ownershipConfig, delay).routine()
+            runAction(ForwardDistanceAction(-10.0))
             var turn = 90.0
             if (ownershipConfig[0] == 'L') {
                 turn = -90.0
@@ -22,20 +23,21 @@ class TwoCubeSwitch(private val startingPosition: DashboardConfigurator.Starting
             val startTime = Timer.getFPGATimestamp()
             runAction(ForwardUntilCubeAction(3.0))
             val elapsed = Timer.getFPGATimestamp() - startTime
+            runAction(WaitAction(0.5))
             runAction(StopIntakeAction())
-            if (intake.switchPressed) {
-                runAction(WaitAction(0.5))
-                runAction(ForwardAction(elapsed, -1))
-                runAction(TurnAction(-turn))
-                runAction(MoveElevatorAction(0.75))
-                runAction(ForwardDistanceAction(45.0))
-                runAction(OpenIntakeAction())
-                runAction(WaitAction(2.0))
-                runAction(ForwardDistanceAction(-30.0))
-                runAction(MoveElevatorAction(-1.25))
-            } else {
-                runAction(ForwardDistanceAction(-15.0))
-            }
+//            if (intake.switchPressed) {
+            runAction(WaitAction(0.5))
+            runAction(ForwardAction(elapsed, -1))
+            runAction(TurnAction(-turn))
+            runAction(MoveElevatorAction(0.75))
+            runAction(ForwardDistanceAction(45.0))
+            runAction(OpenIntakeAction())
+            runAction(WaitAction(2.0))
+            runAction(ForwardDistanceAction(-30.0))
+            runAction(MoveElevatorAction(-1.25))
+//            } else {
+//                runAction(ForwardDistanceAction(-15.0))
+//            }
             runAction(ShiftGearAction(true))
         }
         else {

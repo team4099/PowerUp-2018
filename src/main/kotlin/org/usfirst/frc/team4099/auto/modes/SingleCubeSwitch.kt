@@ -15,16 +15,17 @@ class SingleCubeSwitch(private val startingPosition: DashboardConfigurator.Start
             var dir = -1
             if (ownershipConfig[0] == 'L') {
                 println("LEFT")
-                runAction(TurnAction(-45.0))
+                runAction(TurnAction(-40.0))
                 dir = 1
             } else {
                 runAction(TurnAction(35.0))
             }
             runAction(ForwardDistanceAction(100.0))
 
-//            runAction(TurnAction(15.0 * dir))
+            runAction(TurnAction(15.0 * dir))
+            runAction(ForwardDistanceAction(15.0))
 //            runAction(PushCubeOutAction())
-            runAction(OpenIntakeAction())
+            runAction(PushCubeOutAction())
             runAction(WaitAction(2.0))
             runAction(ForwardDistanceAction(-30.0))
             runAction(MoveElevatorAction(-1.25))

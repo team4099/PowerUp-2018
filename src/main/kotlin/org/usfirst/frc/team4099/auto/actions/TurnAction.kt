@@ -12,9 +12,9 @@ class TurnAction(angleToTurn: Double) : Action {
     private val mDrive: Drive = Drive.instance
     private val angleToTurn: Double = Math.abs(angleToTurn)
     private val direction: Int = Math.abs(angleToTurn.toInt()) / angleToTurn.toInt()
-    private var power: Double = 0.3
+    private var power: Double = 0.5
     private var startAngle: Double = 0.toDouble()
-    private var resetGyro: Boolean = false
+    private var resetGyro: Boolean = true
     private var done: Boolean = false
 
     private val turnSignal: DriveSignal = DriveSignal(direction * power, -direction * power)

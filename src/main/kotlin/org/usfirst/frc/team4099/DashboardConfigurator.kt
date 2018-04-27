@@ -21,7 +21,7 @@ import org.usfirst.frc.team4099.robot.Constants.Autonomous.SELECTED_AUTO_START_P
 object DashboardConfigurator {
     private val defaultDelay = 0.0
     private val defaultStart = StartingPosition.CENTER
-    private val defaultMode = AutoModeCreator("Switch", { startingPos, startingConfig, delay -> SingleCubeSwitch(startingPos, startingConfig, delay) })
+    private val defaultMode = AutoModeCreator("Better Switch", {startingPos, startingConfig, delay -> Better2CubeSwitch(startingPos, startingConfig, delay)})
 
     enum class StartingPosition(val dashboardName: String)  {
         LEFT("LEFT"),
@@ -31,10 +31,12 @@ object DashboardConfigurator {
     private val allModes = arrayOf(
             defaultMode,
             AutoModeCreator("Two Cube Switch", {startingPos, startingConfig, delay -> TwoCubeSwitch(startingPos, startingConfig, delay) }),
+            AutoModeCreator("Switch", { startingPos, startingConfig, delay -> SingleCubeSwitch(startingPos, startingConfig, delay) }),
             AutoModeCreator("Edge Switch", {startingPos, startingConfig, delay -> SingleCubeEdgeSwitch(startingPos, startingConfig, delay)}),
             AutoModeCreator("Stand Still", { _, _ ,_ -> StandStillMode() }),
             AutoModeCreator("Line Cross", { startingPos, startingConfig, delay -> LineCrossMode(startingPos, startingConfig, delay) }),
             AutoModeCreator("Scale", { startingPos, startingConfig, delay -> SingleCubeScale(startingPos, startingConfig, delay) })
+
     )
 
 

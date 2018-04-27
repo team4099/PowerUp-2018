@@ -15,6 +15,7 @@ class StopIntakeAction : Action {
 
     override fun start() {
         intake.intakeState = Intake.IntakeState.STOP
+        intake.open = false
     }
 
 }

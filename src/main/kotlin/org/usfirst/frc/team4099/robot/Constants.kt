@@ -26,9 +26,9 @@ class Constants {
         val RIGHT_HIGH_KF = 1023.0 / 4420.0
 
         //subject to change
-        val ELEVATOR_UP_KP = 0.5
-        val ELEVATOR_UP_KI = 0.01
-        val ELEVATOR_UP_KD = 70.000
+        val ELEVATOR_UP_KP = 0.6
+        val ELEVATOR_UP_KI = 0.0008
+        val ELEVATOR_UP_KD = 55.000
         val ELEVATOR_UP_KF = 0.5700
 
         val ELEVATOR_DOWN_KP = 1.00
@@ -117,8 +117,8 @@ class Constants {
     }
 
     object Intake {
-        val LEFT_INTAKE_TALON_ID = 8
-        val RIGHT_INTAKE_TALON_ID = 9
+        val LEFT_INTAKE_TALON_ID = 9
+        val RIGHT_INTAKE_TALON_ID = 8
         val SHIFTER_FORWARD_ID = 6
         val SHIFTER_REVERSE_ID = 7
 
