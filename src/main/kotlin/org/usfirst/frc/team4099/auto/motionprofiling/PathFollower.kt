@@ -9,4 +9,5 @@ import jaci.pathfinder.*
 class PathFollower{
     var left = EncoderFollower(modifier.getLeftTrajectory())
     var right = EncoderFollower(modifier.getRightTrajectory())
+
 }

@@ -49,7 +49,7 @@ class Drive private constructor() : Subsystem {
     enum class DriveControlState {
         OPEN_LOOP,
         VELOCITY_SETPOINT,
-        PATH_FOLLOWING,
+        PATH_FOLLOWING, //used for auto
         TURN_TO_HEADING //turn in place
     }
 
@@ -325,6 +325,16 @@ class Drive private constructor() : Subsystem {
     override fun stop() {
         synchronized(this) {
             setOpenLoop(DriveSignal.NEUTRAL)
+        }
+    }
+    fun updatePathFollower(timestamp: Double) {
+        val robotPose: RigidTransform2D = robotState.getLatestFieldToVehicle().value
+        var command: Twist2D = pathFollower!!.update(timestamp, robotPose, RobotState.getInstance().distDriven, RobotState.getInstance().predictedVehicleVel.dx())
+        if (!pathFollower!!.isFinished()) {
+            var setpoint: Kinematics.DriveVelocity = Kinematics.inverseKinematics(command)
+            updateVelocitySetpoint(setpoint.left, setpoint.right)
+        } else {
+            updateVelocitySetpoint(0.0,0.0)
         }
     }
 
