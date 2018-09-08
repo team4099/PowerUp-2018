@@ -9,10 +9,11 @@ import jaci.pathfinder.*
 
 class PathGenerator {
 
-    fun generatePath(waypoints : WayPoint[]) : modifier{
-        val config = Trajectory.Config(Trajectory.FitMethod.HERMITE_CUBIC, Trajectory.Config.SAMPLES_HIGH, 0.05, Constants.MAX_VELOCITY, Constants.MAX_ACCELERATION, CONSTANTS.MEX_JERK)
-        val path = Pathfinder.generate(waypoints, config)
-        val modifier = TankModifier(trajectory).modify(Constants.WHEEL_BASE_WIDTH)
+    fun generatePath(waypoints : WayPoint[]) : TankModifier{
+        val config : Trajectory.config = Trajectory.Config(Trajectory.FitMethod.HERMITE_CUBIC, Trajectory.Config.SAMPLES_HIGH, 0.05, AutoConstants.MAX_VELOCITY, AutoConstants.MAX_ACCELERATION, AutoConstants.MAX_JERK)
+        val path : Trajectory = Pathfinder.generate(waypoints, config)
+        val modifier : TankModifer = TankModifier(trajectory).modify(AutoConstants.WHEEL_BASE_WIDTH)
         return modifier
     }
+
 }

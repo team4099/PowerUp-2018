@@ -13,6 +13,9 @@ import org.usfirst.frc.team4099.lib.drive.DriveSignal
 import org.usfirst.frc.team4099.lib.util.CANMotorControllerFactory
 import org.usfirst.frc.team4099.robot.Constants
 import org.usfirst.frc.team4099.robot.loops.Loop
+import org.usfirst.frc.team4099.auto.motionprofiling.PathGenerator
+import org.usfirst.frc.team4099.auto.motionprofiling.AutoConstants
+import jaci.pathfinder.*
 
 
 class Drive private constructor() : Subsystem {
@@ -27,6 +30,11 @@ class Drive private constructor() : Subsystem {
     private val pneumaticShifter: DoubleSolenoid = DoubleSolenoid(Constants.Drive.SHIFTER_FORWARD_ID, Constants.Drive.SHIFTER_REVERSE_ID)
 
     private val ahrs: AHRS
+
+    private val pathGenerator : PathGenerator = PathGenerator()
+    private val path : TankModifier = pathGenerator.generatePath(/* list of waypoints */)
+    var leftEncoderFollower = EncoderFollower(modifier.getLeftTrajectory())
+    var rightEncoderFollower = EncoderFollower(modifier.getRightTrajectory())
 
     var brakeMode: NeutralMode = NeutralMode.Coast //sets whether the break mode should be coast (no resistance) or by force
         set(type) {
@@ -56,6 +64,7 @@ class Drive private constructor() : Subsystem {
     private var currentState = DriveControlState.OPEN_LOOP
 
     init {
+
         leftMasterSRX.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0) //configs sensor to a quad encoder
         leftMasterSRX.setSensorPhase(true) //to align positive sensor velocity with positive motor output
         leftMasterSRX.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 5, 0)
@@ -94,6 +103,11 @@ class Drive private constructor() : Subsystem {
         rightMasterSRX.inverted = false
         rightSlave1SRX.inverted = false
         rightSlave2SPX.inverted = false
+
+        leftEncoderFollower.configureEncoder(leftMasterSRX.getEncPosition(), 1000, Constants.Wheels.DRIVE_WHEEL_DIAMETER_INCHES);
+        rightEncoderFollower.configureEncoder(rightMasterSRX.getEncPosition(), 1000, Constants.Wheels.DRIVE_WHEEL_DIAMETER_INCHES);
+        leftEncoderFollower.configurePIDVA(Constants.Gains.LEFT_HIGH_KP, Constants.Gains.RIGHT_LOW_KI, Constants.Gains.RIGHT_LOW_KD, 1 / AutoConstants.MAX_VELOCITY, Constants.Gains.RIGHT_LOW_KF);
+        rightEncoderFollower.configurePIDVA(Constants.Gains.LEFT_HIGH_KP, Constants.Gains.RIGHT_LOW_KI, Constants.Gains.RIGHT_LOW_KD, 1 / AutoConstants.MAX_VELOCITY, Constants.Gains.RIGHT_LOW_KF);
 
         highGear = false
 
@@ -328,14 +342,14 @@ class Drive private constructor() : Subsystem {
         }
     }
     fun updatePathFollower(timestamp: Double) {
-        val robotPose: RigidTransform2D = robotState.getLatestFieldToVehicle().value
-        var command: Twist2D = pathFollower!!.update(timestamp, robotPose, RobotState.getInstance().distDriven, RobotState.getInstance().predictedVehicleVel.dx())
-        if (!pathFollower!!.isFinished()) {
+        updateVelocitySetpoint(leftEncoderFollower.calculate(leftMasterSRX.getEncPosition()), rightEncoderFollower.calculate(rightMasterSRX.getEncPosition()))
+        //TODO update encoderfollower with ahrs
+        /*if (!pathFollower!!.isFinished()) {
             var setpoint: Kinematics.DriveVelocity = Kinematics.inverseKinematics(command)
             updateVelocitySetpoint(setpoint.left, setpoint.right)
         } else {
             updateVelocitySetpoint(0.0,0.0)
-        }
+        }*/
     }
 
     val loop: Loop = object : Loop {
@@ -352,12 +366,9 @@ class Drive private constructor() : Subsystem {
                     DriveControlState.VELOCITY_SETPOINT -> {
                         return
                     }
-                /*DriveControlState.PATH_FOLLOWING ->{
-                    if (mPathFollower != null) {
-                        updatePathFollower(timestamp);
-                        mCSVWriter.add(mPathFollower.getDebug());
+                    DriveControlState.PATH_FOLLOWING ->{
+                        updatePathFollower()
                     }
-                }*/
                     DriveControlState.TURN_TO_HEADING -> {
                         //updateTurnToHeading(timestamp);
                         return
