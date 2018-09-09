@@ -13,6 +13,9 @@ import org.usfirst.frc.team4099.lib.drive.DriveSignal
 import org.usfirst.frc.team4099.lib.util.CANMotorControllerFactory
 import org.usfirst.frc.team4099.robot.Constants
 import org.usfirst.frc.team4099.robot.loops.Loop
+import org.usfirst.frc.team4099.auto.motionprofiling.PathGenerator
+import org.usfirst.frc.team4099.auto.motionprofiling.AutoConstants
+import jaci.pathfinder.*
 
 
 class Drive private constructor() : Subsystem {
@@ -27,6 +30,11 @@ class Drive private constructor() : Subsystem {
     private val pneumaticShifter: DoubleSolenoid = DoubleSolenoid(Constants.Drive.SHIFTER_FORWARD_ID, Constants.Drive.SHIFTER_REVERSE_ID)
 
     private val ahrs: AHRS
+
+    private val pathGenerator : PathGenerator = PathGenerator()
+    private val path : TankModifier = pathGenerator.generatePath(/* list of waypoints */)
+    var leftEncoderFollower = EncoderFollower(path.getLeftTrajectory())
+    var rightEncoderFollower = EncoderFollower(path.getRightTrajectory())
 
     var brakeMode: NeutralMode = NeutralMode.Coast //sets whether the break mode should be coast (no resistance) or by force
         set(type) {
@@ -56,6 +64,7 @@ class Drive private constructor() : Subsystem {
     private var currentState = DriveControlState.OPEN_LOOP
 
     init {
+
         leftMasterSRX.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0) //configs sensor to a quad encoder
         leftMasterSRX.setSensorPhase(true) //to align positive sensor velocity with positive motor output
         leftMasterSRX.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 5, 0)
@@ -94,6 +103,11 @@ class Drive private constructor() : Subsystem {
         rightMasterSRX.inverted = false
         rightSlave1SRX.inverted = false
         rightSlave2SPX.inverted = false
+
+        leftEncoderFollower.configureEncoder(leftMasterSRX.getEncPosition(), 1000, Constants.Wheels.DRIVE_WHEEL_DIAMETER_INCHES);
+        rightEncoderFollower.configureEncoder(rightMasterSRX.getEncPosition(), 1000, Constants.Wheels.DRIVE_WHEEL_DIAMETER_INCHES);
+        leftEncoderFollower.configurePIDVA(Constants.Gains.LEFT_HIGH_KP, Constants.Gains.RIGHT_LOW_KI, Constants.Gains.RIGHT_LOW_KD, 1 / AutoConstants.MAX_VELOCITY, Constants.Gains.RIGHT_LOW_KF);
+        rightEncoderFollower.configurePIDVA(Constants.Gains.LEFT_HIGH_KP, Constants.Gains.RIGHT_LOW_KI, Constants.Gains.RIGHT_LOW_KD, 1 / AutoConstants.MAX_VELOCITY, Constants.Gains.RIGHT_LOW_KF);
 
         highGear = false
 
@@ -327,15 +341,20 @@ class Drive private constructor() : Subsystem {
             setOpenLoop(DriveSignal.NEUTRAL)
         }
     }
-    fun updatePathFollower(timestamp: Double) {
-        val robotPose: RigidTransform2D = robotState.getLatestFieldToVehicle().value
-        var command: Twist2D = pathFollower!!.update(timestamp, robotPose, RobotState.getInstance().distDriven, RobotState.getInstance().predictedVehicleVel.dx())
-        if (!pathFollower!!.isFinished()) {
+    fun updatePathFollower() {
+        val gyro_heading : Double = ahrs.getYaw()    // Assuming the gyro is giving a value in degrees
+        val desired_heading : Double = Pathfinder.r2d(leftEncoderFollower.getHeading())  // Should also be in degrees
+        val angleDifference : Double = Pathfinder.boundHalfDegrees(desired_heading - gyro_heading)
+        val turn : Double = 0.8 * (-1.0/80.0) * angleDifference
+        val leftTurn : Double = leftEncoderFollower.calculate(leftMasterSRX.getEncPosition()) + turn
+        val rightTurn : Double = rightEncoderFollower.calculate(rightMasterSRX.getEncPosition()) - turn
+        updateVelocitySetpoint(leftTurn, rightTurn)
+        /*if (!pathFollower!!.isFinished()) {
             var setpoint: Kinematics.DriveVelocity = Kinematics.inverseKinematics(command)
             updateVelocitySetpoint(setpoint.left, setpoint.right)
         } else {
             updateVelocitySetpoint(0.0,0.0)
-        }
+        }*/
     }
 
     val loop: Loop = object : Loop {
@@ -358,6 +377,9 @@ class Drive private constructor() : Subsystem {
                             mCSVWriter.add(mPathFollower.getDebug());
                         }
                 }
+
+                        updatePathFollower()
+                    }
                     DriveControlState.TURN_TO_HEADING -> {
                         //updateTurnToHeading(timestamp);
                         return

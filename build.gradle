@@ -10,7 +10,7 @@ buildscript {
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlinx:kotlinx-gradle-serialization-plugin:$serialization_version"
-        compile pathfinder()
+
     }
 }
 
@@ -58,7 +58,7 @@ dependencies {
     compile wpilib()
     compile ctre()
     compile navx()
-
+    compile pathfinder()
     // We need to add the Kotlin stdlib in order to use most Kotlin language features.
     compile "org.jetbrains.kotlin:kotlin-stdlib"
     compile "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$serialization_version"
