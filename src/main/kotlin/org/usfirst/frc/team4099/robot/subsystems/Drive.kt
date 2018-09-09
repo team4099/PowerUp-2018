@@ -342,8 +342,16 @@ class Drive private constructor() : Subsystem {
         }
     }
     fun updatePathFollower(timestamp: Double) {
-        updateVelocitySetpoint(leftEncoderFollower.calculate(leftMasterSRX.getEncPosition()), rightEncoderFollower.calculate(rightMasterSRX.getEncPosition()))
-        //TODO update encoderfollower with ahrs
+        val gyro_heading : Double = ahrs.getyaw()    // Assuming the gyro is giving a value in degrees
+        val desired_heading : Double = Pathfinder.r2d(leftEncoderFollower.getHeading())  // Should also be in degrees
+
+        val angleDifference : Double = Pathfinder.boundHalfDegrees(desired_heading - gyro_heading)
+        val turn : Double = 0.8 * (-1.0/80.0) * angleDifference
+
+        val leftTurn : Double = leftEncoderFollower.calculate(leftMasterSRX.getEncPosition()) + turn
+        val rightTurn : Double = rightEncoderFollower.calculate(rightMasterSRX.getEncPosition()) - turn
+
+        updateVelocitySetpoint(leftTurn, rightTurn)
         /*if (!pathFollower!!.isFinished()) {
             var setpoint: Kinematics.DriveVelocity = Kinematics.inverseKinematics(command)
             updateVelocitySetpoint(setpoint.left, setpoint.right)
