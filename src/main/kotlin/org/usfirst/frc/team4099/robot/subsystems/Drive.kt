@@ -352,12 +352,12 @@ class Drive private constructor() : Subsystem {
                     DriveControlState.VELOCITY_SETPOINT -> {
                         return
                     }
-                /*DriveControlState.PATH_FOLLOWING ->{
-                    if (mPathFollower != null) {
-                        updatePathFollower(timestamp);
-                        mCSVWriter.add(mPathFollower.getDebug());
-                    }
-                }*/
+                    DriveControlState.PATH_FOLLOWING ->{
+                        if (mPathFollower != null) {
+                            updatePathFollower(timestamp);
+                            mCSVWriter.add(mPathFollower.getDebug());
+                        }
+                }
                     DriveControlState.TURN_TO_HEADING -> {
                         //updateTurnToHeading(timestamp);
                         return

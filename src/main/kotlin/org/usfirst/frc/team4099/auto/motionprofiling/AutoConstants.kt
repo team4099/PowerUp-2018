@@ -1,11 +1,14 @@
 package org.usfirst.frc.team4099.auto.motionprofiling
 
 class AutoConstants{
-    val MAX_VELOCITY
-    val MAX_ACCELERATION
-    val MAX_JERK
-    val WHEEL_BASE_LENGTH
-    val WHEEL_BASE_WIDTH
+    val MAX_VELOCITY = 0
+    val MAX_ACCELERATION = 0
+    val MAX_JERK = 0
+
+    val WHEEL_BASE_LENGTH = 0
+    val WHEEL_BASE_WIDTH = 0
+
+    val
 
     val LEFT_HIGH_KP = .1 * 1023 / 70
     val LEFT_HIGH_KI = 0.0000
