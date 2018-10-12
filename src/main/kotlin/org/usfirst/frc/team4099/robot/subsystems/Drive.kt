@@ -31,10 +31,10 @@ class Drive private constructor() : Subsystem {
 
     private val ahrs: AHRS
 
-    private val pathGenerator : PathGenerator = PathGenerator()
-    private val path : TankModifier = pathGenerator.generatePath(/* list of waypoints */)
-    var leftEncoderFollower = EncoderFollower(path.getLeftTrajectory())
-    var rightEncoderFollower = EncoderFollower(path.getRightTrajectory())
+    private val pathGenerator : PathGenerator = null//= PathGenerator()
+    private val path : TankModifier = null//= pathGenerator.generatePath(/* list of waypoints */)
+    var leftEncoderFollower = null//= EncoderFollower(path.getLeftTrajectory())
+    var rightEncoderFollower = null//= EncoderFollower(path.getRightTrajectory())
 
     var brakeMode: NeutralMode = NeutralMode.Coast //sets whether the break mode should be coast (no resistance) or by force
         set(type) {
@@ -360,6 +360,13 @@ class Drive private constructor() : Subsystem {
         } else {
             updateVelocitySetpoint(0.0,0.0)
         }*/
+    }
+    fun enablePathFollow(points: arrayOf<WayPoint>, modifer: TankModifer) {
+        currentState = DriveControlState.PATH_FOLLOWING
+        pathGenerator : PathGenerator = PathGenerator()
+        path : TankModifier = pathGenerator.generatePath(points)
+        leftEncoderFollower =  EncoderFollower(modifer.getLeftTrajectory())
+        rightEncoderFollower =  EncoderFollower(modifer.getRightTrajectory())
     }
 
     val loop: Loop = object : Loop {
