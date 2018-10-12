@@ -343,7 +343,7 @@ class Drive private constructor() : Subsystem {
     }
 
 
-    fun updatePathFollower(timestamp: Double) {
+    fun updatePathFollower() {
         val gyro_heading : Double = ahrs.getyaw()    // Assuming the gyro is giving a value in degrees
         val desired_heading : Double = Pathfinder.r2d(leftEncoderFollower.getHeading())  // Should also be in degrees
 
@@ -377,13 +377,9 @@ class Drive private constructor() : Subsystem {
                         return
                     }
                     DriveControlState.PATH_FOLLOWING ->{
-                        if (mPathFollower != null) {
-                            updatePathFollower(timestamp);
-                            mCSVWriter.add(mPathFollower.getDebug());
-                        }
+                        updatePathFollower()
                 }
 
-                        updatePathFollower()
                     }
                     DriveControlState.TURN_TO_HEADING -> {
                         //updateTurnToHeading(timestamp);
