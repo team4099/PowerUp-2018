@@ -56,9 +56,13 @@ repositories {
 
 dependencies {
     compile wpilib()
+//    compile pathfinder()
     compile ctre()
     compile navx()
-    compile pathfinder()
+
+    compile fileTree(dir: 'libs', include: '**/*.jar')
+    nativeLib  fileTree(dir: 'libs', include: '**/*.so')
+
     // We need to add the Kotlin stdlib in order to use most Kotlin language features.
     compile "org.jetbrains.kotlin:kotlin-stdlib"
     compile "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$serialization_version"
