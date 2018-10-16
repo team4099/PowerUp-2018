@@ -13,7 +13,7 @@ import org.usfirst.frc.team4099.lib.drive.DriveSignal
 import org.usfirst.frc.team4099.lib.util.CANMotorControllerFactory
 import org.usfirst.frc.team4099.robot.Constants
 import org.usfirst.frc.team4099.robot.loops.Loop
-import org.usfirst.frc.team4099.auto.motionprofiling.PathGenerator
+//import org.usfirst.frc.team4099.auto.motionprofiling.PathGenerator
 import org.usfirst.frc.team4099.auto.motionprofiling.AutoConstants
 import jaci.pathfinder.*
 import jaci.pathfinder.modifiers.*
@@ -36,7 +36,7 @@ class Drive /*private constructor() */: Subsystem {
     private val ahrs: AHRS
     var points = arrayOf<Waypoint>(Waypoint(0.0, 0.0, 0.0) // Waypoint @ x=-4, y=-1, exit angle=0 degrees)                           // Waypoint @ x=0, y=0,   exit angle=45 radians
     )
-    private var pathGenerator : PathGenerator = PathGenerator()
+    //private var pathGenerator : PathGenerator = PathGenerator()
     var config : Trajectory.Config = Trajectory.Config(Trajectory.FitMethod.HERMITE_CUBIC, Trajectory.Config.SAMPLES_HIGH, 0.05, AutoConstants.MAX_VELOCITY, AutoConstants.MAX_ACCELERATION, AutoConstants.MAX_JERK)
     var path : Trajectory = Pathfinder.generate(points, config)
     var modifier : TankModifier = TankModifier(path).modify(AutoConstants.WHEEL_BASE_WIDTH)
@@ -364,8 +364,8 @@ class Drive /*private constructor() */: Subsystem {
         val angleDifference : Double = Pathfinder.boundHalfDegrees(desired_heading - gyro_heading)
         val turn : Double = 0.8 * (-1.0/80.0) * angleDifference
 
-        val leftTurn : Double = leftEncoderFollower.calculate(leftMasterSRX.getEncPosition()) + turn
-        val rightTurn : Double = rightEncoderFollower.calculate(rightMasterSRX.getEncPosition()) - turn
+        val leftTurn : Double = leftEncoderFollower.calculate(leftMasterSRX.sensorCollection.quadraturePosition) + turn
+        val rightTurn : Double = rightEncoderFollower.calculate(rightMasterSRX.sensorCollection.quadraturePosition) - turn
 
         updateVelocitySetpoint(leftTurn, rightTurn)
         /*if (!pathFollower!!.isFinished()) {
@@ -377,7 +377,7 @@ class Drive /*private constructor() */: Subsystem {
     }
     fun enablePathFollow(points: Array<Waypoint>, modifier: TankModifier) {
         currentState = DriveControlState.PATH_FOLLOWING
-        pathGenerator = PathGenerator()
+        //pathGenerator = PathGenerator()
         path = Pathfinder.generate(points, config)
         leftEncoderFollower =  EncoderFollower(modifier.leftTrajectory)
         rightEncoderFollower =  EncoderFollower(modifier.rightTrajectory)
