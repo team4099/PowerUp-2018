@@ -35,8 +35,8 @@ object DashboardConfigurator {
             AutoModeCreator("Edge Switch", {startingPos, startingConfig, delay -> SingleCubeEdgeSwitch(startingPos, startingConfig, delay)}),
             AutoModeCreator("Stand Still", { _, _ ,_ -> StandStillMode() }),
             AutoModeCreator("Line Cross", { startingPos, startingConfig, delay -> LineCrossMode(startingPos, startingConfig, delay) }),
-            AutoModeCreator("Scale", { startingPos, startingConfig, delay -> SingleCubeScale(startingPos, startingConfig, delay) })
-
+            AutoModeCreator("Scale", { startingPos, startingConfig, delay -> SingleCubeScale(startingPos, startingConfig, delay) }),
+            AutoModeCreator("MotionTest", { startingPos, startingConfig, delay -> SingleCubeScale(startingPos, startingConfig, delay) })
     )
 
 

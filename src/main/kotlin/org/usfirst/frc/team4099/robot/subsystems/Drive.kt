@@ -34,14 +34,15 @@ class Drive /*private constructor() */: Subsystem {
     private val pneumaticShifter: DoubleSolenoid = DoubleSolenoid(Constants.Drive.SHIFTER_FORWARD_ID, Constants.Drive.SHIFTER_REVERSE_ID)
 
     private val ahrs: AHRS
-    var points = arrayOf<Waypoint>(Waypoint(0.0, 0.0, 0.0) // Waypoint @ x=-4, y=-1, exit angle=0 degrees)                           // Waypoint @ x=0, y=0,   exit angle=45 radians
-    )
+    var points = arrayOf<Waypoint>(Waypoint(0.0, 0.0, 0.0),Waypoint(5.0, 5.0, 0.0)) // Waypoint @ x=-4, y=-1, exit angle=0 degrees)                           // Waypoint @ x=0, y=0,   exit angle=45 radians
+
     //private var pathGenerator : PathGenerator = PathGenerator()
     var config : Trajectory.Config = Trajectory.Config(Trajectory.FitMethod.HERMITE_CUBIC, Trajectory.Config.SAMPLES_HIGH, 0.05, AutoConstants.MAX_VELOCITY, AutoConstants.MAX_ACCELERATION, AutoConstants.MAX_JERK)
     var path : Trajectory = Pathfinder.generate(points, config)
     var modifier : TankModifier = TankModifier(path).modify(AutoConstants.WHEEL_BASE_WIDTH)
     var leftEncoderFollower = EncoderFollower(modifier.leftTrajectory)
     var rightEncoderFollower = EncoderFollower(modifier.rightTrajectory)
+
 
     var brakeMode: NeutralMode = NeutralMode.Coast //sets whether the break mode should be coast (no resistance) or by force
         set(type) {
@@ -111,10 +112,10 @@ class Drive /*private constructor() */: Subsystem {
         rightSlave1SRX.inverted = false
         rightSlave2SPX.inverted = false
 
-/*        leftEncoderFollower.configureEncoder(leftMasterSRX.getEncPosition(), 1000, Constants.Wheels.DRIVE_WHEEL_DIAMETER_INCHES);
-        rightEncoderFollower.configureEncoder(rightMasterSRX.getEncPosition(), 1000, Constants.Wheels.DRIVE_WHEEL_DIAMETER_INCHES);
+        leftEncoderFollower.configureEncoder(leftMasterSRX.sensorCollection.quadraturePosition,1000,AutoConstants.WHEEL_BASE_LENGTH)
+        rightEncoderFollower.configureEncoder(rightMasterSRX.sensorCollection.quadraturePosition,1000,AutoConstants.WHEEL_BASE_LENGTH)
         leftEncoderFollower.configurePIDVA(Constants.Gains.LEFT_HIGH_KP, Constants.Gains.RIGHT_LOW_KI, Constants.Gains.RIGHT_LOW_KD, 1 / AutoConstants.MAX_VELOCITY, Constants.Gains.RIGHT_LOW_KF);
-        rightEncoderFollower.configurePIDVA(Constants.Gains.LEFT_HIGH_KP, Constants.Gains.RIGHT_LOW_KI, Constants.Gains.RIGHT_LOW_KD, 1 / AutoConstants.MAX_VELOCITY, Constants.Gains.RIGHT_LOW_KF);*/
+        rightEncoderFollower.configurePIDVA(Constants.Gains.LEFT_HIGH_KP, Constants.Gains.RIGHT_LOW_KI, Constants.Gains.RIGHT_LOW_KD, 1 / AutoConstants.MAX_VELOCITY, Constants.Gains.RIGHT_LOW_KF);
 
         highGear = false
 
