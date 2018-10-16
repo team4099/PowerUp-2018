@@ -22,7 +22,7 @@ import jaci.pathfinder.followers.EncoderFollower
 import jaci.pathfinder.Waypoint
 
 
-class Drive private constructor() : Subsystem {
+class Drive /*private constructor() */: Subsystem {
 
     private val leftMasterSRX: TalonSRX = CANMotorControllerFactory.createDefaultTalon(Constants.Drive.LEFT_MASTER_ID)
     private val leftSlave1SRX: TalonSRX = CANMotorControllerFactory.createPermanentSlaveTalon(Constants.Drive.LEFT_SLAVE_1_ID, Constants.Drive.LEFT_MASTER_ID)
@@ -34,11 +34,14 @@ class Drive private constructor() : Subsystem {
     private val pneumaticShifter: DoubleSolenoid = DoubleSolenoid(Constants.Drive.SHIFTER_FORWARD_ID, Constants.Drive.SHIFTER_REVERSE_ID)
 
     private val ahrs: AHRS
-
-    private var pathGenerator : PathGenerator? = null//= PathGenerator()
-    private var path : TankModifier? = null//= pathGenerator.generatePath(/* list of waypoints */)
-    var leftEncoderFollower = null//= EncoderFollower(path.getLeftTrajectory())
-    var rightEncoderFollower = null//= EncoderFollower(path.getRightTrajectory())
+    var points = arrayOf<Waypoint>(Waypoint(0.0, 0.0, 0.0) // Waypoint @ x=-4, y=-1, exit angle=0 degrees)                           // Waypoint @ x=0, y=0,   exit angle=45 radians
+    )
+    private var pathGenerator : PathGenerator = PathGenerator()
+    var config : Trajectory.Config = Trajectory.Config(Trajectory.FitMethod.HERMITE_CUBIC, Trajectory.Config.SAMPLES_HIGH, 0.05, AutoConstants.MAX_VELOCITY, AutoConstants.MAX_ACCELERATION, AutoConstants.MAX_JERK)
+    val path : Trajectory = Pathfinder.generate(points, config)
+    val modifier : TankModifier = TankModifier(path).modify(AutoConstants.WHEEL_BASE_WIDTH)
+    var leftEncoderFollower = EncoderFollower(modifier.getLeftTrajectory())
+    var rightEncoderFollower = EncoderFollower(modifier.getRightTrajectory())
 
     var brakeMode: NeutralMode = NeutralMode.Coast //sets whether the break mode should be coast (no resistance) or by force
         set(type) {
@@ -121,14 +124,13 @@ class Drive private constructor() : Subsystem {
 
         this.zeroSensors()
     }
-    constructor(){}
-    constructor(points: Waypoint[], modifier: TankModifier) {
+    /*constructor(points: Waypoint[], modifier: TankModifier) {
         currentState = DriveControlState.PATH_FOLLOWING
         pathGenerator: PathGenerator = PathGenerator()
         path: TankModifier = pathGenerator.generatePath(points)
         leftEncoderFollower =  EncoderFollower(modifier.getLeftTrajectory())
         rightEncoderFollower =  EncoderFollower(modifier.getRightTrajectory())
-    }
+    }*/
 
 
     @Synchronized
@@ -373,13 +375,13 @@ class Drive private constructor() : Subsystem {
             updateVelocitySetpoint(0.0,0.0)
         }*/
     }
-    /*fun enablePathFollow(points: arrayOf<WayPoint>, modifier: TankModifier) {
+    fun enablePathFollow(points: arrayOf<WayPoint>, modifier: TankModifier) {
         currentState = DriveControlState.PATH_FOLLOWING
-        pathGenerator: PathGenerator = PathGenerator()
-        path: TankModifier = pathGenerator.generatePath(points)
+        pathGenerator = PathGenerator()
+        path = Pathfinder.generate(points, config)
         leftEncoderFollower =  EncoderFollower(modifier.getLeftTrajectory())
         rightEncoderFollower =  EncoderFollower(modifier.getRightTrajectory())
-    }*/
+    }
 
     val loop: Loop = object : Loop {
         override fun onStart() {
