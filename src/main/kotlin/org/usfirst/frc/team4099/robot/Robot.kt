@@ -103,7 +103,7 @@ class Robot : IterativeRobot() {
             disabledLooper.stop() // end DisabledLooper
             enabledLooper.start() // start EnabledLooper
             drive.zeroSensors()
-            drive.getAHRS().zeroYaw()
+            drive.getAHRS()!!.zeroYaw()
 
             val allianceOwnership = DashboardConfigurator.updateAllianceOwnership()
 
