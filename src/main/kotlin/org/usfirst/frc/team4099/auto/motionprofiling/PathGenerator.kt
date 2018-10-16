@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4099.auto.motionprofiling
+/*package org.usfirst.frc.team4099.auto.motionprofiling
 
 import jaci.pathfinder.*
 import jaci.pathfinder.modifiers.TankModifier
@@ -17,4 +17,4 @@ class PathGenerator {
         return modifier
     }
 
-}
+}*/
