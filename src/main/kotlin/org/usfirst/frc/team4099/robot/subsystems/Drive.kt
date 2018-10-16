@@ -358,7 +358,7 @@ class Drive /*private constructor() */: Subsystem {
 
 
     fun updatePathFollower() {
-        val gyro_heading : Double = ahrs.getyaw()    // Assuming the gyro is giving a value in degrees
+        val gyro_heading : Float = ahrs.yaw    // Assuming the gyro is giving a value in degrees
         val desired_heading : Double = Pathfinder.r2d(leftEncoderFollower.heading)  // Should also be in degrees
 
         val angleDifference : Double = Pathfinder.boundHalfDegrees(desired_heading - gyro_heading)
