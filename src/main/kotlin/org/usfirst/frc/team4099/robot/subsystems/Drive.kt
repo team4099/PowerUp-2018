@@ -38,8 +38,8 @@ class Drive /*private constructor() */: Subsystem {
     )
     private var pathGenerator : PathGenerator = PathGenerator()
     var config : Trajectory.Config = Trajectory.Config(Trajectory.FitMethod.HERMITE_CUBIC, Trajectory.Config.SAMPLES_HIGH, 0.05, AutoConstants.MAX_VELOCITY, AutoConstants.MAX_ACCELERATION, AutoConstants.MAX_JERK)
-    val path : Trajectory = Pathfinder.generate(points, config)
-    val modifier : TankModifier = TankModifier(path).modify(AutoConstants.WHEEL_BASE_WIDTH)
+    var path : Trajectory = Pathfinder.generate(points, config)
+    var modifier : TankModifier = TankModifier(path).modify(AutoConstants.WHEEL_BASE_WIDTH)
     var leftEncoderFollower = EncoderFollower(modifier.getLeftTrajectory())
     var rightEncoderFollower = EncoderFollower(modifier.getRightTrajectory())
 
