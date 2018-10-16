@@ -375,7 +375,7 @@ class Drive /*private constructor() */: Subsystem {
             updateVelocitySetpoint(0.0,0.0)
         }*/
     }
-    fun enablePathFollow(points: arrayOf<WayPoint>, modifier: TankModifier) {
+    fun enablePathFollow(points: Array<Waypoint>, modifier: TankModifier) {
         currentState = DriveControlState.PATH_FOLLOWING
         pathGenerator = PathGenerator()
         path = Pathfinder.generate(points, config)
