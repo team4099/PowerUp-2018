@@ -19,7 +19,7 @@ plugins {
     id "org.jetbrains.kotlin.jvm" version "1.1.51"
     id "eclipse"
     id "idea"
-    id "jaci.openrio.gradle.GradleRIO" version "2018.01.07" //2018.01.06 for last working version on DriverStation
+    id "jaci.openrio.gradle.GradleRIO" version "2018.03.06" //2018.01.06 for last working version on DriverStation
 }
 apply plugin: 'idea'
 apply plugin: 'kotlin'
@@ -56,7 +56,7 @@ repositories {
 
 dependencies {
     compile wpilib()
-//    compile pathfinder()
+    compile pathfinder()
     compile ctre()
     compile navx()
 

@@ -16,6 +16,10 @@ import org.usfirst.frc.team4099.robot.loops.Loop
 import org.usfirst.frc.team4099.auto.motionprofiling.PathGenerator
 import org.usfirst.frc.team4099.auto.motionprofiling.AutoConstants
 import jaci.pathfinder.*
+import jaci.pathfinder.modifiers.*
+import jaci.pathfinder.Pathfinder
+import jaci.pathfinder.followers.EncoderFollower
+import jaci.pathfinder.Waypoint
 
 
 class Drive private constructor() : Subsystem {
@@ -31,8 +35,8 @@ class Drive private constructor() : Subsystem {
 
     private val ahrs: AHRS
 
-    private val pathGenerator : PathGenerator = null//= PathGenerator()
-    private val path : TankModifier = null//= pathGenerator.generatePath(/* list of waypoints */)
+    private var pathGenerator : PathGenerator? = null//= PathGenerator()
+    private var path : TankModifier? = null//= pathGenerator.generatePath(/* list of waypoints */)
     var leftEncoderFollower = null//= EncoderFollower(path.getLeftTrajectory())
     var rightEncoderFollower = null//= EncoderFollower(path.getRightTrajectory())
 
@@ -104,10 +108,10 @@ class Drive private constructor() : Subsystem {
         rightSlave1SRX.inverted = false
         rightSlave2SPX.inverted = false
 
-        leftEncoderFollower.configureEncoder(leftMasterSRX.getEncPosition(), 1000, Constants.Wheels.DRIVE_WHEEL_DIAMETER_INCHES);
+/*        leftEncoderFollower.configureEncoder(leftMasterSRX.getEncPosition(), 1000, Constants.Wheels.DRIVE_WHEEL_DIAMETER_INCHES);
         rightEncoderFollower.configureEncoder(rightMasterSRX.getEncPosition(), 1000, Constants.Wheels.DRIVE_WHEEL_DIAMETER_INCHES);
         leftEncoderFollower.configurePIDVA(Constants.Gains.LEFT_HIGH_KP, Constants.Gains.RIGHT_LOW_KI, Constants.Gains.RIGHT_LOW_KD, 1 / AutoConstants.MAX_VELOCITY, Constants.Gains.RIGHT_LOW_KF);
-        rightEncoderFollower.configurePIDVA(Constants.Gains.LEFT_HIGH_KP, Constants.Gains.RIGHT_LOW_KI, Constants.Gains.RIGHT_LOW_KD, 1 / AutoConstants.MAX_VELOCITY, Constants.Gains.RIGHT_LOW_KF);
+        rightEncoderFollower.configurePIDVA(Constants.Gains.LEFT_HIGH_KP, Constants.Gains.RIGHT_LOW_KI, Constants.Gains.RIGHT_LOW_KD, 1 / AutoConstants.MAX_VELOCITY, Constants.Gains.RIGHT_LOW_KF);*/
 
         highGear = false
 
@@ -116,6 +120,14 @@ class Drive private constructor() : Subsystem {
         ahrs = AHRS(SPI.Port.kMXP)
 
         this.zeroSensors()
+    }
+    constructor(){}
+    constructor(points: Waypoint[], modifier: TankModifier) {
+        currentState = DriveControlState.PATH_FOLLOWING
+        pathGenerator: PathGenerator = PathGenerator()
+        path: TankModifier = pathGenerator.generatePath(points)
+        leftEncoderFollower =  EncoderFollower(modifier.getLeftTrajectory())
+        rightEncoderFollower =  EncoderFollower(modifier.getRightTrajectory())
     }
 
 
@@ -361,13 +373,13 @@ class Drive private constructor() : Subsystem {
             updateVelocitySetpoint(0.0,0.0)
         }*/
     }
-    fun enablePathFollow(points: arrayOf<WayPoint>, modifer: TankModifer) {
+    /*fun enablePathFollow(points: arrayOf<WayPoint>, modifier: TankModifier) {
         currentState = DriveControlState.PATH_FOLLOWING
-        pathGenerator : PathGenerator = PathGenerator()
-        path : TankModifier = pathGenerator.generatePath(points)
-        leftEncoderFollower =  EncoderFollower(modifer.getLeftTrajectory())
-        rightEncoderFollower =  EncoderFollower(modifer.getRightTrajectory())
-    }
+        pathGenerator: PathGenerator = PathGenerator()
+        path: TankModifier = pathGenerator.generatePath(points)
+        leftEncoderFollower =  EncoderFollower(modifier.getLeftTrajectory())
+        rightEncoderFollower =  EncoderFollower(modifier.getRightTrajectory())
+    }*/
 
     val loop: Loop = object : Loop {
         override fun onStart() {
