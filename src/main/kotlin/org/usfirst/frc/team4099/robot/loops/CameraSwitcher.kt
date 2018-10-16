@@ -16,7 +16,7 @@ class CameraSwitcher private constructor() : Loop {
 
     private val intakeCamera = CameraServer.getInstance().startAutomaticCapture(0)
     private val elevatorCamera = CameraServer.getInstance().startAutomaticCapture(1)
-    private val server = CameraServer.getInstance().getServer()
+    private val server = CameraServer.getInstance().server
 
     private var currentSource = Camera.ELEVATOR_CAMERA
 

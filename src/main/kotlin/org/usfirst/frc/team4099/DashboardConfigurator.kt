@@ -54,8 +54,8 @@ object DashboardConfigurator {
         }
         autoModesString += "${allModes[allModes.size - 1].dashboardName} ]"
 
-        SmartDashboard.putString(AUTO_OPTIONS_DASHBOARD_KEY, autoModesString);
-        SmartDashboard.putString(SELECTED_AUTO_MODE_DASHBOARD_KEY, defaultMode.dashboardName);
+        SmartDashboard.putString(AUTO_OPTIONS_DASHBOARD_KEY, autoModesString)
+        SmartDashboard.putString(SELECTED_AUTO_MODE_DASHBOARD_KEY, defaultMode.dashboardName)
 
         var autoStartsString = "[ "
         for (i in 0 until StartingPosition.values().size - 1) {

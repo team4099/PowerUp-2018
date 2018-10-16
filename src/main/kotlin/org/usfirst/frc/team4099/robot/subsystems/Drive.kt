@@ -40,8 +40,8 @@ class Drive /*private constructor() */: Subsystem {
     var config : Trajectory.Config = Trajectory.Config(Trajectory.FitMethod.HERMITE_CUBIC, Trajectory.Config.SAMPLES_HIGH, 0.05, AutoConstants.MAX_VELOCITY, AutoConstants.MAX_ACCELERATION, AutoConstants.MAX_JERK)
     var path : Trajectory = Pathfinder.generate(points, config)
     var modifier : TankModifier = TankModifier(path).modify(AutoConstants.WHEEL_BASE_WIDTH)
-    var leftEncoderFollower = EncoderFollower(modifier.getLeftTrajectory())
-    var rightEncoderFollower = EncoderFollower(modifier.getRightTrajectory())
+    var leftEncoderFollower = EncoderFollower(modifier.leftTrajectory)
+    var rightEncoderFollower = EncoderFollower(modifier.rightTrajectory)
 
     var brakeMode: NeutralMode = NeutralMode.Coast //sets whether the break mode should be coast (no resistance) or by force
         set(type) {
@@ -198,7 +198,7 @@ class Drive /*private constructor() */: Subsystem {
     }
 
     fun startLiveWindowMode() {
-        LiveWindow.addSensor("Drive", "Gyro", ahrs);
+        LiveWindow.addSensor("Drive", "Gyro", ahrs)
     }
 
     fun stopLiveWindowMode() {
@@ -359,7 +359,7 @@ class Drive /*private constructor() */: Subsystem {
 
     fun updatePathFollower() {
         val gyro_heading : Double = ahrs.getyaw()    // Assuming the gyro is giving a value in degrees
-        val desired_heading : Double = Pathfinder.r2d(leftEncoderFollower.getHeading())  // Should also be in degrees
+        val desired_heading : Double = Pathfinder.r2d(leftEncoderFollower.heading)  // Should also be in degrees
 
         val angleDifference : Double = Pathfinder.boundHalfDegrees(desired_heading - gyro_heading)
         val turn : Double = 0.8 * (-1.0/80.0) * angleDifference
@@ -379,8 +379,8 @@ class Drive /*private constructor() */: Subsystem {
         currentState = DriveControlState.PATH_FOLLOWING
         pathGenerator = PathGenerator()
         path = Pathfinder.generate(points, config)
-        leftEncoderFollower =  EncoderFollower(modifier.getLeftTrajectory())
-        rightEncoderFollower =  EncoderFollower(modifier.getRightTrajectory())
+        leftEncoderFollower =  EncoderFollower(modifier.leftTrajectory)
+        rightEncoderFollower =  EncoderFollower(modifier.rightTrajectory)
     }
 
     val loop: Loop = object : Loop {
@@ -397,10 +397,8 @@ class Drive /*private constructor() */: Subsystem {
                     DriveControlState.VELOCITY_SETPOINT -> {
                         return
                     }
-                    DriveControlState.PATH_FOLLOWING ->{
+                    DriveControlState.PATH_FOLLOWING -> {
                         updatePathFollower()
-                }
-
                     }
                     DriveControlState.TURN_TO_HEADING -> {
                         //updateTurnToHeading(timestamp);
@@ -412,7 +410,6 @@ class Drive /*private constructor() */: Subsystem {
                 }
             }
         }
-
         override fun onStop() {
             setOpenLoop(DriveSignal.NEUTRAL)
         }
@@ -450,10 +447,10 @@ class Drive /*private constructor() */: Subsystem {
         return rpmToInchesPerSecond(rightMasterSRX.getSelectedSensorVelocity(0).toDouble())
     }
 
-
     companion object {
         val instance = Drive()
     }
+
 
 }
 
