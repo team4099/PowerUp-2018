@@ -34,7 +34,7 @@ class ForwardAction(secondsToMove: Double) : Action {
     }
 
     override fun isFinished(): Boolean {
-        return Timer.getFPGATimestamp() - startTime >= secondsToMove || done
+        return Timer.getFPGATimestamp() - startTime >= sgit econdsToMove || done
     }
 
     override fun update() {
