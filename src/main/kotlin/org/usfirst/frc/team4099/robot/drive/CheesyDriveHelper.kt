@@ -150,6 +150,6 @@ class CheesyDriveHelper {
         private val kThrottleDeadband = 0.02
         private val kWheelDeadband = 0.02
         private val kTurnSensitivity = 0.6
-        private val kMaxThrottleDelta = 1.0 / 40.0
+        private val kMaxThrottleDelta = 3.0 / 40.0
     }
 }

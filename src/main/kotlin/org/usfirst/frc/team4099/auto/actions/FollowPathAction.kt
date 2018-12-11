@@ -17,9 +17,12 @@ class FollowPathAction(waypoints : Array<Waypoint>) : Action{
 
     }
     override fun start(){
+        ForwardDistanceAction(150.0)
+        mDrive.arcadeDrive(0.4, 0.0)
         mDrive.enablePathFollow(modifier)
     }
     override fun update(){
+        mDrive.arcadeDrive(0.4, 0.0)
         mDrive.updatePathFollower()
     }
     override fun done(){

@@ -10,6 +10,7 @@ import org.usfirst.frc.team4099.robot.Constants.Autonomous.AUTO_STARTS_DASHBOARD
 import org.usfirst.frc.team4099.robot.Constants.Autonomous.SELECTED_AUTO_MODE_DASHBOARD_KEY
 import org.usfirst.frc.team4099.robot.Constants.Autonomous.SELECTED_AUTO_START_DELAY_KEY
 import org.usfirst.frc.team4099.robot.Constants.Autonomous.SELECTED_AUTO_START_POS_KEY
+import src.main.kotlin.org.usfirst.frc.team4099.auto.modes.MotionTest
 
 
 /**
@@ -21,7 +22,7 @@ import org.usfirst.frc.team4099.robot.Constants.Autonomous.SELECTED_AUTO_START_P
 object DashboardConfigurator {
     private val defaultDelay = 0.0
     private val defaultStart = StartingPosition.CENTER
-    private val defaultMode = AutoModeCreator("Better Switch", {startingPos, startingConfig, delay -> Better2CubeSwitch(startingPos, startingConfig, delay)})
+    private val defaultMode = AutoModeCreator("Better Switch", {startingPos, startingConfig, delay -> MotionTest(startingPos, startingConfig, delay)})
 
     enum class StartingPosition(val dashboardName: String)  {
         LEFT("LEFT"),
@@ -36,7 +37,7 @@ object DashboardConfigurator {
             AutoModeCreator("Stand Still", { _, _ ,_ -> StandStillMode() }),
             AutoModeCreator("Line Cross", { startingPos, startingConfig, delay -> LineCrossMode(startingPos, startingConfig, delay) }),
             AutoModeCreator("Scale", { startingPos, startingConfig, delay -> SingleCubeScale(startingPos, startingConfig, delay) }),
-            AutoModeCreator("MotionTest", { startingPos, startingConfig, delay -> SingleCubeScale(startingPos, startingConfig, delay) })
+            AutoModeCreator("MotionTest", { startingPos, startingConfig, delay -> MotionTest(startingPos, startingConfig, delay) })
     )
 
 

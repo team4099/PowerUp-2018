@@ -9,6 +9,6 @@ class DriveSignal constructor(var leftMotor: Double, var rightMotor: Double, var
     companion object {
 
         var NEUTRAL = DriveSignal(0.0, 0.0)
-        var BRAKE = DriveSignal(0.0, 0.0, true)
+        var BRAKE = DriveSignal(0.0, 0.0, false)
     }
 }

@@ -11,6 +11,7 @@ import jaci.pathfinder.Pathfinder
 import jaci.pathfinder.followers.*
 import jaci.pathfinder.Waypoint
 import org.usfirst.frc.team4099.auto.actions.FollowPathAction
+import org.usfirst.frc.team4099.auto.actions.ForwardDistanceAction
 
 class MotionTest(private val startingPosition: DashboardConfigurator.StartingPosition, private val ownershipConfig: String, private val delay: Double) : AutoModeBase(){
 
@@ -21,7 +22,9 @@ class MotionTest(private val startingPosition: DashboardConfigurator.StartingPos
 
 
     override fun routine() {
-        FollowPathAction(points)
+        runAction(ForwardDistanceAction(150.0))
+
+        runAction(FollowPathAction(points))
     }
 
     /*   fun generatePath(waypoints : WayPoint[]) : TankModifier{

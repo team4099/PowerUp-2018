@@ -20,6 +20,7 @@ import jaci.pathfinder.modifiers.*
 import jaci.pathfinder.Pathfinder
 import jaci.pathfinder.followers.EncoderFollower
 import jaci.pathfinder.Waypoint
+import org.usfirst.frc.team4099.auto.actions.ForwardDistanceAction
 
 
 class Drive /*private constructor() */: Subsystem {
@@ -368,7 +369,7 @@ class Drive /*private constructor() */: Subsystem {
         val leftTurn : Double = leftEncoderFollower.calculate(leftMasterSRX.sensorCollection.quadraturePosition) + turn
         val rightTurn : Double = rightEncoderFollower.calculate(rightMasterSRX.sensorCollection.quadraturePosition) - turn
 
-        updateVelocitySetpoint(leftTurn, rightTurn)
+        setLeftRightPower(leftTurn/100, rightTurn/100);
         /*if (!pathFollower!!.isFinished()) {
             var setpoint: Kinematics.DriveVelocity = Kinematics.inverseKinematics(command)
             updateVelocitySetpoint(setpoint.left, setpoint.right)
@@ -376,7 +377,9 @@ class Drive /*private constructor() */: Subsystem {
             updateVelocitySetpoint(0.0,0.0)
         }*/
     }
+    @Synchronized
     fun enablePathFollow(/*points: Array<Waypoint>,*/ modifier: TankModifier) {
+        ForwardDistanceAction(150.0)
         currentState = DriveControlState.PATH_FOLLOWING
         //pathGenerator = PathGenerator()
         //path = Pathfinder.generate(points, config)
