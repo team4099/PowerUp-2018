@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import com.ctre.phoenix.motorcontrol.can.VictorSPX
 import com.kauailabs.navx.frc.AHRS
 import edu.wpi.first.wpilibj.DoubleSolenoid
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.SPI
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -45,7 +46,7 @@ class Drive /*private constructor() */: Subsystem {
     public var rightEncoderFollower = EncoderFollower(modifier.rightTrajectory)
 
 
-    var brakeMode: NeutralMode = NeutralMode.Coast //sets whether the break mode should be coast (no resistance) or by force
+    var brakeMode: NeutralMode = NeutralMode.Brake //sets whether the break mode should be coast (no resistance) or by force
         set(type) {
             if (brakeMode != type) {
                 rightMasterSRX.setNeutralMode(type)
@@ -156,6 +157,7 @@ class Drive /*private constructor() */: Subsystem {
     @Synchronized
     private fun setLeftRightPower(left: Double, right: Double) {
         //        println("power: $left, $right")
+        DriverStation.reportError("in lefty right boi", false)
         leftMasterSRX.set(ControlMode.PercentOutput, left)
         rightMasterSRX.set(ControlMode.PercentOutput, right)
         //        println("left out: $left, left speed: ${leftMasterSRX.getSelectedSensorVelocity(0)}")
@@ -360,6 +362,7 @@ class Drive /*private constructor() */: Subsystem {
 
     @Synchronized
     fun updatePathFollower() {
+        DriverStation.reportError("Update Pathfollow in Drive", false)
         val gyro_heading : Float = ahrs.yaw    // Assuming the gyro is giving a value in degrees
         val desired_heading : Double = Pathfinder.r2d(leftEncoderFollower.heading)  // Should also be in degrees
 
@@ -368,8 +371,11 @@ class Drive /*private constructor() */: Subsystem {
 
         val leftTurn : Double = leftEncoderFollower.calculate(leftMasterSRX.sensorCollection.quadraturePosition) + turn
         val rightTurn : Double = rightEncoderFollower.calculate(rightMasterSRX.sensorCollection.quadraturePosition) - turn
+        DriverStation.reportError(leftTurn.toString(), false)
+        DriverStation.reportError(rightTurn.toString(), false)
+        //updateVelocitySetpoint(leftTurn,rightTurn)
+        setLeftRightPower(leftTurn/5, rightTurn/5)
 
-        setLeftRightPower(leftTurn/100, rightTurn/100);
         /*if (!pathFollower!!.isFinished()) {
             var setpoint: Kinematics.DriveVelocity = Kinematics.inverseKinematics(command)
             updateVelocitySetpoint(setpoint.left, setpoint.right)
@@ -379,7 +385,6 @@ class Drive /*private constructor() */: Subsystem {
     }
     @Synchronized
     fun enablePathFollow(/*points: Array<Waypoint>,*/ modifier: TankModifier) {
-        ForwardDistanceAction(150.0)
         currentState = DriveControlState.PATH_FOLLOWING
         //pathGenerator = PathGenerator()
         //path = Pathfinder.generate(points, config)

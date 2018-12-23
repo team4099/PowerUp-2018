@@ -9,7 +9,7 @@ class ControlBoard private constructor() {
     private val operator: Gamepad = XboxOneGamepad(Constants.Joysticks.SHOTGUN_PORT)
 
     val throttle: Double
-        get() = driver.rightTriggerAxis - driver.leftTriggerAxis
+        get() = -driver.rightTriggerAxis + driver.leftTriggerAxis
 
     val turn: Double
         get() = -driver.leftXAxis

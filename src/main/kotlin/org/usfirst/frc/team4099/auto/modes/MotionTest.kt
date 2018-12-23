@@ -1,5 +1,6 @@
 package src.main.kotlin.org.usfirst.frc.team4099.auto.modes
 
+import edu.wpi.first.wpilibj.DriverStation
 import org.usfirst.frc.team4099.DashboardConfigurator
 import org.usfirst.frc.team4099.auto.modes.AutoModeBase
 import org.usfirst.frc.team4099.auto.motionprofiling.AutoConstants
@@ -15,15 +16,14 @@ import org.usfirst.frc.team4099.auto.actions.ForwardDistanceAction
 
 class MotionTest(private val startingPosition: DashboardConfigurator.StartingPosition, private val ownershipConfig: String, private val delay: Double) : AutoModeBase(){
 
-    var points = arrayOf<Waypoint>(Waypoint(0.0, 0.0, 0.0), // Waypoint @ x=-4, y=-1, exit angle=0 degrees
-            Waypoint(4.0, 0.0, 0.0), // Waypoint @ x=-2, y=-2, exit angle=0 radians
-            Waypoint(4.0, 4.0, Pathfinder.d2r(45.0))                           // Waypoint @ x=0, y=0,   exit angle=45 radians
+    var points = arrayOf(Waypoint(0.0, 0.0, 0.0), // Waypoint @ x=-4, y=-1, exit angle=0 degrees
+            Waypoint(0.0, 0.0, 0.0), // Waypoint @ x=-2, y=-2, exit angle=0 radians
+            Waypoint(0.0, 0.0, Pathfinder.d2r(0.0))                           // Waypoint @ x=0, y=0,   exit angle=45 radians
     )
 
 
     override fun routine() {
-        runAction(ForwardDistanceAction(150.0))
-
+        //runAction(ForwardDistanceAction(150.0))
         runAction(FollowPathAction(points))
     }
 

@@ -85,9 +85,9 @@ class CheesyDriveHelper {
             //TODO: find the optimal value for negativeInertia decrease per iteration
             //TODO: testing 0.1, 0.15, 0.2, 0.25, 0.3, 0.5, 1.0, etc.
             if (negativeInertia > 1) {
-                negativeInertia -= 0.1
+                negativeInertia -= 0.5
             } else if (negativeInertia < -1) {
-                negativeInertia += 0.1
+                negativeInertia += 0.5
             } else {
                 negativeInertia = 0.0
             }
